@@ -93,7 +93,10 @@ func (p *AirbyteProvider) Configure(ctx context.Context, req provider.ConfigureR
 }
 
 func (p *AirbyteProvider) Resources(ctx context.Context) []func() resource.Resource {
-	return []func() resource.Resource{}
+	return []func() resource.Resource{
+		NewConnectionResource,
+		NewSourceResource,
+	}
 }
 
 func (p *AirbyteProvider) DataSources(ctx context.Context) []func() datasource.DataSource {

@@ -172,7 +172,7 @@ func New(opts ...SDKOption) *Airbyte {
 		sdkConfiguration: sdkConfiguration{
 			Language:          "terraform",
 			OpenAPIDocVersion: "1.0.0",
-			SDKVersion:        "1.0.0",
+			SDKVersion:        "1.0.1",
 			GenVersion:        "2.75.1",
 		},
 	}

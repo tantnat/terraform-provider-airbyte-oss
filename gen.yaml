@@ -1,4 +1,4 @@
-configVersion: 1.0.0
+configVersion: 1.0.1
 management:
   docChecksum: f9e4916f5224f36a702df791dcda1286
   docVersion: 1.0.0
@@ -13,6 +13,6 @@ generation:
   singleTagPerOp: false
   tagNamespacingDisabled: false
 terraform:
-  version: 1.0.0
+  version: 1.0.1
   author: aballiet
   packageName: airbyte

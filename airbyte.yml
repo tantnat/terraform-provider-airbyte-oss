@@ -713,6 +713,7 @@ paths:
       tags:
         - source
       summary: Create a source
+      x-speakeasy-entity-operation: Source#create
       operationId: createSource
       requestBody:
         content:
@@ -734,6 +735,7 @@ paths:
       tags:
         - source
       summary: Update a source
+      x-speakeasy-entity-operation: Source#update
       operationId: updateSource
       requestBody:
         content:
@@ -895,6 +897,7 @@ paths:
         - source
       summary: Delete a source
       operationId: deleteSource
+      x-speakeasy-entity-operation: Source#delete
       requestBody:
         content:
           application/json:
@@ -1503,6 +1506,7 @@ paths:
       tags:
         - connection
       summary: Create a connection between a source and a destination
+      x-speakeasy-entity-operation: Connection#create
       operationId: createConnection
       requestBody:
         content:
@@ -1524,6 +1528,7 @@ paths:
       tags:
         - connection
       summary: Update a connection
+      x-speakeasy-entity-operation: Connection#update
       description: |
         Apply a patch-style update to a connection. Only fields present on the update request body will be updated.
         Note that if a catalog is present in the request body, the connection's entire catalog will be replaced
@@ -1712,6 +1717,7 @@ paths:
       tags:
         - connection
       summary: Delete a connection
+      x-speakeasy-entity-operation: Connection#delete
       operationId: deleteConnection
       requestBody:
         content:
@@ -3369,6 +3375,7 @@ components:
       format: uuid
     SourceIdRequestBody:
       type: object
+      x-speakeasy-entity: Source
       required:
         - sourceId
       properties:
@@ -3411,6 +3418,7 @@ components:
           $ref: "#/components/schemas/WorkspaceId"
     SourceCreate:
       type: object
+      x-speakeasy-entity: Source
       required:
         - workspaceId
         - name
@@ -3458,6 +3466,7 @@ components:
           type: string
     SourceUpdate:
       type: object
+      x-speakeasy-entity: Source
       required:
         - sourceId
         - connectionConfiguration
@@ -3916,6 +3925,7 @@ components:
       format: uuid
     ConnectionIdRequestBody:
       type: object
+      x-speakeasy-entity: Connection
       required:
         - connectionId
       properties:
@@ -3961,6 +3971,7 @@ components:
           $ref: "#/components/schemas/ConnectionId"
     ConnectionCreate:
       type: object
+      x-speakeasy-entity: Connection
       required:
         - sourceId
         - destinationId
@@ -4073,6 +4084,7 @@ components:
           $ref: "#/components/schemas/ConnectionState"
     ConnectionUpdate:
       type: object
+      x-speakeasy-entity: Connection
       description: Used to apply a patch-style update to a connection, which means that null properties remain unchanged
       required:
         - connectionId
