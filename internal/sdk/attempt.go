@@ -47,7 +47,7 @@ func (s *attempt) SaveStats(ctx context.Context, request shared.SaveStatsRequest
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -109,7 +109,7 @@ func (s *attempt) SaveSyncConfig(ctx context.Context, request shared.SaveAttempt
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -171,7 +171,7 @@ func (s *attempt) SetWorkflowInAttempt(ctx context.Context, request shared.SetWo
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {

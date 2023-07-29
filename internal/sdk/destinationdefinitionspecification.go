@@ -47,7 +47,7 @@ func (s *destinationDefinitionSpecification) GetDestinationDefinitionSpecificati
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -129,7 +129,7 @@ func (s *destinationDefinitionSpecification) GetSpecificationForDestinationID(ct
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {

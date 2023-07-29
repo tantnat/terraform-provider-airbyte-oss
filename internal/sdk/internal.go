@@ -46,7 +46,7 @@ func (s *internal) CreateOrUpdateState(ctx context.Context, request shared.Conne
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -125,7 +125,7 @@ func (s *internal) GetAttemptNormalizationStatusesForJob(ctx context.Context, re
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -187,7 +187,7 @@ func (s *internal) SaveStats(ctx context.Context, request shared.SaveStatsReques
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -249,7 +249,7 @@ func (s *internal) SaveSyncConfig(ctx context.Context, request shared.SaveAttemp
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -311,7 +311,7 @@ func (s *internal) SetWorkflowInAttempt(ctx context.Context, request shared.SetW
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -373,7 +373,7 @@ func (s *internal) WriteDiscoverCatalogResult(ctx context.Context, request share
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {

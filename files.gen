@@ -419,6 +419,7 @@ internal/sdk/pkg/models/shared/workspacereadlist.go
 internal/sdk/pkg/models/shared/workspaceupdate.go
 internal/sdk/pkg/models/shared/workspacegivefeedback.go
 internal/sdk/pkg/models/shared/workspaceupdatename.go
+internal/sdk/pkg/models/shared/security.go
 USAGE.md
 internal/provider/provider.go
 examples/provider/provider.tf

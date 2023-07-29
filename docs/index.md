@@ -56,7 +56,7 @@ terraform {
   required_providers {
     airbyte = {
       source  = "aballiet/airbyte"
-      version = "1.0.0"
+      version = "1.0.1"
     }
   }
 }
@@ -71,4 +71,5 @@ provider "airbyte" {
 
 ### Optional
 
+- `bearer_auth` (String, Sensitive)
 - `server_url` (String) Server URL (defaults to http://localhost:8000/api)

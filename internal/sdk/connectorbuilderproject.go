@@ -46,7 +46,7 @@ func (s *connectorBuilderProject) CreateConnectorBuilderProject(ctx context.Cont
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -108,7 +108,7 @@ func (s *connectorBuilderProject) DeleteConnectorBuilderProject(ctx context.Cont
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -161,7 +161,7 @@ func (s *connectorBuilderProject) GetConnectorBuilderProject(ctx context.Context
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -223,7 +223,7 @@ func (s *connectorBuilderProject) ListConnectorBuilderProjects(ctx context.Conte
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -285,7 +285,7 @@ func (s *connectorBuilderProject) PublishConnectorBuilderProject(ctx context.Con
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -347,7 +347,7 @@ func (s *connectorBuilderProject) UpdateConnectorBuilderProject(ctx context.Cont
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {

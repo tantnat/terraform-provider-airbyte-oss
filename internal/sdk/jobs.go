@@ -46,7 +46,7 @@ func (s *jobs) CancelJob(ctx context.Context, request shared.JobIDRequestBody) (
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -125,7 +125,7 @@ func (s *jobs) GetAttemptNormalizationStatusesForJob(ctx context.Context, reques
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -187,7 +187,7 @@ func (s *jobs) GetJobDebugInfo(ctx context.Context, request shared.JobIDRequestB
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -269,7 +269,7 @@ func (s *jobs) GetJobInfo(ctx context.Context, request shared.JobIDRequestBody) 
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -351,7 +351,7 @@ func (s *jobs) GetJobInfoLight(ctx context.Context, request shared.JobIDRequestB
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -433,7 +433,7 @@ func (s *jobs) GetJobInfoWithoutLogs(ctx context.Context, request shared.JobIDRe
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -514,7 +514,7 @@ func (s *jobs) GetLastReplicationJob(ctx context.Context, request shared.Connect
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -596,7 +596,7 @@ func (s *jobs) ListJobsFor(ctx context.Context, request shared.JobListRequestBod
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {

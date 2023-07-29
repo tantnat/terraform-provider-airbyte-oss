@@ -37,6 +37,8 @@ externalDocs:
   url: "https://airbyte.io"
 servers:
   - url: "http://localhost:8000/api"
+security:
+  - bearerAuth: []
 tags:
   - name: workspace
     description: Workspace related resources.
@@ -6151,5 +6153,3 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/KnownExceptionInfo"
-security:
-  - {}

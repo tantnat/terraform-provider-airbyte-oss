@@ -43,7 +43,7 @@ func (s *streams) CreateStreamStatus(ctx context.Context, request shared.StreamS
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -102,7 +102,7 @@ func (s *streams) GetStreamStatuses(ctx context.Context, request shared.StreamSt
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -161,7 +161,7 @@ func (s *streams) UpdateStreamStatus(ctx context.Context, request shared.StreamS
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {

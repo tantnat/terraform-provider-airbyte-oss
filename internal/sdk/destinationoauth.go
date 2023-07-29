@@ -47,7 +47,7 @@ func (s *destinationOauth) CompleteDestinationOAuth(ctx context.Context, request
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -129,7 +129,7 @@ func (s *destinationOauth) GetDestinationOAuthConsent(ctx context.Context, reque
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -211,7 +211,7 @@ func (s *destinationOauth) SetInstancewideDestinationOauthParams(ctx context.Con
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {

@@ -47,7 +47,7 @@ func (s *sourceOauth) CompleteSourceOAuth(ctx context.Context, request shared.Co
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -129,7 +129,7 @@ func (s *sourceOauth) GetSourceOAuthConsent(ctx context.Context, request shared.
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -211,7 +211,7 @@ func (s *sourceOauth) RevokeSourceOAuthTokens(ctx context.Context, request share
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -284,7 +284,7 @@ func (s *sourceOauth) SetInstancewideSourceOauthParams(ctx context.Context, requ
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {

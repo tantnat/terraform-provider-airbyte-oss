@@ -46,7 +46,7 @@ func (s *scheduler) ExecuteDestinationCheckConnection(ctx context.Context, reque
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -118,7 +118,7 @@ func (s *scheduler) ExecuteSourceCheckConnection(ctx context.Context, request sh
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -190,7 +190,7 @@ func (s *scheduler) ExecuteSourceDiscoverSchema(ctx context.Context, request sha
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {

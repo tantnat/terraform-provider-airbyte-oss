@@ -47,7 +47,7 @@ func (s *source) ApplySchemaChangeForSource(ctx context.Context, request shared.
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -120,7 +120,7 @@ func (s *source) CheckConnectionToSource(ctx context.Context, request shared.Sou
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -202,7 +202,7 @@ func (s *source) CheckConnectionToSourceForUpdate(ctx context.Context, request s
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -284,7 +284,7 @@ func (s *source) CloneSource(ctx context.Context, request shared.SourceCloneRequ
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -366,7 +366,7 @@ func (s *source) CreateSource(ctx context.Context, request shared.SourceCreate) 
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -438,7 +438,7 @@ func (s *source) DeleteSource(ctx context.Context, request shared.SourceIDReques
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -511,7 +511,7 @@ func (s *source) DiscoverSchemaForSource(ctx context.Context, request shared.Sou
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -593,7 +593,7 @@ func (s *source) GetMostRecentSourceActorCatalog(ctx context.Context, request sh
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -675,7 +675,7 @@ func (s *source) GetSource(ctx context.Context, request shared.SourceIDRequestBo
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -758,7 +758,7 @@ func (s *source) ListSourcesForWorkspace(ctx context.Context, request shared.Wor
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -840,7 +840,7 @@ func (s *source) PartialUpdateSource(ctx context.Context, request shared.Partial
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -922,7 +922,7 @@ func (s *source) SearchSources(ctx context.Context, request shared.SourceSearch)
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -994,7 +994,7 @@ func (s *source) UpdateSource(ctx context.Context, request shared.SourceUpdate) 
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -1076,7 +1076,7 @@ func (s *source) WriteDiscoverCatalogResult(ctx context.Context, request shared.
 
 	req.Header.Set("Content-Type", reqContentType)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
