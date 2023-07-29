@@ -56,13 +56,16 @@ terraform {
   required_providers {
     airbyte = {
       source  = "aballiet/airbyte"
-      version = "1.0.1"
+      version = "1.0.3"
     }
   }
 }
 
 provider "airbyte" {
   # Configuration options
+  server_url  = "http://localhost:8000"
+  username = "YOUR_USER_NAME"
+  password = "YOUR_PASSWORD"
 }
 ```
 
@@ -71,5 +74,6 @@ provider "airbyte" {
 
 ### Optional
 
-- `bearer_auth` (String, Sensitive)
+- `password` (String, Sensitive)
 - `server_url` (String) Server URL (defaults to http://localhost:8000/api)
+- `username` (String, Sensitive)

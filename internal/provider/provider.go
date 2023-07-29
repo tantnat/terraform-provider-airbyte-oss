@@ -25,8 +25,9 @@ type AirbyteProvider struct {
 
 // AirbyteProviderModel describes the provider data model.
 type AirbyteProviderModel struct {
-	ServerURL  types.String `tfsdk:"server_url"`
-	BearerAuth types.String `tfsdk:"bearer_auth"`
+	ServerURL types.String `tfsdk:"server_url"`
+	Password  types.String `tfsdk:"password"`
+	Username  types.String `tfsdk:"username"`
 }
 
 func (p *AirbyteProvider) Metadata(ctx context.Context, req provider.MetadataRequest, resp *provider.MetadataResponse) {
@@ -66,7 +67,11 @@ func (p *AirbyteProvider) Schema(ctx context.Context, req provider.SchemaRequest
 				Optional:            true,
 				Required:            false,
 			},
-			"bearer_auth": schema.StringAttribute{
+			"password": schema.StringAttribute{
+				Optional:  true,
+				Sensitive: true,
+			},
+			"username": schema.StringAttribute{
 				Optional:  true,
 				Sensitive: true,
 			},
@@ -89,9 +94,11 @@ func (p *AirbyteProvider) Configure(ctx context.Context, req provider.ConfigureR
 		ServerURL = "http://localhost:8000/api"
 	}
 
-	bearerAuth := data.BearerAuth.ValueString()
+	password := data.Password.ValueString()
+	username := data.Username.ValueString()
 	security := shared.Security{
-		BearerAuth: bearerAuth,
+		Password: password,
+		Username: username,
 	}
 
 	opts := []sdk.SDKOption{

@@ -2684,8 +2684,7 @@ components:
   securitySchemes:
     bearerAuth:
       type: http
-      scheme: bearer
-      bearerFormat: JWT
+      scheme: basic
   schemas:
     # WORKSPACE
     WorkspaceId:

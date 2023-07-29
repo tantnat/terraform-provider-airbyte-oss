@@ -3,5 +3,6 @@
 package shared
 
 type Security struct {
-	BearerAuth string `security:"scheme,type=http,subtype=bearer,name=Authorization"`
+	Password string `security:"scheme,type=http,subtype=basic,name=password"`
+	Username string `security:"scheme,type=http,subtype=basic,name=username"`
 }
