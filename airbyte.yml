@@ -80,6 +80,7 @@ paths:
         - workspace
       summary: Creates a workspace
       operationId: createWorkspace
+      x-speakeasy-entity-operation: Workspace#create
       requestBody:
         content:
           application/json:
@@ -101,6 +102,7 @@ paths:
         - workspace
       summary: Deletes a workspace
       operationId: deleteWorkspace
+      x-speakeasy-entity-operation: Workspace#delete
       requestBody:
         content:
           application/json:
@@ -202,6 +204,7 @@ paths:
         - workspace
       summary: Update workspace state
       operationId: updateWorkspace
+      x-speakeasy-entity-operation: Workspace#update
       requestBody:
         content:
           application/json:
@@ -289,6 +292,7 @@ paths:
         - source_definition
       summary: Update a sourceDefinition
       operationId: updateSourceDefinition
+      x-speakeasy-entity-operation: SourceDefinition#update
       requestBody:
         content:
           application/json:
@@ -361,6 +365,7 @@ paths:
         - source_definition
       summary: Delete a source definition
       operationId: deleteSourceDefinition
+      x-speakeasy-entity-operation: SourceDefinition#delete
       requestBody:
         content:
           application/json:
@@ -418,6 +423,7 @@ paths:
         - source_definition
       summary: Creates a custom sourceDefinition for the given workspace
       operationId: createCustomSourceDefinition
+      x-speakeasy-entity-operation: SourceDefinition#create
       requestBody:
         content:
           application/json:
@@ -549,6 +555,7 @@ paths:
         - declarative_source_definitions
       summary: Create a declarative manifest to be used by the specified source definition
       operationId: createDeclarativeSourceDefinitionManifest
+      x-speakeasy-entity-operation: SourceDefinitionManifest#create
       requestBody:
         content:
           application/json:
@@ -570,6 +577,7 @@ paths:
         - declarative_source_definitions
       summary: Update the declarative manifest version for a source
       operationId: updateDeclarativeManifestVersion
+      x-speakeasy-entity-operation: SourceDefinitionManifest#update
       requestBody:
         content:
           application/json:
@@ -2695,6 +2703,7 @@ components:
       format: uuid
     WorkspaceCreate:
       type: object
+      x-speakeasy-entity: Workspace
       required:
         - name
       properties:
@@ -2813,6 +2822,7 @@ components:
           type: string
     WorkspaceIdRequestBody:
       type: object
+      x-speakeasy-entity: Workspace
       required:
         - workspaceId
       properties:
@@ -2931,6 +2941,7 @@ components:
     WorkspaceUpdate:
       type: object
       description: Used to apply a patch-style update to a workspace, which means that null properties remain unchanged
+      x-speakeasy-entity: Workspace
       required:
         - workspaceId
       properties:
@@ -3157,6 +3168,7 @@ components:
       format: uuid
     SourceDefinitionIdRequestBody:
       type: object
+      x-speakeasy-entity: SourceDefinition
       required:
         - sourceDefinitionId
       properties:
@@ -3186,6 +3198,7 @@ components:
     SourceDefinitionUpdate:
       type: object
       description: Update the SourceDefinition. Currently, the only allowed attribute to update is the default docker image version.
+      x-speakeasy-entity: SourceDefinition
       required:
         - sourceDefinitionId
         - dockerImageTag
@@ -3250,6 +3263,7 @@ components:
             $ref: "#/components/schemas/SourceDefinitionRead"
     CustomSourceDefinitionCreate:
       type: object
+      x-speakeasy-entity: SourceDefinition
       required:
         - workspaceId
         - sourceDefinition
@@ -3303,6 +3317,7 @@ components:
           type: string
     DeclarativeSourceDefinitionCreateManifestRequestBody:
       type: object
+      x-speakeasy-entity: SourceDefinitionManifest
       required:
         - workspaceId
         - sourceDefinitionId
@@ -3319,6 +3334,7 @@ components:
           $ref: "#/components/schemas/DeclarativeSourceManifest"
     UpdateActiveManifestRequestBody:
       type: object
+      x-speakeasy-entity: SourceDefinitionManifest
       required:
         - workspaceId
         - sourceDefinitionId

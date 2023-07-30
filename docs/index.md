@@ -25,6 +25,8 @@ description: |-
 
 # aballiet-terraform-provider-airbyte-oss Provider
 
+STILL UNDER DEVELOPMENT, USE AT YOUR OWN RISKS
+
 Airbyte Configuration API: Airbyte Configuration API
 [https://airbyte.io](https://airbyte.io).
 
