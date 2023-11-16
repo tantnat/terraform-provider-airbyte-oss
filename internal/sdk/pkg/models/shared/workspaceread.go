@@ -19,6 +19,7 @@ type WorkspaceRead struct {
 	FeedbackDone            *bool                 `json:"feedbackDone,omitempty"`
 	DefaultGeography        *Geography            `json:"defaultGeography,omitempty"`
 	WebhookConfigs          []WebhookConfigRead   `json:"webhookConfigs,omitempty"`
+	OrganizationID          *string               `json:"organizationId,omitempty"`
 }
 
 func (o *WorkspaceRead) GetWorkspaceID() string {
@@ -131,4 +132,11 @@ func (o *WorkspaceRead) GetWebhookConfigs() []WebhookConfigRead {
 		return nil
 	}
 	return o.WebhookConfigs
+}
+
+func (o *WorkspaceRead) GetOrganizationID() *string {
+	if o == nil {
+		return nil
+	}
+	return o.OrganizationID
 }

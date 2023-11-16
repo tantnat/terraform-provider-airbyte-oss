@@ -15,15 +15,18 @@ type DestinationDefinitionRead struct {
 	DocumentationURL        string  `json:"documentationUrl"`
 	Icon                    *string `json:"icon,omitempty"`
 	// The Airbyte Protocol version supported by the connector
-	ProtocolVersion *string       `json:"protocolVersion,omitempty"`
-	ReleaseStage    *ReleaseStage `json:"releaseStage,omitempty"`
+	ProtocolVersion *string `json:"protocolVersion,omitempty"`
+	// Whether the connector is custom or not
+	Custom       *bool         `default:"false" json:"custom"`
+	SupportLevel *SupportLevel `json:"supportLevel,omitempty"`
+	ReleaseStage *ReleaseStage `json:"releaseStage,omitempty"`
 	// The date when this connector was first released, in yyyy-mm-dd format.
 	ReleaseDate *types.Date `json:"releaseDate,omitempty"`
 	// actor definition specific resource requirements. if default is set, these are the requirements that should be set for ALL jobs run for this actor definition. it is overriden by the job type specific configurations. if not set, the platform will use defaults. these values will be overriden by configuration at the connection level.
 	ResourceRequirements *ActorDefinitionResourceRequirements `json:"resourceRequirements,omitempty"`
 	// an optional flag indicating whether DBT is used in the normalization. If the flag value is NULL - DBT is not used.
 	SupportsDbt bool `json:"supportsDbt"`
-	// describes a normalization config for destination definition
+	// describes a normalization config for destination definition version
 	NormalizationConfig NormalizationDestinationDefinitionConfig `json:"normalizationConfig"`
 }
 
@@ -85,6 +88,20 @@ func (o *DestinationDefinitionRead) GetProtocolVersion() *string {
 		return nil
 	}
 	return o.ProtocolVersion
+}
+
+func (o *DestinationDefinitionRead) GetCustom() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.Custom
+}
+
+func (o *DestinationDefinitionRead) GetSupportLevel() *SupportLevel {
+	if o == nil {
+		return nil
+	}
+	return o.SupportLevel
 }
 
 func (o *DestinationDefinitionRead) GetReleaseStage() *ReleaseStage {

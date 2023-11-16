@@ -13,6 +13,7 @@ type WorkspaceCreate struct {
 	DisplaySetupWizard      *bool                 `json:"displaySetupWizard,omitempty"`
 	DefaultGeography        *Geography            `json:"defaultGeography,omitempty"`
 	WebhookConfigs          []WebhookConfigWrite  `json:"webhookConfigs,omitempty"`
+	OrganizationID          *string               `json:"organizationId,omitempty"`
 }
 
 func (o *WorkspaceCreate) GetEmail() *string {
@@ -83,4 +84,11 @@ func (o *WorkspaceCreate) GetWebhookConfigs() []WebhookConfigWrite {
 		return nil
 	}
 	return o.WebhookConfigs
+}
+
+func (o *WorkspaceCreate) GetOrganizationID() *string {
+	if o == nil {
+		return nil
+	}
+	return o.OrganizationID
 }

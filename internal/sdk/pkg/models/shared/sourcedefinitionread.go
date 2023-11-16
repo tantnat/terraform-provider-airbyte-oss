@@ -50,8 +50,11 @@ type SourceDefinitionRead struct {
 	DocumentationURL   *string `json:"documentationUrl,omitempty"`
 	Icon               *string `json:"icon,omitempty"`
 	// The Airbyte Protocol version supported by the connector
-	ProtocolVersion *string       `json:"protocolVersion,omitempty"`
-	ReleaseStage    *ReleaseStage `json:"releaseStage,omitempty"`
+	ProtocolVersion *string `json:"protocolVersion,omitempty"`
+	// Whether the connector is custom or not
+	Custom       *bool         `default:"false" json:"custom"`
+	SupportLevel *SupportLevel `json:"supportLevel,omitempty"`
+	ReleaseStage *ReleaseStage `json:"releaseStage,omitempty"`
 	// The date when this connector was first released, in yyyy-mm-dd format.
 	ReleaseDate *types.Date `json:"releaseDate,omitempty"`
 	SourceType  *SourceType `json:"sourceType,omitempty"`
@@ -119,6 +122,20 @@ func (o *SourceDefinitionRead) GetProtocolVersion() *string {
 		return nil
 	}
 	return o.ProtocolVersion
+}
+
+func (o *SourceDefinitionRead) GetCustom() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.Custom
+}
+
+func (o *SourceDefinitionRead) GetSupportLevel() *SupportLevel {
+	if o == nil {
+		return nil
+	}
+	return o.SupportLevel
 }
 
 func (o *SourceDefinitionRead) GetReleaseStage() *ReleaseStage {

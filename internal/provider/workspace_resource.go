@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/aballiet/terraform-provider-airbyte/internal/sdk"
 
+	"github.com/aballiet/terraform-provider-airbyte/internal/sdk/pkg/models/shared"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -44,6 +45,7 @@ type WorkspaceResourceModel struct {
 	News                    types.Bool            `tfsdk:"news"`
 	Notifications           []Notification        `tfsdk:"notifications"`
 	NotificationSettings    *NotificationSettings `tfsdk:"notification_settings"`
+	OrganizationID          types.String          `tfsdk:"organization_id"`
 	SecurityUpdates         types.Bool            `tfsdk:"security_updates"`
 	Slug                    types.String          `tfsdk:"slug"`
 	WebhookConfigs          []WebhookConfigRead   `tfsdk:"webhook_configs"`
@@ -151,6 +153,56 @@ func (r *WorkspaceResource) Schema(ctx context.Context, req resource.SchemaReque
 				Computed: true,
 				Optional: true,
 				Attributes: map[string]schema.Attribute{
+					"send_on_breaking_change_syncs_disabled": schema.SingleNestedAttribute{
+						Computed: true,
+						Optional: true,
+						Attributes: map[string]schema.Attribute{
+							"customerio_configuration": schema.SingleNestedAttribute{
+								Computed:   true,
+								Optional:   true,
+								Attributes: map[string]schema.Attribute{},
+							},
+							"notification_type": schema.ListAttribute{
+								Computed:    true,
+								Optional:    true,
+								ElementType: types.StringType,
+							},
+							"slack_configuration": schema.SingleNestedAttribute{
+								Computed: true,
+								Optional: true,
+								Attributes: map[string]schema.Attribute{
+									"webhook": schema.StringAttribute{
+										Required: true,
+									},
+								},
+							},
+						},
+					},
+					"send_on_breaking_change_warning": schema.SingleNestedAttribute{
+						Computed: true,
+						Optional: true,
+						Attributes: map[string]schema.Attribute{
+							"customerio_configuration": schema.SingleNestedAttribute{
+								Computed:   true,
+								Optional:   true,
+								Attributes: map[string]schema.Attribute{},
+							},
+							"notification_type": schema.ListAttribute{
+								Computed:    true,
+								Optional:    true,
+								ElementType: types.StringType,
+							},
+							"slack_configuration": schema.SingleNestedAttribute{
+								Computed: true,
+								Optional: true,
+								Attributes: map[string]schema.Attribute{
+									"webhook": schema.StringAttribute{
+										Required: true,
+									},
+								},
+							},
+						},
+					},
 					"send_on_connection_update": schema.SingleNestedAttribute{
 						Computed: true,
 						Optional: true,
@@ -302,6 +354,13 @@ func (r *WorkspaceResource) Schema(ctx context.Context, req resource.SchemaReque
 						},
 					},
 				},
+			},
+			"organization_id": schema.StringAttribute{
+				Computed: true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
+				Optional: true,
 			},
 			"security_updates": schema.BoolAttribute{
 				Computed: true,
@@ -482,7 +541,10 @@ func (r *WorkspaceResource) Delete(ctx context.Context, req resource.DeleteReque
 		return
 	}
 
-	request := *data.ToDeleteSDKType()
+	workspaceID := data.WorkspaceID.ValueString()
+	request := shared.WorkspaceIDRequestBody{
+		WorkspaceID: workspaceID,
+	}
 	res, err := r.client.Workspace.DeleteWorkspace(ctx, request)
 	if err != nil {
 		resp.Diagnostics.AddError("failure to invoke API", err.Error())

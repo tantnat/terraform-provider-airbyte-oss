@@ -35,6 +35,7 @@ type SourceDefinitionResource struct {
 
 // SourceDefinitionResourceModel describes the resource data model.
 type SourceDefinitionResourceModel struct {
+	Custom                    types.Bool                           `tfsdk:"custom"`
 	DockerImageTag            types.String                         `tfsdk:"docker_image_tag"`
 	DockerRepository          types.String                         `tfsdk:"docker_repository"`
 	DocumentationURL          types.String                         `tfsdk:"documentation_url"`
@@ -45,9 +46,12 @@ type SourceDefinitionResourceModel struct {
 	ReleaseDate               types.String                         `tfsdk:"release_date"`
 	ReleaseStage              types.String                         `tfsdk:"release_stage"`
 	ResourceRequirements      *ActorDefinitionResourceRequirements `tfsdk:"resource_requirements"`
+	ScopeID                   types.String                         `tfsdk:"scope_id"`
+	ScopeType                 types.String                         `tfsdk:"scope_type"`
 	SourceDefinition          SourceDefinitionCreate               `tfsdk:"source_definition"`
 	SourceDefinitionID        types.String                         `tfsdk:"source_definition_id"`
 	SourceType                types.String                         `tfsdk:"source_type"`
+	SupportLevel              types.String                         `tfsdk:"support_level"`
 	WorkspaceID               types.String                         `tfsdk:"workspace_id"`
 }
 
@@ -60,6 +64,11 @@ func (r *SourceDefinitionResource) Schema(ctx context.Context, req resource.Sche
 		MarkdownDescription: "SourceDefinition Resource",
 
 		Attributes: map[string]schema.Attribute{
+			"custom": schema.BoolAttribute{
+				Computed: true,
+				MarkdownDescription: `Default: false` + "\n" +
+					`Whether the connector is custom or not`,
+			},
 			"docker_image_tag": schema.StringAttribute{
 				Computed: true,
 			},
@@ -167,19 +176,44 @@ func (r *SourceDefinitionResource) Schema(ctx context.Context, req resource.Sche
 				},
 				Description: `actor definition specific resource requirements. if default is set, these are the requirements that should be set for ALL jobs run for this actor definition. it is overriden by the job type specific configurations. if not set, the platform will use defaults. these values will be overriden by configuration at the connection level.`,
 			},
+			"scope_id": schema.StringAttribute{
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
+				Optional: true,
+			},
+			"scope_type": schema.StringAttribute{
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplace(),
+				},
+				Optional:    true,
+				Description: `must be one of ["workspace", "organization"]`,
+				Validators: []validator.String{
+					stringvalidator.OneOf(
+						"workspace",
+						"organization",
+					),
+				},
+			},
 			"source_definition": schema.SingleNestedAttribute{
 				PlanModifiers: []planmodifier.Object{
 					objectplanmodifier.RequiresReplace(),
 				},
 				Required: true,
 				Attributes: map[string]schema.Attribute{
-					"docker_image_tag": schema.StringAttribute{
+					"name": schema.StringAttribute{
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.RequiresReplace(),
 						},
 						Required: true,
 					},
 					"docker_repository": schema.StringAttribute{
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.RequiresReplace(),
+						},
+						Required: true,
+					},
+					"docker_image_tag": schema.StringAttribute{
 						PlanModifiers: []planmodifier.String{
 							stringplanmodifier.RequiresReplace(),
 						},
@@ -197,12 +231,6 @@ func (r *SourceDefinitionResource) Schema(ctx context.Context, req resource.Sche
 						},
 						Optional: true,
 					},
-					"name": schema.StringAttribute{
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.RequiresReplace(),
-						},
-						Required: true,
-					},
 					"resource_requirements": schema.SingleNestedAttribute{
 						PlanModifiers: []planmodifier.Object{
 							objectplanmodifier.RequiresReplace(),
@@ -215,25 +243,25 @@ func (r *SourceDefinitionResource) Schema(ctx context.Context, req resource.Sche
 								},
 								Optional: true,
 								Attributes: map[string]schema.Attribute{
-									"cpu_limit": schema.StringAttribute{
-										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.RequiresReplace(),
-										},
-										Optional: true,
-									},
 									"cpu_request": schema.StringAttribute{
 										PlanModifiers: []planmodifier.String{
 											stringplanmodifier.RequiresReplace(),
 										},
 										Optional: true,
 									},
-									"memory_limit": schema.StringAttribute{
+									"cpu_limit": schema.StringAttribute{
 										PlanModifiers: []planmodifier.String{
 											stringplanmodifier.RequiresReplace(),
 										},
 										Optional: true,
 									},
 									"memory_request": schema.StringAttribute{
+										PlanModifiers: []planmodifier.String{
+											stringplanmodifier.RequiresReplace(),
+										},
+										Optional: true,
+									},
+									"memory_limit": schema.StringAttribute{
 										PlanModifiers: []planmodifier.String{
 											stringplanmodifier.RequiresReplace(),
 										},
@@ -274,25 +302,25 @@ func (r *SourceDefinitionResource) Schema(ctx context.Context, req resource.Sche
 											},
 											Required: true,
 											Attributes: map[string]schema.Attribute{
-												"cpu_limit": schema.StringAttribute{
-													PlanModifiers: []planmodifier.String{
-														stringplanmodifier.RequiresReplace(),
-													},
-													Optional: true,
-												},
 												"cpu_request": schema.StringAttribute{
 													PlanModifiers: []planmodifier.String{
 														stringplanmodifier.RequiresReplace(),
 													},
 													Optional: true,
 												},
-												"memory_limit": schema.StringAttribute{
+												"cpu_limit": schema.StringAttribute{
 													PlanModifiers: []planmodifier.String{
 														stringplanmodifier.RequiresReplace(),
 													},
 													Optional: true,
 												},
 												"memory_request": schema.StringAttribute{
+													PlanModifiers: []planmodifier.String{
+														stringplanmodifier.RequiresReplace(),
+													},
+													Optional: true,
+												},
+												"memory_limit": schema.StringAttribute{
 													PlanModifiers: []planmodifier.String{
 														stringplanmodifier.RequiresReplace(),
 													},
@@ -324,11 +352,22 @@ func (r *SourceDefinitionResource) Schema(ctx context.Context, req resource.Sche
 					),
 				},
 			},
+			"support_level": schema.StringAttribute{
+				Computed:    true,
+				Description: `must be one of ["community", "certified", "none"]`,
+				Validators: []validator.String{
+					stringvalidator.OneOf(
+						"community",
+						"certified",
+						"none",
+					),
+				},
+			},
 			"workspace_id": schema.StringAttribute{
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
 				},
-				Required: true,
+				Optional: true,
 			},
 		},
 	}

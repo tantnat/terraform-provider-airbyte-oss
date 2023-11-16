@@ -3,15 +3,31 @@
 package shared
 
 type CustomSourceDefinitionCreate struct {
-	WorkspaceID      string                 `json:"workspaceId"`
+	WorkspaceID      *string                `json:"workspaceId,omitempty"`
+	ScopeID          *string                `json:"scopeId,omitempty"`
+	ScopeType        *ScopeType             `json:"scopeType,omitempty"`
 	SourceDefinition SourceDefinitionCreate `json:"sourceDefinition"`
 }
 
-func (o *CustomSourceDefinitionCreate) GetWorkspaceID() string {
+func (o *CustomSourceDefinitionCreate) GetWorkspaceID() *string {
 	if o == nil {
-		return ""
+		return nil
 	}
 	return o.WorkspaceID
+}
+
+func (o *CustomSourceDefinitionCreate) GetScopeID() *string {
+	if o == nil {
+		return nil
+	}
+	return o.ScopeID
+}
+
+func (o *CustomSourceDefinitionCreate) GetScopeType() *ScopeType {
+	if o == nil {
+		return nil
+	}
+	return o.ScopeType
 }
 
 func (o *CustomSourceDefinitionCreate) GetSourceDefinition() SourceDefinitionCreate {

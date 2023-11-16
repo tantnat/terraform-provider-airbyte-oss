@@ -3,6 +3,7 @@
 package shared
 
 type ActorDefinitionRequestBody struct {
+	// A unique identifier for an actor definition.
 	ActorDefinitionID string    `json:"actorDefinitionId"`
 	ActorType         ActorType `json:"actorType"`
 }

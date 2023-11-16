@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/aballiet/terraform-provider-airbyte/internal/sdk"
 
+	"github.com/aballiet/terraform-provider-airbyte/internal/sdk/pkg/models/shared"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -549,7 +550,10 @@ func (r *ConnectionResource) Delete(ctx context.Context, req resource.DeleteRequ
 		return
 	}
 
-	request := *data.ToDeleteSDKType()
+	connectionID := data.ConnectionID.ValueString()
+	request := shared.ConnectionIDRequestBody{
+		ConnectionID: connectionID,
+	}
 	res, err := r.client.Connection.DeleteConnection(ctx, request)
 	if err != nil {
 		resp.Diagnostics.AddError("failure to invoke API", err.Error())

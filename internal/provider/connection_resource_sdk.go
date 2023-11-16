@@ -573,12 +573,9 @@ func (r *ConnectionResourceModel) ToUpdateSDKType() *shared.ConnectionUpdate {
 	return &out
 }
 
-func (r *ConnectionResourceModel) ToDeleteSDKType() *shared.ConnectionIDRequestBody {
-	connectionID := r.ConnectionID.ValueString()
-	out := shared.ConnectionIDRequestBody{
-		ConnectionID: connectionID,
-	}
-	return &out
+func (r *ConnectionResourceModel) ToDeleteSDKType() *shared.ConnectionCreate {
+	out := r.ToCreateSDKType()
+	return out
 }
 
 func (r *ConnectionResourceModel) RefreshFromCreateResponse(resp *shared.ConnectionRead) {

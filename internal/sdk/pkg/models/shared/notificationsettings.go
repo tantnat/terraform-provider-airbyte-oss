@@ -9,6 +9,8 @@ type NotificationSettings struct {
 	SendOnSyncDisabledWarning            *NotificationItem `json:"sendOnSyncDisabledWarning,omitempty"`
 	SendOnConnectionUpdate               *NotificationItem `json:"sendOnConnectionUpdate,omitempty"`
 	SendOnConnectionUpdateActionRequired *NotificationItem `json:"sendOnConnectionUpdateActionRequired,omitempty"`
+	SendOnBreakingChangeWarning          *NotificationItem `json:"sendOnBreakingChangeWarning,omitempty"`
+	SendOnBreakingChangeSyncsDisabled    *NotificationItem `json:"sendOnBreakingChangeSyncsDisabled,omitempty"`
 }
 
 func (o *NotificationSettings) GetSendOnSuccess() *NotificationItem {
@@ -51,4 +53,18 @@ func (o *NotificationSettings) GetSendOnConnectionUpdateActionRequired() *Notifi
 		return nil
 	}
 	return o.SendOnConnectionUpdateActionRequired
+}
+
+func (o *NotificationSettings) GetSendOnBreakingChangeWarning() *NotificationItem {
+	if o == nil {
+		return nil
+	}
+	return o.SendOnBreakingChangeWarning
+}
+
+func (o *NotificationSettings) GetSendOnBreakingChangeSyncsDisabled() *NotificationItem {
+	if o == nil {
+		return nil
+	}
+	return o.SendOnBreakingChangeSyncsDisabled
 }

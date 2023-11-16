@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-type GrantSourceDefinitionToWorkspaceResponse struct {
+type GrantSourceDefinitionResponse struct {
 	// HTTP response content type for this operation
 	ContentType string
 	// HTTP response status code for this operation
@@ -22,42 +22,42 @@ type GrantSourceDefinitionToWorkspaceResponse struct {
 	InvalidInputExceptionInfo *shared.InvalidInputExceptionInfo
 }
 
-func (o *GrantSourceDefinitionToWorkspaceResponse) GetContentType() string {
+func (o *GrantSourceDefinitionResponse) GetContentType() string {
 	if o == nil {
 		return ""
 	}
 	return o.ContentType
 }
 
-func (o *GrantSourceDefinitionToWorkspaceResponse) GetStatusCode() int {
+func (o *GrantSourceDefinitionResponse) GetStatusCode() int {
 	if o == nil {
 		return 0
 	}
 	return o.StatusCode
 }
 
-func (o *GrantSourceDefinitionToWorkspaceResponse) GetRawResponse() *http.Response {
+func (o *GrantSourceDefinitionResponse) GetRawResponse() *http.Response {
 	if o == nil {
 		return nil
 	}
 	return o.RawResponse
 }
 
-func (o *GrantSourceDefinitionToWorkspaceResponse) GetPrivateSourceDefinitionRead() *shared.PrivateSourceDefinitionRead {
+func (o *GrantSourceDefinitionResponse) GetPrivateSourceDefinitionRead() *shared.PrivateSourceDefinitionRead {
 	if o == nil {
 		return nil
 	}
 	return o.PrivateSourceDefinitionRead
 }
 
-func (o *GrantSourceDefinitionToWorkspaceResponse) GetNotFoundKnownExceptionInfo() *shared.NotFoundKnownExceptionInfo {
+func (o *GrantSourceDefinitionResponse) GetNotFoundKnownExceptionInfo() *shared.NotFoundKnownExceptionInfo {
 	if o == nil {
 		return nil
 	}
 	return o.NotFoundKnownExceptionInfo
 }
 
-func (o *GrantSourceDefinitionToWorkspaceResponse) GetInvalidInputExceptionInfo() *shared.InvalidInputExceptionInfo {
+func (o *GrantSourceDefinitionResponse) GetInvalidInputExceptionInfo() *shared.InvalidInputExceptionInfo {
 	if o == nil {
 		return nil
 	}

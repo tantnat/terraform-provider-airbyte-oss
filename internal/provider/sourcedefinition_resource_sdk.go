@@ -8,7 +8,24 @@ import (
 )
 
 func (r *SourceDefinitionResourceModel) ToCreateSDKType() *shared.CustomSourceDefinitionCreate {
-	workspaceID := r.WorkspaceID.ValueString()
+	workspaceID := new(string)
+	if !r.WorkspaceID.IsUnknown() && !r.WorkspaceID.IsNull() {
+		*workspaceID = r.WorkspaceID.ValueString()
+	} else {
+		workspaceID = nil
+	}
+	scopeID := new(string)
+	if !r.ScopeID.IsUnknown() && !r.ScopeID.IsNull() {
+		*scopeID = r.ScopeID.ValueString()
+	} else {
+		scopeID = nil
+	}
+	scopeType := new(shared.ScopeType)
+	if !r.ScopeType.IsUnknown() && !r.ScopeType.IsNull() {
+		*scopeType = shared.ScopeType(r.ScopeType.ValueString())
+	} else {
+		scopeType = nil
+	}
 	name := r.SourceDefinition.Name.ValueString()
 	dockerRepository := r.SourceDefinition.DockerRepository.ValueString()
 	dockerImageTag := r.SourceDefinition.DockerImageTag.ValueString()
@@ -107,6 +124,8 @@ func (r *SourceDefinitionResourceModel) ToCreateSDKType() *shared.CustomSourceDe
 	}
 	out := shared.CustomSourceDefinitionCreate{
 		WorkspaceID:      workspaceID,
+		ScopeID:          scopeID,
+		ScopeType:        scopeType,
 		SourceDefinition: sourceDefinition,
 	}
 	return &out
@@ -210,6 +229,11 @@ func (r *SourceDefinitionResourceModel) ToDeleteSDKType() *shared.SourceDefiniti
 }
 
 func (r *SourceDefinitionResourceModel) RefreshFromCreateResponse(resp *shared.SourceDefinitionRead) {
+	if resp.Custom != nil {
+		r.Custom = types.BoolValue(*resp.Custom)
+	} else {
+		r.Custom = types.BoolNull()
+	}
 	r.DockerImageTag = types.StringValue(resp.DockerImageTag)
 	r.DockerRepository = types.StringValue(resp.DockerRepository)
 	if resp.DocumentationURL != nil {
@@ -311,6 +335,11 @@ func (r *SourceDefinitionResourceModel) RefreshFromCreateResponse(resp *shared.S
 		r.SourceType = types.StringValue(string(*resp.SourceType))
 	} else {
 		r.SourceType = types.StringNull()
+	}
+	if resp.SupportLevel != nil {
+		r.SupportLevel = types.StringValue(string(*resp.SupportLevel))
+	} else {
+		r.SupportLevel = types.StringNull()
 	}
 }
 

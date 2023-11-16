@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-type GrantDestinationDefinitionToWorkspaceResponse struct {
+type ListDestinationsForWorkspacesPaginatedResponse struct {
 	// HTTP response content type for this operation
 	ContentType string
 	// HTTP response status code for this operation
@@ -15,49 +15,49 @@ type GrantDestinationDefinitionToWorkspaceResponse struct {
 	// Raw HTTP response; suitable for custom response parsing
 	RawResponse *http.Response
 	// Successful operation
-	PrivateDestinationDefinitionRead *shared.PrivateDestinationDefinitionRead
+	DestinationReadList *shared.DestinationReadList
 	// Object with given id was not found.
 	NotFoundKnownExceptionInfo *shared.NotFoundKnownExceptionInfo
 	// Input failed validation
 	InvalidInputExceptionInfo *shared.InvalidInputExceptionInfo
 }
 
-func (o *GrantDestinationDefinitionToWorkspaceResponse) GetContentType() string {
+func (o *ListDestinationsForWorkspacesPaginatedResponse) GetContentType() string {
 	if o == nil {
 		return ""
 	}
 	return o.ContentType
 }
 
-func (o *GrantDestinationDefinitionToWorkspaceResponse) GetStatusCode() int {
+func (o *ListDestinationsForWorkspacesPaginatedResponse) GetStatusCode() int {
 	if o == nil {
 		return 0
 	}
 	return o.StatusCode
 }
 
-func (o *GrantDestinationDefinitionToWorkspaceResponse) GetRawResponse() *http.Response {
+func (o *ListDestinationsForWorkspacesPaginatedResponse) GetRawResponse() *http.Response {
 	if o == nil {
 		return nil
 	}
 	return o.RawResponse
 }
 
-func (o *GrantDestinationDefinitionToWorkspaceResponse) GetPrivateDestinationDefinitionRead() *shared.PrivateDestinationDefinitionRead {
+func (o *ListDestinationsForWorkspacesPaginatedResponse) GetDestinationReadList() *shared.DestinationReadList {
 	if o == nil {
 		return nil
 	}
-	return o.PrivateDestinationDefinitionRead
+	return o.DestinationReadList
 }
 
-func (o *GrantDestinationDefinitionToWorkspaceResponse) GetNotFoundKnownExceptionInfo() *shared.NotFoundKnownExceptionInfo {
+func (o *ListDestinationsForWorkspacesPaginatedResponse) GetNotFoundKnownExceptionInfo() *shared.NotFoundKnownExceptionInfo {
 	if o == nil {
 		return nil
 	}
 	return o.NotFoundKnownExceptionInfo
 }
 
-func (o *GrantDestinationDefinitionToWorkspaceResponse) GetInvalidInputExceptionInfo() *shared.InvalidInputExceptionInfo {
+func (o *ListDestinationsForWorkspacesPaginatedResponse) GetInvalidInputExceptionInfo() *shared.InvalidInputExceptionInfo {
 	if o == nil {
 		return nil
 	}

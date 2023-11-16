@@ -5,10 +5,10 @@ package provider
 import "github.com/hashicorp/terraform-plugin-framework/types"
 
 type SourceDefinitionCreate struct {
-	DockerImageTag       types.String                         `tfsdk:"docker_image_tag"`
+	Name                 types.String                         `tfsdk:"name"`
 	DockerRepository     types.String                         `tfsdk:"docker_repository"`
+	DockerImageTag       types.String                         `tfsdk:"docker_image_tag"`
 	DocumentationURL     types.String                         `tfsdk:"documentation_url"`
 	Icon                 types.String                         `tfsdk:"icon"`
-	Name                 types.String                         `tfsdk:"name"`
 	ResourceRequirements *ActorDefinitionResourceRequirements `tfsdk:"resource_requirements"`
 }

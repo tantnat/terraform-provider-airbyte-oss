@@ -3,8 +3,8 @@
 package shared
 
 type ConnectionStream struct {
-	StreamName      string `json:"streamName"`
-	StreamNamespace string `json:"streamNamespace"`
+	StreamName      string  `json:"streamName"`
+	StreamNamespace *string `json:"streamNamespace,omitempty"`
 }
 
 func (o *ConnectionStream) GetStreamName() string {
@@ -14,9 +14,9 @@ func (o *ConnectionStream) GetStreamName() string {
 	return o.StreamName
 }
 
-func (o *ConnectionStream) GetStreamNamespace() string {
+func (o *ConnectionStream) GetStreamNamespace() *string {
 	if o == nil {
-		return ""
+		return nil
 	}
 	return o.StreamNamespace
 }

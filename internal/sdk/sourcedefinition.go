@@ -524,7 +524,7 @@ func (s *SourceDefinition) ListSourceDefinitionsForWorkspace(ctx context.Context
 	return res, nil
 }
 
-// CreateCustomSourceDefinition - Creates a custom sourceDefinition for the given workspace
+// CreateCustomSourceDefinition - Creates a custom sourceDefinition for the given workspace or organization
 func (s *SourceDefinition) CreateCustomSourceDefinition(ctx context.Context, request *shared.CustomSourceDefinitionCreate) (*operations.CreateCustomSourceDefinitionResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/v1/source_definitions/create_custom"
@@ -692,8 +692,100 @@ func (s *SourceDefinition) GetSourceDefinitionForWorkspace(ctx context.Context, 
 	return res, nil
 }
 
-// GrantSourceDefinitionToWorkspace - grant a private, non-custom sourceDefinition to a given workspace
-func (s *SourceDefinition) GrantSourceDefinitionToWorkspace(ctx context.Context, request shared.SourceDefinitionIDWithWorkspaceID) (*operations.GrantSourceDefinitionToWorkspaceResponse, error) {
+// GetSourceDefinitionForScope - Get a sourceDefinition that is configured for the given workspace or organization
+func (s *SourceDefinition) GetSourceDefinitionForScope(ctx context.Context, request shared.ActorDefinitionIDWithScope) (*operations.GetSourceDefinitionForScopeResponse, error) {
+	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
+	url := strings.TrimSuffix(baseURL, "/") + "/v1/source_definitions/get_for_scope"
+
+	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, false, false, "Request", "json", `request:"mediaType=application/json"`)
+	if err != nil {
+		return nil, fmt.Errorf("error serializing request body: %w", err)
+	}
+	if bodyReader == nil {
+		return nil, fmt.Errorf("request body is required")
+	}
+
+	debugBody := bytes.NewBuffer([]byte{})
+	debugReader := io.TeeReader(bodyReader, debugBody)
+
+	req, err := http.NewRequestWithContext(ctx, "POST", url, debugReader)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %w", err)
+	}
+	req.Header.Set("Accept", "application/json")
+	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
+
+	req.Header.Set("Content-Type", reqContentType)
+
+	client := s.sdkConfiguration.SecurityClient
+
+	httpRes, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %w", err)
+	}
+	if httpRes == nil {
+		return nil, fmt.Errorf("error sending request: no response")
+	}
+
+	rawBody, err := io.ReadAll(httpRes.Body)
+	if err != nil {
+		return nil, fmt.Errorf("error reading response body: %w", err)
+	}
+	httpRes.Request.Body = io.NopCloser(debugBody)
+	httpRes.Body.Close()
+	httpRes.Body = io.NopCloser(bytes.NewBuffer(rawBody))
+
+	contentType := httpRes.Header.Get("Content-Type")
+
+	res := &operations.GetSourceDefinitionForScopeResponse{
+		StatusCode:  httpRes.StatusCode,
+		ContentType: contentType,
+		RawResponse: httpRes,
+	}
+	switch {
+	case httpRes.StatusCode == 200:
+		switch {
+		case utils.MatchContentType(contentType, `application/json`):
+			var out shared.SourceDefinitionRead
+			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
+				return nil, err
+			}
+
+			res.SourceDefinitionRead = &out
+		default:
+			return nil, sdkerrors.NewSDKError(fmt.Sprintf("unknown content-type received: %s", contentType), httpRes.StatusCode, string(rawBody), httpRes)
+		}
+	case httpRes.StatusCode == 404:
+		switch {
+		case utils.MatchContentType(contentType, `application/json`):
+			var out shared.NotFoundKnownExceptionInfo
+			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
+				return nil, err
+			}
+
+			res.NotFoundKnownExceptionInfo = &out
+		default:
+			return nil, sdkerrors.NewSDKError(fmt.Sprintf("unknown content-type received: %s", contentType), httpRes.StatusCode, string(rawBody), httpRes)
+		}
+	case httpRes.StatusCode == 422:
+		switch {
+		case utils.MatchContentType(contentType, `application/json`):
+			var out shared.InvalidInputExceptionInfo
+			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
+				return nil, err
+			}
+
+			res.InvalidInputExceptionInfo = &out
+		default:
+			return nil, sdkerrors.NewSDKError(fmt.Sprintf("unknown content-type received: %s", contentType), httpRes.StatusCode, string(rawBody), httpRes)
+		}
+	}
+
+	return res, nil
+}
+
+// GrantSourceDefinition - grant a private, non-custom sourceDefinition to a given workspace or organization
+func (s *SourceDefinition) GrantSourceDefinition(ctx context.Context, request shared.ActorDefinitionIDWithScope) (*operations.GrantSourceDefinitionResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/v1/source_definitions/grant_definition"
 
@@ -737,7 +829,7 @@ func (s *SourceDefinition) GrantSourceDefinitionToWorkspace(ctx context.Context,
 
 	contentType := httpRes.Header.Get("Content-Type")
 
-	res := &operations.GrantSourceDefinitionToWorkspaceResponse{
+	res := &operations.GrantSourceDefinitionResponse{
 		StatusCode:  httpRes.StatusCode,
 		ContentType: contentType,
 		RawResponse: httpRes,
@@ -784,8 +876,8 @@ func (s *SourceDefinition) GrantSourceDefinitionToWorkspace(ctx context.Context,
 	return res, nil
 }
 
-// RevokeSourceDefinitionFromWorkspace - revoke a grant to a private, non-custom sourceDefinition from a given workspace
-func (s *SourceDefinition) RevokeSourceDefinitionFromWorkspace(ctx context.Context, request shared.SourceDefinitionIDWithWorkspaceID) (*operations.RevokeSourceDefinitionFromWorkspaceResponse, error) {
+// RevokeSourceDefinition - revoke a grant to a private, non-custom sourceDefinition from a given workspace or organization
+func (s *SourceDefinition) RevokeSourceDefinition(ctx context.Context, request shared.ActorDefinitionIDWithScope) (*operations.RevokeSourceDefinitionResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/v1/source_definitions/revoke_definition"
 
@@ -829,7 +921,7 @@ func (s *SourceDefinition) RevokeSourceDefinitionFromWorkspace(ctx context.Conte
 
 	contentType := httpRes.Header.Get("Content-Type")
 
-	res := &operations.RevokeSourceDefinitionFromWorkspaceResponse{
+	res := &operations.RevokeSourceDefinitionResponse{
 		StatusCode:  httpRes.StatusCode,
 		ContentType: contentType,
 		RawResponse: httpRes,

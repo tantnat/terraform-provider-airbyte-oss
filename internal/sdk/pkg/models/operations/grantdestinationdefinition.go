@@ -7,48 +7,57 @@ import (
 	"net/http"
 )
 
-type RevokeSourceDefinitionFromWorkspaceResponse struct {
+type GrantDestinationDefinitionResponse struct {
 	// HTTP response content type for this operation
 	ContentType string
 	// HTTP response status code for this operation
 	StatusCode int
 	// Raw HTTP response; suitable for custom response parsing
 	RawResponse *http.Response
+	// Successful operation
+	PrivateDestinationDefinitionRead *shared.PrivateDestinationDefinitionRead
 	// Object with given id was not found.
 	NotFoundKnownExceptionInfo *shared.NotFoundKnownExceptionInfo
 	// Input failed validation
 	InvalidInputExceptionInfo *shared.InvalidInputExceptionInfo
 }
 
-func (o *RevokeSourceDefinitionFromWorkspaceResponse) GetContentType() string {
+func (o *GrantDestinationDefinitionResponse) GetContentType() string {
 	if o == nil {
 		return ""
 	}
 	return o.ContentType
 }
 
-func (o *RevokeSourceDefinitionFromWorkspaceResponse) GetStatusCode() int {
+func (o *GrantDestinationDefinitionResponse) GetStatusCode() int {
 	if o == nil {
 		return 0
 	}
 	return o.StatusCode
 }
 
-func (o *RevokeSourceDefinitionFromWorkspaceResponse) GetRawResponse() *http.Response {
+func (o *GrantDestinationDefinitionResponse) GetRawResponse() *http.Response {
 	if o == nil {
 		return nil
 	}
 	return o.RawResponse
 }
 
-func (o *RevokeSourceDefinitionFromWorkspaceResponse) GetNotFoundKnownExceptionInfo() *shared.NotFoundKnownExceptionInfo {
+func (o *GrantDestinationDefinitionResponse) GetPrivateDestinationDefinitionRead() *shared.PrivateDestinationDefinitionRead {
+	if o == nil {
+		return nil
+	}
+	return o.PrivateDestinationDefinitionRead
+}
+
+func (o *GrantDestinationDefinitionResponse) GetNotFoundKnownExceptionInfo() *shared.NotFoundKnownExceptionInfo {
 	if o == nil {
 		return nil
 	}
 	return o.NotFoundKnownExceptionInfo
 }
 
-func (o *RevokeSourceDefinitionFromWorkspaceResponse) GetInvalidInputExceptionInfo() *shared.InvalidInputExceptionInfo {
+func (o *GrantDestinationDefinitionResponse) GetInvalidInputExceptionInfo() *shared.InvalidInputExceptionInfo {
 	if o == nil {
 		return nil
 	}

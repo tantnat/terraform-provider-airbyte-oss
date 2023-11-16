@@ -7,50 +7,50 @@ import (
 	"net/http"
 )
 
-type RevokeDestinationDefinitionFromWorkspaceResponse struct {
+type ListOrganizationsByUserResponse struct {
 	// HTTP response content type for this operation
 	ContentType string
 	// HTTP response status code for this operation
 	StatusCode int
 	// Raw HTTP response; suitable for custom response parsing
 	RawResponse *http.Response
+	// Successfully retrieved organizations by given user id.
+	OrganizationReadList *shared.OrganizationReadList
 	// Object with given id was not found.
 	NotFoundKnownExceptionInfo *shared.NotFoundKnownExceptionInfo
-	// Input failed validation
-	InvalidInputExceptionInfo *shared.InvalidInputExceptionInfo
 }
 
-func (o *RevokeDestinationDefinitionFromWorkspaceResponse) GetContentType() string {
+func (o *ListOrganizationsByUserResponse) GetContentType() string {
 	if o == nil {
 		return ""
 	}
 	return o.ContentType
 }
 
-func (o *RevokeDestinationDefinitionFromWorkspaceResponse) GetStatusCode() int {
+func (o *ListOrganizationsByUserResponse) GetStatusCode() int {
 	if o == nil {
 		return 0
 	}
 	return o.StatusCode
 }
 
-func (o *RevokeDestinationDefinitionFromWorkspaceResponse) GetRawResponse() *http.Response {
+func (o *ListOrganizationsByUserResponse) GetRawResponse() *http.Response {
 	if o == nil {
 		return nil
 	}
 	return o.RawResponse
 }
 
-func (o *RevokeDestinationDefinitionFromWorkspaceResponse) GetNotFoundKnownExceptionInfo() *shared.NotFoundKnownExceptionInfo {
+func (o *ListOrganizationsByUserResponse) GetOrganizationReadList() *shared.OrganizationReadList {
+	if o == nil {
+		return nil
+	}
+	return o.OrganizationReadList
+}
+
+func (o *ListOrganizationsByUserResponse) GetNotFoundKnownExceptionInfo() *shared.NotFoundKnownExceptionInfo {
 	if o == nil {
 		return nil
 	}
 	return o.NotFoundKnownExceptionInfo
-}
-
-func (o *RevokeDestinationDefinitionFromWorkspaceResponse) GetInvalidInputExceptionInfo() *shared.InvalidInputExceptionInfo {
-	if o == nil {
-		return nil
-	}
-	return o.InvalidInputExceptionInfo
 }

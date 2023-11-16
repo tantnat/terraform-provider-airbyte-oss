@@ -13,6 +13,7 @@ import (
 
 // ServerList contains the list of servers available to the SDK
 var ServerList = []string{
+	// Your Airbyte API server
 	"http://localhost:8000/api",
 }
 
@@ -92,10 +93,13 @@ type SDK struct {
 	Notifications *Notifications
 	// SourceDefinition related resources.
 	SourceDefinition *SourceDefinition
+	// Interactions with actor definition version related resources.
+	ActorDefinitionVersion *ActorDefinitionVersion
 	// SourceDefinition specification related resources.
 	SourceDefinitionSpecification *SourceDefinitionSpecification
 	DeclarativeSourceDefinitions  *DeclarativeSourceDefinitions
 	ConnectorBuilderProject       *ConnectorBuilderProject
+	ConnectorDocumentation        *ConnectorDocumentation
 	// Source related resources.
 	Source   *Source
 	Internal *Internal
@@ -120,14 +124,23 @@ type SDK struct {
 	//
 	WebBackend *WebBackend
 	Jobs       *Jobs
-	// Healthchecks
-	Health  *Health
-	Logs    *Logs
-	Openapi *Openapi
 	// Interactions with attempt related resources.
-	Attempt        *Attempt
-	StreamStatuses *StreamStatuses
-	Streams        *Streams
+	Attempt *Attempt
+	// Interactions with user related resources.
+	User *User
+	// Interactions with permission related resources.
+	Permission               *Permission
+	SecretsPersistenceConfig *SecretsPersistenceConfig
+	// Healthchecks
+	Health                *Health
+	Logs                  *Logs
+	Openapi               *Openapi
+	StreamStatuses        *StreamStatuses
+	Streams               *Streams
+	InstanceConfiguration *InstanceConfiguration
+	JobRetryStates        *JobRetryStates
+	// Interactions with organizations.
+	Organization *Organization
 
 	sdkConfiguration sdkConfiguration
 }
@@ -204,9 +217,9 @@ func New(opts ...SDKOption) *SDK {
 		sdkConfiguration: sdkConfiguration{
 			Language:          "go",
 			OpenAPIDocVersion: "1.0.0",
-			SDKVersion:        "1.0.4",
+			SDKVersion:        "1.0.5",
 			GenVersion:        "2.192.1",
-			UserAgent:         "speakeasy-sdk/go 1.0.4 2.192.1 1.0.0 airbyte",
+			UserAgent:         "speakeasy-sdk/go 1.0.5 2.192.1 1.0.0 airbyte",
 		},
 	}
 	for _, opt := range opts {
@@ -231,11 +244,15 @@ func New(opts ...SDKOption) *SDK {
 
 	sdk.SourceDefinition = newSourceDefinition(sdk.sdkConfiguration)
 
+	sdk.ActorDefinitionVersion = newActorDefinitionVersion(sdk.sdkConfiguration)
+
 	sdk.SourceDefinitionSpecification = newSourceDefinitionSpecification(sdk.sdkConfiguration)
 
 	sdk.DeclarativeSourceDefinitions = newDeclarativeSourceDefinitions(sdk.sdkConfiguration)
 
 	sdk.ConnectorBuilderProject = newConnectorBuilderProject(sdk.sdkConfiguration)
+
+	sdk.ConnectorDocumentation = newConnectorDocumentation(sdk.sdkConfiguration)
 
 	sdk.Source = newSource(sdk.sdkConfiguration)
 
@@ -263,17 +280,29 @@ func New(opts ...SDKOption) *SDK {
 
 	sdk.Jobs = newJobs(sdk.sdkConfiguration)
 
+	sdk.Attempt = newAttempt(sdk.sdkConfiguration)
+
+	sdk.User = newUser(sdk.sdkConfiguration)
+
+	sdk.Permission = newPermission(sdk.sdkConfiguration)
+
+	sdk.SecretsPersistenceConfig = newSecretsPersistenceConfig(sdk.sdkConfiguration)
+
 	sdk.Health = newHealth(sdk.sdkConfiguration)
 
 	sdk.Logs = newLogs(sdk.sdkConfiguration)
 
 	sdk.Openapi = newOpenapi(sdk.sdkConfiguration)
 
-	sdk.Attempt = newAttempt(sdk.sdkConfiguration)
-
 	sdk.StreamStatuses = newStreamStatuses(sdk.sdkConfiguration)
 
 	sdk.Streams = newStreams(sdk.sdkConfiguration)
+
+	sdk.InstanceConfiguration = newInstanceConfiguration(sdk.sdkConfiguration)
+
+	sdk.JobRetryStates = newJobRetryStates(sdk.sdkConfiguration)
+
+	sdk.Organization = newOrganization(sdk.sdkConfiguration)
 
 	return sdk
 }

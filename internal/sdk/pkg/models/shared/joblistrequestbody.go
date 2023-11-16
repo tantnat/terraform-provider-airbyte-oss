@@ -2,11 +2,98 @@
 
 package shared
 
+import (
+	"encoding/json"
+	"fmt"
+	"github.com/aballiet/terraform-provider-airbyte/internal/sdk/pkg/utils"
+	"time"
+)
+
+// OrderByField - The field to order by
+type OrderByField string
+
+const (
+	OrderByFieldCreatedAt OrderByField = "createdAt"
+	OrderByFieldUpdatedAt OrderByField = "updatedAt"
+)
+
+func (e OrderByField) ToPointer() *OrderByField {
+	return &e
+}
+
+func (e *OrderByField) UnmarshalJSON(data []byte) error {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case "createdAt":
+		fallthrough
+	case "updatedAt":
+		*e = OrderByField(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for OrderByField: %v", v)
+	}
+}
+
+// OrderByMethod - The order by method
+type OrderByMethod string
+
+const (
+	OrderByMethodAsc  OrderByMethod = "ASC"
+	OrderByMethodDesc OrderByMethod = "DESC"
+)
+
+func (e OrderByMethod) ToPointer() *OrderByMethod {
+	return &e
+}
+
+func (e *OrderByMethod) UnmarshalJSON(data []byte) error {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case "ASC":
+		fallthrough
+	case "DESC":
+		*e = OrderByMethod(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for OrderByMethod: %v", v)
+	}
+}
+
 type JobListRequestBody struct {
 	ConfigTypes    []JobConfigType `json:"configTypes"`
 	ConfigID       string          `json:"configId"`
 	IncludingJobID *int64          `json:"includingJobId,omitempty"`
 	Pagination     *Pagination     `json:"pagination,omitempty"`
+	Status         *JobStatus      `json:"status,omitempty"`
+	// The start datetime to filter by
+	CreatedAtStart *time.Time `json:"createdAtStart,omitempty"`
+	// The end datetime to filter by
+	CreatedAtEnd *time.Time `json:"createdAtEnd,omitempty"`
+	// The start datetime to filter by
+	UpdatedAtStart *time.Time `json:"updatedAtStart,omitempty"`
+	// The end datetime to filter by
+	UpdatedAtEnd *time.Time `json:"updatedAtEnd,omitempty"`
+	// The field to order by
+	OrderByField *OrderByField `json:"orderByField,omitempty"`
+	// The order by method
+	OrderByMethod *OrderByMethod `json:"orderByMethod,omitempty"`
+}
+
+func (j JobListRequestBody) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(j, "", false)
+}
+
+func (j *JobListRequestBody) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &j, "", false, false); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (o *JobListRequestBody) GetConfigTypes() []JobConfigType {
@@ -35,4 +122,53 @@ func (o *JobListRequestBody) GetPagination() *Pagination {
 		return nil
 	}
 	return o.Pagination
+}
+
+func (o *JobListRequestBody) GetStatus() *JobStatus {
+	if o == nil {
+		return nil
+	}
+	return o.Status
+}
+
+func (o *JobListRequestBody) GetCreatedAtStart() *time.Time {
+	if o == nil {
+		return nil
+	}
+	return o.CreatedAtStart
+}
+
+func (o *JobListRequestBody) GetCreatedAtEnd() *time.Time {
+	if o == nil {
+		return nil
+	}
+	return o.CreatedAtEnd
+}
+
+func (o *JobListRequestBody) GetUpdatedAtStart() *time.Time {
+	if o == nil {
+		return nil
+	}
+	return o.UpdatedAtStart
+}
+
+func (o *JobListRequestBody) GetUpdatedAtEnd() *time.Time {
+	if o == nil {
+		return nil
+	}
+	return o.UpdatedAtEnd
+}
+
+func (o *JobListRequestBody) GetOrderByField() *OrderByField {
+	if o == nil {
+		return nil
+	}
+	return o.OrderByField
+}
+
+func (o *JobListRequestBody) GetOrderByMethod() *OrderByMethod {
+	if o == nil {
+		return nil
+	}
+	return o.OrderByMethod
 }

@@ -6,7 +6,7 @@ import (
 	"github.com/aballiet/terraform-provider-airbyte/internal/sdk/pkg/utils"
 )
 
-// NormalizationDestinationDefinitionConfig - describes a normalization config for destination definition
+// NormalizationDestinationDefinitionConfig - describes a normalization config for destination definition version
 type NormalizationDestinationDefinitionConfig struct {
 	// whether the destination definition supports normalization.
 	Supported *bool `default:"false" json:"supported"`

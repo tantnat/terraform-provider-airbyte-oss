@@ -696,8 +696,100 @@ func (s *DestinationDefinition) GetDestinationDefinitionForWorkspace(ctx context
 	return res, nil
 }
 
-// GrantDestinationDefinitionToWorkspace - grant a private, non-custom destinationDefinition to a given workspace
-func (s *DestinationDefinition) GrantDestinationDefinitionToWorkspace(ctx context.Context, request shared.DestinationDefinitionIDWithWorkspaceID) (*operations.GrantDestinationDefinitionToWorkspaceResponse, error) {
+// GetDestinationDefinitionForScope - Get a destinationDefinition that is configured for the given scope
+func (s *DestinationDefinition) GetDestinationDefinitionForScope(ctx context.Context, request shared.ActorDefinitionIDWithScope) (*operations.GetDestinationDefinitionForScopeResponse, error) {
+	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
+	url := strings.TrimSuffix(baseURL, "/") + "/v1/destination_definitions/get_for_scope"
+
+	bodyReader, reqContentType, err := utils.SerializeRequestBody(ctx, request, false, false, "Request", "json", `request:"mediaType=application/json"`)
+	if err != nil {
+		return nil, fmt.Errorf("error serializing request body: %w", err)
+	}
+	if bodyReader == nil {
+		return nil, fmt.Errorf("request body is required")
+	}
+
+	debugBody := bytes.NewBuffer([]byte{})
+	debugReader := io.TeeReader(bodyReader, debugBody)
+
+	req, err := http.NewRequestWithContext(ctx, "POST", url, debugReader)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %w", err)
+	}
+	req.Header.Set("Accept", "application/json")
+	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
+
+	req.Header.Set("Content-Type", reqContentType)
+
+	client := s.sdkConfiguration.SecurityClient
+
+	httpRes, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %w", err)
+	}
+	if httpRes == nil {
+		return nil, fmt.Errorf("error sending request: no response")
+	}
+
+	rawBody, err := io.ReadAll(httpRes.Body)
+	if err != nil {
+		return nil, fmt.Errorf("error reading response body: %w", err)
+	}
+	httpRes.Request.Body = io.NopCloser(debugBody)
+	httpRes.Body.Close()
+	httpRes.Body = io.NopCloser(bytes.NewBuffer(rawBody))
+
+	contentType := httpRes.Header.Get("Content-Type")
+
+	res := &operations.GetDestinationDefinitionForScopeResponse{
+		StatusCode:  httpRes.StatusCode,
+		ContentType: contentType,
+		RawResponse: httpRes,
+	}
+	switch {
+	case httpRes.StatusCode == 200:
+		switch {
+		case utils.MatchContentType(contentType, `application/json`):
+			var out shared.DestinationDefinitionRead
+			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
+				return nil, err
+			}
+
+			res.DestinationDefinitionRead = &out
+		default:
+			return nil, sdkerrors.NewSDKError(fmt.Sprintf("unknown content-type received: %s", contentType), httpRes.StatusCode, string(rawBody), httpRes)
+		}
+	case httpRes.StatusCode == 404:
+		switch {
+		case utils.MatchContentType(contentType, `application/json`):
+			var out shared.NotFoundKnownExceptionInfo
+			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
+				return nil, err
+			}
+
+			res.NotFoundKnownExceptionInfo = &out
+		default:
+			return nil, sdkerrors.NewSDKError(fmt.Sprintf("unknown content-type received: %s", contentType), httpRes.StatusCode, string(rawBody), httpRes)
+		}
+	case httpRes.StatusCode == 422:
+		switch {
+		case utils.MatchContentType(contentType, `application/json`):
+			var out shared.InvalidInputExceptionInfo
+			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
+				return nil, err
+			}
+
+			res.InvalidInputExceptionInfo = &out
+		default:
+			return nil, sdkerrors.NewSDKError(fmt.Sprintf("unknown content-type received: %s", contentType), httpRes.StatusCode, string(rawBody), httpRes)
+		}
+	}
+
+	return res, nil
+}
+
+// GrantDestinationDefinition - grant a private, non-custom destinationDefinition to a given workspace or organization
+func (s *DestinationDefinition) GrantDestinationDefinition(ctx context.Context, request shared.ActorDefinitionIDWithScope) (*operations.GrantDestinationDefinitionResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/v1/destination_definitions/grant_definition"
 
@@ -741,7 +833,7 @@ func (s *DestinationDefinition) GrantDestinationDefinitionToWorkspace(ctx contex
 
 	contentType := httpRes.Header.Get("Content-Type")
 
-	res := &operations.GrantDestinationDefinitionToWorkspaceResponse{
+	res := &operations.GrantDestinationDefinitionResponse{
 		StatusCode:  httpRes.StatusCode,
 		ContentType: contentType,
 		RawResponse: httpRes,
@@ -788,8 +880,8 @@ func (s *DestinationDefinition) GrantDestinationDefinitionToWorkspace(ctx contex
 	return res, nil
 }
 
-// RevokeDestinationDefinitionFromWorkspace - revoke a grant to a private, non-custom destinationDefinition from a given workspace
-func (s *DestinationDefinition) RevokeDestinationDefinitionFromWorkspace(ctx context.Context, request shared.DestinationDefinitionIDWithWorkspaceID) (*operations.RevokeDestinationDefinitionFromWorkspaceResponse, error) {
+// RevokeDestinationDefinition - revoke a grant to a private, non-custom destinationDefinition from a given workspace or organization
+func (s *DestinationDefinition) RevokeDestinationDefinition(ctx context.Context, request shared.ActorDefinitionIDWithScope) (*operations.RevokeDestinationDefinitionResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/v1/destination_definitions/revoke_definition"
 
@@ -833,7 +925,7 @@ func (s *DestinationDefinition) RevokeDestinationDefinitionFromWorkspace(ctx con
 
 	contentType := httpRes.Header.Get("Content-Type")
 
-	res := &operations.RevokeDestinationDefinitionFromWorkspaceResponse{
+	res := &operations.RevokeDestinationDefinitionResponse{
 		StatusCode:  httpRes.StatusCode,
 		ContentType: contentType,
 		RawResponse: httpRes,

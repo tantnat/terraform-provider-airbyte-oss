@@ -3,13 +3,15 @@
 package shared
 
 type CustomDestinationDefinitionCreate struct {
-	WorkspaceID           string                      `json:"workspaceId"`
+	WorkspaceID           *string                     `json:"workspaceId,omitempty"`
 	DestinationDefinition DestinationDefinitionCreate `json:"destinationDefinition"`
+	ScopeID               *string                     `json:"scopeId,omitempty"`
+	ScopeType             *ScopeType                  `json:"scopeType,omitempty"`
 }
 
-func (o *CustomDestinationDefinitionCreate) GetWorkspaceID() string {
+func (o *CustomDestinationDefinitionCreate) GetWorkspaceID() *string {
 	if o == nil {
-		return ""
+		return nil
 	}
 	return o.WorkspaceID
 }
@@ -19,4 +21,18 @@ func (o *CustomDestinationDefinitionCreate) GetDestinationDefinition() Destinati
 		return DestinationDefinitionCreate{}
 	}
 	return o.DestinationDefinition
+}
+
+func (o *CustomDestinationDefinitionCreate) GetScopeID() *string {
+	if o == nil {
+		return nil
+	}
+	return o.ScopeID
+}
+
+func (o *CustomDestinationDefinitionCreate) GetScopeType() *ScopeType {
+	if o == nil {
+		return nil
+	}
+	return o.ScopeType
 }

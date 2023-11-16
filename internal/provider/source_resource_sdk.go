@@ -59,8 +59,6 @@ func (r *SourceResourceModel) ToDeleteSDKType() *shared.SourceIDRequestBody {
 }
 
 func (r *SourceResourceModel) RefreshFromCreateResponse(resp *shared.SourceRead) {
-	connectionConfigurationResult, _ := json.Marshal(resp.ConnectionConfiguration)
-	r.ConnectionConfiguration = types.StringValue(string(connectionConfigurationResult))
 	if resp.Icon != nil {
 		r.Icon = types.StringValue(*resp.Icon)
 	} else {

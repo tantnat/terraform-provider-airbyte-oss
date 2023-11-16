@@ -16,6 +16,7 @@ const (
 	FailureTypeManualCancellation FailureType = "manual_cancellation"
 	FailureTypeRefreshSchema      FailureType = "refresh_schema"
 	FailureTypeHeartbeatTimeout   FailureType = "heartbeat_timeout"
+	FailureTypeDestinationTimeout FailureType = "destination_timeout"
 )
 
 func (e FailureType) ToPointer() *FailureType {
@@ -37,6 +38,8 @@ func (e *FailureType) UnmarshalJSON(data []byte) error {
 	case "refresh_schema":
 		fallthrough
 	case "heartbeat_timeout":
+		fallthrough
+	case "destination_timeout":
 		*e = FailureType(v)
 		return nil
 	default:

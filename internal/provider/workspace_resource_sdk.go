@@ -207,6 +207,52 @@ func (r *WorkspaceResourceModel) ToCreateSDKType() *shared.WorkspaceCreate {
 				CustomerioConfiguration: customerioConfiguration6,
 			}
 		}
+		var sendOnBreakingChangeWarning *shared.NotificationItem
+		if r.NotificationSettings.SendOnBreakingChangeWarning != nil {
+			var notificationType7 []shared.NotificationType = nil
+			for _, notificationTypeItem6 := range r.NotificationSettings.SendOnBreakingChangeWarning.NotificationType {
+				notificationType7 = append(notificationType7, shared.NotificationType(notificationTypeItem6.ValueString()))
+			}
+			var slackConfiguration7 *shared.SlackNotificationConfiguration
+			if r.NotificationSettings.SendOnBreakingChangeWarning.SlackConfiguration != nil {
+				webhook7 := r.NotificationSettings.SendOnBreakingChangeWarning.SlackConfiguration.Webhook.ValueString()
+				slackConfiguration7 = &shared.SlackNotificationConfiguration{
+					Webhook: webhook7,
+				}
+			}
+			var customerioConfiguration7 *shared.CustomerioNotificationConfiguration
+			if r.NotificationSettings.SendOnBreakingChangeWarning.CustomerioConfiguration != nil {
+				customerioConfiguration7 = &shared.CustomerioNotificationConfiguration{}
+			}
+			sendOnBreakingChangeWarning = &shared.NotificationItem{
+				NotificationType:        notificationType7,
+				SlackConfiguration:      slackConfiguration7,
+				CustomerioConfiguration: customerioConfiguration7,
+			}
+		}
+		var sendOnBreakingChangeSyncsDisabled *shared.NotificationItem
+		if r.NotificationSettings.SendOnBreakingChangeSyncsDisabled != nil {
+			var notificationType8 []shared.NotificationType = nil
+			for _, notificationTypeItem7 := range r.NotificationSettings.SendOnBreakingChangeSyncsDisabled.NotificationType {
+				notificationType8 = append(notificationType8, shared.NotificationType(notificationTypeItem7.ValueString()))
+			}
+			var slackConfiguration8 *shared.SlackNotificationConfiguration
+			if r.NotificationSettings.SendOnBreakingChangeSyncsDisabled.SlackConfiguration != nil {
+				webhook8 := r.NotificationSettings.SendOnBreakingChangeSyncsDisabled.SlackConfiguration.Webhook.ValueString()
+				slackConfiguration8 = &shared.SlackNotificationConfiguration{
+					Webhook: webhook8,
+				}
+			}
+			var customerioConfiguration8 *shared.CustomerioNotificationConfiguration
+			if r.NotificationSettings.SendOnBreakingChangeSyncsDisabled.CustomerioConfiguration != nil {
+				customerioConfiguration8 = &shared.CustomerioNotificationConfiguration{}
+			}
+			sendOnBreakingChangeSyncsDisabled = &shared.NotificationItem{
+				NotificationType:        notificationType8,
+				SlackConfiguration:      slackConfiguration8,
+				CustomerioConfiguration: customerioConfiguration8,
+			}
+		}
 		notificationSettings = &shared.NotificationSettings{
 			SendOnSuccess:                        sendOnSuccess1,
 			SendOnFailure:                        sendOnFailure1,
@@ -214,6 +260,8 @@ func (r *WorkspaceResourceModel) ToCreateSDKType() *shared.WorkspaceCreate {
 			SendOnSyncDisabledWarning:            sendOnSyncDisabledWarning,
 			SendOnConnectionUpdate:               sendOnConnectionUpdate,
 			SendOnConnectionUpdateActionRequired: sendOnConnectionUpdateActionRequired,
+			SendOnBreakingChangeWarning:          sendOnBreakingChangeWarning,
+			SendOnBreakingChangeSyncsDisabled:    sendOnBreakingChangeSyncsDisabled,
 		}
 	}
 	displaySetupWizard := new(bool)
@@ -254,6 +302,12 @@ func (r *WorkspaceResourceModel) ToCreateSDKType() *shared.WorkspaceCreate {
 			ValidationURL: validationURL,
 		})
 	}
+	organizationID := new(string)
+	if !r.OrganizationID.IsUnknown() && !r.OrganizationID.IsNull() {
+		*organizationID = r.OrganizationID.ValueString()
+	} else {
+		organizationID = nil
+	}
 	out := shared.WorkspaceCreate{
 		Email:                   email,
 		AnonymousDataCollection: anonymousDataCollection,
@@ -265,6 +319,7 @@ func (r *WorkspaceResourceModel) ToCreateSDKType() *shared.WorkspaceCreate {
 		DisplaySetupWizard:      displaySetupWizard,
 		DefaultGeography:        defaultGeography,
 		WebhookConfigs:          webhookConfigs,
+		OrganizationID:          organizationID,
 	}
 	return &out
 }
@@ -481,6 +536,52 @@ func (r *WorkspaceResourceModel) ToUpdateSDKType() *shared.WorkspaceUpdate {
 				CustomerioConfiguration: customerioConfiguration6,
 			}
 		}
+		var sendOnBreakingChangeWarning *shared.NotificationItem
+		if r.NotificationSettings.SendOnBreakingChangeWarning != nil {
+			var notificationType7 []shared.NotificationType = nil
+			for _, notificationTypeItem6 := range r.NotificationSettings.SendOnBreakingChangeWarning.NotificationType {
+				notificationType7 = append(notificationType7, shared.NotificationType(notificationTypeItem6.ValueString()))
+			}
+			var slackConfiguration7 *shared.SlackNotificationConfiguration
+			if r.NotificationSettings.SendOnBreakingChangeWarning.SlackConfiguration != nil {
+				webhook7 := r.NotificationSettings.SendOnBreakingChangeWarning.SlackConfiguration.Webhook.ValueString()
+				slackConfiguration7 = &shared.SlackNotificationConfiguration{
+					Webhook: webhook7,
+				}
+			}
+			var customerioConfiguration7 *shared.CustomerioNotificationConfiguration
+			if r.NotificationSettings.SendOnBreakingChangeWarning.CustomerioConfiguration != nil {
+				customerioConfiguration7 = &shared.CustomerioNotificationConfiguration{}
+			}
+			sendOnBreakingChangeWarning = &shared.NotificationItem{
+				NotificationType:        notificationType7,
+				SlackConfiguration:      slackConfiguration7,
+				CustomerioConfiguration: customerioConfiguration7,
+			}
+		}
+		var sendOnBreakingChangeSyncsDisabled *shared.NotificationItem
+		if r.NotificationSettings.SendOnBreakingChangeSyncsDisabled != nil {
+			var notificationType8 []shared.NotificationType = nil
+			for _, notificationTypeItem7 := range r.NotificationSettings.SendOnBreakingChangeSyncsDisabled.NotificationType {
+				notificationType8 = append(notificationType8, shared.NotificationType(notificationTypeItem7.ValueString()))
+			}
+			var slackConfiguration8 *shared.SlackNotificationConfiguration
+			if r.NotificationSettings.SendOnBreakingChangeSyncsDisabled.SlackConfiguration != nil {
+				webhook8 := r.NotificationSettings.SendOnBreakingChangeSyncsDisabled.SlackConfiguration.Webhook.ValueString()
+				slackConfiguration8 = &shared.SlackNotificationConfiguration{
+					Webhook: webhook8,
+				}
+			}
+			var customerioConfiguration8 *shared.CustomerioNotificationConfiguration
+			if r.NotificationSettings.SendOnBreakingChangeSyncsDisabled.CustomerioConfiguration != nil {
+				customerioConfiguration8 = &shared.CustomerioNotificationConfiguration{}
+			}
+			sendOnBreakingChangeSyncsDisabled = &shared.NotificationItem{
+				NotificationType:        notificationType8,
+				SlackConfiguration:      slackConfiguration8,
+				CustomerioConfiguration: customerioConfiguration8,
+			}
+		}
 		notificationSettings = &shared.NotificationSettings{
 			SendOnSuccess:                        sendOnSuccess1,
 			SendOnFailure:                        sendOnFailure1,
@@ -488,6 +589,8 @@ func (r *WorkspaceResourceModel) ToUpdateSDKType() *shared.WorkspaceUpdate {
 			SendOnSyncDisabledWarning:            sendOnSyncDisabledWarning,
 			SendOnConnectionUpdate:               sendOnConnectionUpdate,
 			SendOnConnectionUpdateActionRequired: sendOnConnectionUpdateActionRequired,
+			SendOnBreakingChangeWarning:          sendOnBreakingChangeWarning,
+			SendOnBreakingChangeSyncsDisabled:    sendOnBreakingChangeSyncsDisabled,
 		}
 	}
 	defaultGeography := new(shared.Geography)
@@ -538,12 +641,9 @@ func (r *WorkspaceResourceModel) ToUpdateSDKType() *shared.WorkspaceUpdate {
 	return &out
 }
 
-func (r *WorkspaceResourceModel) ToDeleteSDKType() *shared.WorkspaceIDRequestBody {
-	workspaceID := r.WorkspaceID.ValueString()
-	out := shared.WorkspaceIDRequestBody{
-		WorkspaceID: workspaceID,
-	}
-	return &out
+func (r *WorkspaceResourceModel) ToDeleteSDKType() *shared.WorkspaceCreate {
+	out := r.ToCreateSDKType()
+	return out
 }
 
 func (r *WorkspaceResourceModel) RefreshFromCreateResponse(resp *shared.WorkspaceRead) {
@@ -626,6 +726,46 @@ func (r *WorkspaceResourceModel) RefreshFromCreateResponse(resp *shared.Workspac
 		r.NotificationSettings = nil
 	} else {
 		r.NotificationSettings = &NotificationSettings{}
+		if resp.NotificationSettings.SendOnBreakingChangeSyncsDisabled == nil {
+			r.NotificationSettings.SendOnBreakingChangeSyncsDisabled = nil
+		} else {
+			r.NotificationSettings.SendOnBreakingChangeSyncsDisabled = &NotificationItem{}
+			if resp.NotificationSettings.SendOnBreakingChangeSyncsDisabled.CustomerioConfiguration == nil {
+				r.NotificationSettings.SendOnBreakingChangeSyncsDisabled.CustomerioConfiguration = nil
+			} else {
+				r.NotificationSettings.SendOnBreakingChangeSyncsDisabled.CustomerioConfiguration = &StreamJSONSchema{}
+			}
+			r.NotificationSettings.SendOnBreakingChangeSyncsDisabled.NotificationType = nil
+			for _, v := range resp.NotificationSettings.SendOnBreakingChangeSyncsDisabled.NotificationType {
+				r.NotificationSettings.SendOnBreakingChangeSyncsDisabled.NotificationType = append(r.NotificationSettings.SendOnBreakingChangeSyncsDisabled.NotificationType, types.StringValue(string(v)))
+			}
+			if resp.NotificationSettings.SendOnBreakingChangeSyncsDisabled.SlackConfiguration == nil {
+				r.NotificationSettings.SendOnBreakingChangeSyncsDisabled.SlackConfiguration = nil
+			} else {
+				r.NotificationSettings.SendOnBreakingChangeSyncsDisabled.SlackConfiguration = &SlackNotificationConfiguration{}
+				r.NotificationSettings.SendOnBreakingChangeSyncsDisabled.SlackConfiguration.Webhook = types.StringValue(resp.NotificationSettings.SendOnBreakingChangeSyncsDisabled.SlackConfiguration.Webhook)
+			}
+		}
+		if resp.NotificationSettings.SendOnBreakingChangeWarning == nil {
+			r.NotificationSettings.SendOnBreakingChangeWarning = nil
+		} else {
+			r.NotificationSettings.SendOnBreakingChangeWarning = &NotificationItem{}
+			if resp.NotificationSettings.SendOnBreakingChangeWarning.CustomerioConfiguration == nil {
+				r.NotificationSettings.SendOnBreakingChangeWarning.CustomerioConfiguration = nil
+			} else {
+				r.NotificationSettings.SendOnBreakingChangeWarning.CustomerioConfiguration = &StreamJSONSchema{}
+			}
+			r.NotificationSettings.SendOnBreakingChangeWarning.NotificationType = nil
+			for _, v := range resp.NotificationSettings.SendOnBreakingChangeWarning.NotificationType {
+				r.NotificationSettings.SendOnBreakingChangeWarning.NotificationType = append(r.NotificationSettings.SendOnBreakingChangeWarning.NotificationType, types.StringValue(string(v)))
+			}
+			if resp.NotificationSettings.SendOnBreakingChangeWarning.SlackConfiguration == nil {
+				r.NotificationSettings.SendOnBreakingChangeWarning.SlackConfiguration = nil
+			} else {
+				r.NotificationSettings.SendOnBreakingChangeWarning.SlackConfiguration = &SlackNotificationConfiguration{}
+				r.NotificationSettings.SendOnBreakingChangeWarning.SlackConfiguration.Webhook = types.StringValue(resp.NotificationSettings.SendOnBreakingChangeWarning.SlackConfiguration.Webhook)
+			}
+		}
 		if resp.NotificationSettings.SendOnConnectionUpdate == nil {
 			r.NotificationSettings.SendOnConnectionUpdate = nil
 		} else {
@@ -746,6 +886,11 @@ func (r *WorkspaceResourceModel) RefreshFromCreateResponse(resp *shared.Workspac
 				r.NotificationSettings.SendOnSyncDisabledWarning.SlackConfiguration.Webhook = types.StringValue(resp.NotificationSettings.SendOnSyncDisabledWarning.SlackConfiguration.Webhook)
 			}
 		}
+	}
+	if resp.OrganizationID != nil {
+		r.OrganizationID = types.StringValue(*resp.OrganizationID)
+	} else {
+		r.OrganizationID = types.StringNull()
 	}
 	if resp.SecurityUpdates != nil {
 		r.SecurityUpdates = types.BoolValue(*resp.SecurityUpdates)

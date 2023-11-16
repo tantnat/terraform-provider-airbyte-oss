@@ -3,6 +3,8 @@
 package provider
 
 type NotificationSettings struct {
+	SendOnBreakingChangeSyncsDisabled    *NotificationItem `tfsdk:"send_on_breaking_change_syncs_disabled"`
+	SendOnBreakingChangeWarning          *NotificationItem `tfsdk:"send_on_breaking_change_warning"`
 	SendOnConnectionUpdate               *NotificationItem `tfsdk:"send_on_connection_update"`
 	SendOnConnectionUpdateActionRequired *NotificationItem `tfsdk:"send_on_connection_update_action_required"`
 	SendOnFailure                        *NotificationItem `tfsdk:"send_on_failure"`
