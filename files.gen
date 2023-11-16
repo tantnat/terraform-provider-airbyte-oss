@@ -582,6 +582,15 @@ internal/provider/type_notification.go
 internal/provider/type_notification_item.go
 internal/provider/type_notification_settings.go
 internal/provider/type_webhook_config_read.go
+internal/provider/type_stream_descriptor.go
+internal/provider/type_field_add.go
+internal/provider/type_field_schema_update.go
+internal/provider/type_field_transform.go
+internal/provider/type_stream_transform.go
+internal/provider/type_catalog_diff.go
+internal/provider/type_log_read.go
+internal/provider/type_failure_reason.go
+internal/provider/type_synchronous_job_read.go
 USAGE.md
 internal/provider/provider.go
 examples/provider/provider.tf
@@ -600,5 +609,8 @@ examples/resources/airbyte_source_definition_manifest/resource.tf
 internal/provider/workspace_resource.go
 internal/provider/workspace_resource_sdk.go
 examples/resources/airbyte_workspace/resource.tf
+internal/provider/sourceschema_data_source.go
+internal/provider/sourceschema_data_source_sdk.go
+examples/data-sources/airbyte_source_schema/data-source.tf
 internal/sdk/pkg/models/operations/options.go
 .gitattributes
