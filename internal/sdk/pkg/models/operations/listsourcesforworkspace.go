@@ -3,18 +3,63 @@
 package operations
 
 import (
-	"airbyte/internal/sdk/pkg/models/shared"
+	"github.com/aballiet/terraform-provider-airbyte/internal/sdk/pkg/models/shared"
 	"net/http"
 )
 
 type ListSourcesForWorkspaceResponse struct {
+	// HTTP response content type for this operation
 	ContentType string
-	// Input failed validation
-	InvalidInputExceptionInfo *shared.InvalidInputExceptionInfo
-	// Object with given id was not found.
-	NotFoundKnownExceptionInfo *shared.NotFoundKnownExceptionInfo
+	// HTTP response status code for this operation
+	StatusCode int
+	// Raw HTTP response; suitable for custom response parsing
+	RawResponse *http.Response
 	// Successful operation
 	SourceReadList *shared.SourceReadList
-	StatusCode     int
-	RawResponse    *http.Response
+	// Object with given id was not found.
+	NotFoundKnownExceptionInfo *shared.NotFoundKnownExceptionInfo
+	// Input failed validation
+	InvalidInputExceptionInfo *shared.InvalidInputExceptionInfo
+}
+
+func (o *ListSourcesForWorkspaceResponse) GetContentType() string {
+	if o == nil {
+		return ""
+	}
+	return o.ContentType
+}
+
+func (o *ListSourcesForWorkspaceResponse) GetStatusCode() int {
+	if o == nil {
+		return 0
+	}
+	return o.StatusCode
+}
+
+func (o *ListSourcesForWorkspaceResponse) GetRawResponse() *http.Response {
+	if o == nil {
+		return nil
+	}
+	return o.RawResponse
+}
+
+func (o *ListSourcesForWorkspaceResponse) GetSourceReadList() *shared.SourceReadList {
+	if o == nil {
+		return nil
+	}
+	return o.SourceReadList
+}
+
+func (o *ListSourcesForWorkspaceResponse) GetNotFoundKnownExceptionInfo() *shared.NotFoundKnownExceptionInfo {
+	if o == nil {
+		return nil
+	}
+	return o.NotFoundKnownExceptionInfo
+}
+
+func (o *ListSourcesForWorkspaceResponse) GetInvalidInputExceptionInfo() *shared.InvalidInputExceptionInfo {
+	if o == nil {
+		return nil
+	}
+	return o.InvalidInputExceptionInfo
 }

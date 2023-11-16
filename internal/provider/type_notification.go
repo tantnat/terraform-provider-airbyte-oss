@@ -5,9 +5,9 @@ package provider
 import "github.com/hashicorp/terraform-plugin-framework/types"
 
 type Notification struct {
-	CustomerioConfiguration *CustomerioNotificationConfiguration `tfsdk:"customerio_configuration"`
-	NotificationType        types.String                         `tfsdk:"notification_type"`
-	SendOnFailure           types.Bool                           `tfsdk:"send_on_failure"`
-	SendOnSuccess           types.Bool                           `tfsdk:"send_on_success"`
-	SlackConfiguration      *SlackNotificationConfiguration      `tfsdk:"slack_configuration"`
+	CustomerioConfiguration *StreamJSONSchema               `tfsdk:"customerio_configuration"`
+	NotificationType        types.String                    `tfsdk:"notification_type"`
+	SendOnFailure           types.Bool                      `tfsdk:"send_on_failure"`
+	SendOnSuccess           types.Bool                      `tfsdk:"send_on_success"`
+	SlackConfiguration      *SlackNotificationConfiguration `tfsdk:"slack_configuration"`
 }

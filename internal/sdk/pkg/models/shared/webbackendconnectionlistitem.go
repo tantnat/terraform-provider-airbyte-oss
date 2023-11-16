@@ -4,19 +4,96 @@ package shared
 
 // WebBackendConnectionListItem - Information about a connection that shows up in the connection list view.
 type WebBackendConnectionListItem struct {
-	ConnectionID string                 `json:"connectionId"`
-	Destination  DestinationSnippetRead `json:"destination"`
-	IsSyncing    bool                   `json:"isSyncing"`
-	// epoch time of the latest sync job. null if no sync job has taken place.
-	LatestSyncJobCreatedAt *int64     `json:"latestSyncJobCreatedAt,omitempty"`
-	LatestSyncJobStatus    *JobStatus `json:"latestSyncJobStatus,omitempty"`
-	Name                   string     `json:"name"`
-	// schedule for when the the connection should run, per the schedule type
-	ScheduleData *ConnectionScheduleData `json:"scheduleData,omitempty"`
+	ConnectionID string `json:"connectionId"`
+	Name         string `json:"name"`
 	// determine how the schedule data should be interpreted
 	ScheduleType *ConnectionScheduleType `json:"scheduleType,omitempty"`
-	SchemaChange SchemaChange            `json:"schemaChange"`
-	Source       SourceSnippetRead       `json:"source"`
+	// schedule for when the the connection should run, per the schedule type
+	ScheduleData *ConnectionScheduleData `json:"scheduleData,omitempty"`
 	// Active means that data is flowing through the connection. Inactive means it is not. Deprecated means the connection is off and cannot be re-activated. the schema field describes the elements of the schema that will be synced.
-	Status ConnectionStatus `json:"status"`
+	Status      ConnectionStatus       `json:"status"`
+	Source      SourceSnippetRead      `json:"source"`
+	Destination DestinationSnippetRead `json:"destination"`
+	// epoch time of the latest sync job. null if no sync job has taken place.
+	LatestSyncJobCreatedAt *int64       `json:"latestSyncJobCreatedAt,omitempty"`
+	LatestSyncJobStatus    *JobStatus   `json:"latestSyncJobStatus,omitempty"`
+	IsSyncing              bool         `json:"isSyncing"`
+	SchemaChange           SchemaChange `json:"schemaChange"`
+}
+
+func (o *WebBackendConnectionListItem) GetConnectionID() string {
+	if o == nil {
+		return ""
+	}
+	return o.ConnectionID
+}
+
+func (o *WebBackendConnectionListItem) GetName() string {
+	if o == nil {
+		return ""
+	}
+	return o.Name
+}
+
+func (o *WebBackendConnectionListItem) GetScheduleType() *ConnectionScheduleType {
+	if o == nil {
+		return nil
+	}
+	return o.ScheduleType
+}
+
+func (o *WebBackendConnectionListItem) GetScheduleData() *ConnectionScheduleData {
+	if o == nil {
+		return nil
+	}
+	return o.ScheduleData
+}
+
+func (o *WebBackendConnectionListItem) GetStatus() ConnectionStatus {
+	if o == nil {
+		return ConnectionStatus("")
+	}
+	return o.Status
+}
+
+func (o *WebBackendConnectionListItem) GetSource() SourceSnippetRead {
+	if o == nil {
+		return SourceSnippetRead{}
+	}
+	return o.Source
+}
+
+func (o *WebBackendConnectionListItem) GetDestination() DestinationSnippetRead {
+	if o == nil {
+		return DestinationSnippetRead{}
+	}
+	return o.Destination
+}
+
+func (o *WebBackendConnectionListItem) GetLatestSyncJobCreatedAt() *int64 {
+	if o == nil {
+		return nil
+	}
+	return o.LatestSyncJobCreatedAt
+}
+
+func (o *WebBackendConnectionListItem) GetLatestSyncJobStatus() *JobStatus {
+	if o == nil {
+		return nil
+	}
+	return o.LatestSyncJobStatus
+}
+
+func (o *WebBackendConnectionListItem) GetIsSyncing() bool {
+	if o == nil {
+		return false
+	}
+	return o.IsSyncing
+}
+
+func (o *WebBackendConnectionListItem) GetSchemaChange() SchemaChange {
+	if o == nil {
+		return SchemaChange("")
+	}
+	return o.SchemaChange
 }

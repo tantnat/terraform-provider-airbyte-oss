@@ -3,6 +3,6 @@
 package provider
 
 type ActorDefinitionResourceRequirements struct {
-	Default     *ResourceRequirements1 `tfsdk:"default"`
+	Default     *ResourceRequirements  `tfsdk:"default"`
 	JobSpecific []JobTypeResourceLimit `tfsdk:"job_specific"`
 }

@@ -2,7 +2,13 @@
 
 package shared
 
-// SourceReadList - Successful operation
 type SourceReadList struct {
 	Sources []SourceRead `json:"sources"`
+}
+
+func (o *SourceReadList) GetSources() []SourceRead {
+	if o == nil {
+		return []SourceRead{}
+	}
+	return o.Sources
 }

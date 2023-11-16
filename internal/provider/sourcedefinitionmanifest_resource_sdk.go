@@ -3,11 +3,14 @@
 package provider
 
 import (
-	"airbyte/internal/sdk/pkg/models/shared"
+	"github.com/aballiet/terraform-provider-airbyte/internal/sdk/pkg/models/shared"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 func (r *SourceDefinitionManifestResourceModel) ToCreateSDKType() *shared.DeclarativeSourceDefinitionCreateManifestRequestBody {
+	workspaceID := r.WorkspaceID.ValueString()
+	sourceDefinitionID := r.SourceDefinitionID.ValueString()
+	setAsActiveManifest := r.SetAsActiveManifest.ValueBool()
 	description := r.DeclarativeManifest.Description.ValueString()
 	manifest := shared.DeclarativeManifest{}
 	spec := shared.SourceDefinitionSpecification{}
@@ -18,16 +21,22 @@ func (r *SourceDefinitionManifestResourceModel) ToCreateSDKType() *shared.Declar
 		Spec:        spec,
 		Version:     version,
 	}
-	setAsActiveManifest := r.SetAsActiveManifest.ValueBool()
 	out := shared.DeclarativeSourceDefinitionCreateManifestRequestBody{
-		DeclarativeManifest: declarativeManifest,
+		WorkspaceID:         workspaceID,
+		SourceDefinitionID:  sourceDefinitionID,
 		SetAsActiveManifest: setAsActiveManifest,
+		DeclarativeManifest: declarativeManifest,
 	}
 	return &out
 }
 
 func (r *SourceDefinitionManifestResourceModel) ToUpdateSDKType() *shared.UpdateActiveManifestRequestBody {
-	out := shared.UpdateActiveManifestRequestBody{}
+	workspaceID := r.WorkspaceID.ValueString()
+	sourceDefinitionID := r.SourceDefinitionID.ValueString()
+	out := shared.UpdateActiveManifestRequestBody{
+		WorkspaceID:        workspaceID,
+		SourceDefinitionID: sourceDefinitionID,
+	}
 	return &out
 }
 

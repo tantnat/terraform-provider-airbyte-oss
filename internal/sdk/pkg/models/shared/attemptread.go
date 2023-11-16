@@ -3,14 +3,84 @@
 package shared
 
 type AttemptRead struct {
-	BytesSynced    *int64                 `json:"bytesSynced,omitempty"`
-	CreatedAt      int64                  `json:"createdAt"`
-	EndedAt        *int64                 `json:"endedAt,omitempty"`
-	FailureSummary *AttemptFailureSummary `json:"failureSummary,omitempty"`
 	ID             int64                  `json:"id"`
-	RecordsSynced  *int64                 `json:"recordsSynced,omitempty"`
 	Status         AttemptStatus          `json:"status"`
-	StreamStats    []AttemptStreamStats   `json:"streamStats,omitempty"`
-	TotalStats     *AttemptStats          `json:"totalStats,omitempty"`
+	CreatedAt      int64                  `json:"createdAt"`
 	UpdatedAt      int64                  `json:"updatedAt"`
+	EndedAt        *int64                 `json:"endedAt,omitempty"`
+	BytesSynced    *int64                 `json:"bytesSynced,omitempty"`
+	RecordsSynced  *int64                 `json:"recordsSynced,omitempty"`
+	TotalStats     *AttemptStats          `json:"totalStats,omitempty"`
+	StreamStats    []AttemptStreamStats   `json:"streamStats,omitempty"`
+	FailureSummary *AttemptFailureSummary `json:"failureSummary,omitempty"`
+}
+
+func (o *AttemptRead) GetID() int64 {
+	if o == nil {
+		return 0
+	}
+	return o.ID
+}
+
+func (o *AttemptRead) GetStatus() AttemptStatus {
+	if o == nil {
+		return AttemptStatus("")
+	}
+	return o.Status
+}
+
+func (o *AttemptRead) GetCreatedAt() int64 {
+	if o == nil {
+		return 0
+	}
+	return o.CreatedAt
+}
+
+func (o *AttemptRead) GetUpdatedAt() int64 {
+	if o == nil {
+		return 0
+	}
+	return o.UpdatedAt
+}
+
+func (o *AttemptRead) GetEndedAt() *int64 {
+	if o == nil {
+		return nil
+	}
+	return o.EndedAt
+}
+
+func (o *AttemptRead) GetBytesSynced() *int64 {
+	if o == nil {
+		return nil
+	}
+	return o.BytesSynced
+}
+
+func (o *AttemptRead) GetRecordsSynced() *int64 {
+	if o == nil {
+		return nil
+	}
+	return o.RecordsSynced
+}
+
+func (o *AttemptRead) GetTotalStats() *AttemptStats {
+	if o == nil {
+		return nil
+	}
+	return o.TotalStats
+}
+
+func (o *AttemptRead) GetStreamStats() []AttemptStreamStats {
+	if o == nil {
+		return nil
+	}
+	return o.StreamStats
+}
+
+func (o *AttemptRead) GetFailureSummary() *AttemptFailureSummary {
+	if o == nil {
+		return nil
+	}
+	return o.FailureSummary
 }

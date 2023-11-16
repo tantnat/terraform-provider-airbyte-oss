@@ -3,9 +3,9 @@
 package provider
 
 import (
-	"airbyte/internal/sdk"
-	"airbyte/internal/sdk/pkg/models/shared"
 	"context"
+	"github.com/aballiet/terraform-provider-airbyte/internal/sdk"
+	"github.com/aballiet/terraform-provider-airbyte/internal/sdk/pkg/models/shared"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
@@ -26,8 +26,8 @@ type AirbyteProvider struct {
 // AirbyteProviderModel describes the provider data model.
 type AirbyteProviderModel struct {
 	ServerURL types.String `tfsdk:"server_url"`
-	Password  types.String `tfsdk:"password"`
 	Username  types.String `tfsdk:"username"`
+	Password  types.String `tfsdk:"password"`
 }
 
 func (p *AirbyteProvider) Metadata(ctx context.Context, req provider.MetadataRequest, resp *provider.MetadataResponse) {
@@ -67,11 +67,11 @@ func (p *AirbyteProvider) Schema(ctx context.Context, req provider.SchemaRequest
 				Optional:            true,
 				Required:            false,
 			},
-			"password": schema.StringAttribute{
+			"username": schema.StringAttribute{
 				Optional:  true,
 				Sensitive: true,
 			},
-			"username": schema.StringAttribute{
+			"password": schema.StringAttribute{
 				Optional:  true,
 				Sensitive: true,
 			},
@@ -94,11 +94,11 @@ func (p *AirbyteProvider) Configure(ctx context.Context, req provider.ConfigureR
 		ServerURL = "http://localhost:8000/api"
 	}
 
-	password := data.Password.ValueString()
 	username := data.Username.ValueString()
+	password := data.Password.ValueString()
 	security := shared.Security{
-		Password: password,
 		Username: username,
+		Password: password,
 	}
 
 	opts := []sdk.SDKOption{

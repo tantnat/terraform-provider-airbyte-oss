@@ -3,8 +3,36 @@
 package shared
 
 type DeclarativeSourceDefinitionCreateManifestRequestBody struct {
-	DeclarativeManifest DeclarativeSourceManifest `json:"declarativeManifest"`
-	SetAsActiveManifest bool                      `json:"setAsActiveManifest"`
-	SourceDefinitionID  string                    `json:"sourceDefinitionId"`
 	WorkspaceID         string                    `json:"workspaceId"`
+	SourceDefinitionID  string                    `json:"sourceDefinitionId"`
+	SetAsActiveManifest bool                      `json:"setAsActiveManifest"`
+	DeclarativeManifest DeclarativeSourceManifest `json:"declarativeManifest"`
+}
+
+func (o *DeclarativeSourceDefinitionCreateManifestRequestBody) GetWorkspaceID() string {
+	if o == nil {
+		return ""
+	}
+	return o.WorkspaceID
+}
+
+func (o *DeclarativeSourceDefinitionCreateManifestRequestBody) GetSourceDefinitionID() string {
+	if o == nil {
+		return ""
+	}
+	return o.SourceDefinitionID
+}
+
+func (o *DeclarativeSourceDefinitionCreateManifestRequestBody) GetSetAsActiveManifest() bool {
+	if o == nil {
+		return false
+	}
+	return o.SetAsActiveManifest
+}
+
+func (o *DeclarativeSourceDefinitionCreateManifestRequestBody) GetDeclarativeManifest() DeclarativeSourceManifest {
+	if o == nil {
+		return DeclarativeSourceManifest{}
+	}
+	return o.DeclarativeManifest
 }

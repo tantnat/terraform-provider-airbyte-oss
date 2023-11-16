@@ -2,7 +2,13 @@
 
 package shared
 
-// ConnectorBuilderProjectReadList - Successful operation
 type ConnectorBuilderProjectReadList struct {
 	Projects []ConnectorBuilderProjectDetailsRead `json:"projects"`
+}
+
+func (o *ConnectorBuilderProjectReadList) GetProjects() []ConnectorBuilderProjectDetailsRead {
+	if o == nil {
+		return []ConnectorBuilderProjectDetailsRead{}
+	}
+	return o.Projects
 }

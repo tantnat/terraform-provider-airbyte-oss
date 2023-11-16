@@ -2,7 +2,13 @@
 
 package shared
 
-// SourceDefinitionReadList - Successful operation
 type SourceDefinitionReadList struct {
 	SourceDefinitions []SourceDefinitionRead `json:"sourceDefinitions"`
+}
+
+func (o *SourceDefinitionReadList) GetSourceDefinitions() []SourceDefinitionRead {
+	if o == nil {
+		return []SourceDefinitionRead{}
+	}
+	return o.SourceDefinitions
 }

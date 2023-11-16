@@ -3,6 +3,20 @@
 package shared
 
 type SetInstancewideSourceOauthParamsRequestBody struct {
-	Params             map[string]interface{} `json:"params"`
 	SourceDefinitionID string                 `json:"sourceDefinitionId"`
+	Params             map[string]interface{} `json:"params"`
+}
+
+func (o *SetInstancewideSourceOauthParamsRequestBody) GetSourceDefinitionID() string {
+	if o == nil {
+		return ""
+	}
+	return o.SourceDefinitionID
+}
+
+func (o *SetInstancewideSourceOauthParamsRequestBody) GetParams() map[string]interface{} {
+	if o == nil {
+		return map[string]interface{}{}
+	}
+	return o.Params
 }

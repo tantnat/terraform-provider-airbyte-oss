@@ -3,9 +3,10 @@
 package sdk
 
 import (
-	"airbyte/internal/sdk/pkg/models/shared"
-	"airbyte/internal/sdk/pkg/utils"
+	"context"
 	"fmt"
+	"github.com/aballiet/terraform-provider-airbyte/internal/sdk/pkg/models/shared"
+	"github.com/aballiet/terraform-provider-airbyte/internal/sdk/pkg/utils"
 	"net/http"
 	"time"
 )
@@ -41,13 +42,15 @@ func Float64(f float64) *float64 { return &f }
 type sdkConfiguration struct {
 	DefaultClient     HTTPClient
 	SecurityClient    HTTPClient
-	Security          *shared.Security
+	Security          func(context.Context) (interface{}, error)
 	ServerURL         string
 	ServerIndex       int
 	Language          string
 	OpenAPIDocVersion string
 	SDKVersion        string
 	GenVersion        string
+	UserAgent         string
+	RetryConfig       *utils.RetryConfig
 }
 
 func (c *sdkConfiguration) GetServerDetails() (string, map[string]string) {
@@ -58,7 +61,7 @@ func (c *sdkConfiguration) GetServerDetails() (string, map[string]string) {
 	return ServerList[c.ServerIndex], nil
 }
 
-// Airbyte - Airbyte Configuration API: Airbyte Configuration API
+// SDK - Airbyte Configuration API: Airbyte Configuration API
 // [https://airbyte.io](https://airbyte.io).
 //
 // The Configuration API is an internal Airbyte API that is designed for communications between different Airbyte components.
@@ -83,64 +86,64 @@ func (c *sdkConfiguration) GetServerDetails() (string, map[string]string) {
 // * When authenticating to the Configuration API, you must use Basic Authentication by setting the Authentication Header to Basic and base64 encoding the username and password (which are `airbyte` and `password` by default - so base64 encoding `airbyte:password` results in `YWlyYnl0ZTpwYXNzd29yZA==`). So the full header reads `'Authorization': "Basic YWlyYnl0ZTpwYXNzd29yZA=="`
 //
 // https://airbyte.io - Find out more about Airbyte
-type Airbyte struct {
-	// Attempt - Interactions with attempt related resources.
-	Attempt *attempt
-	// Connection - Connection between sources and destinations.
-	Connection                   *connection
-	ConnectorBuilderProject      *connectorBuilderProject
-	DeclarativeSourceDefinitions *declarativeSourceDefinitions
-	// Destination - Destination related resources.
-	Destination *destination
-	// DestinationDefinition - DestinationDefinition related resources.
-	DestinationDefinition *destinationDefinition
-	// DestinationDefinitionSpecification - DestinationDefinitionSpecification related resources.
-	DestinationDefinitionSpecification *destinationDefinitionSpecification
-	// DestinationOauth - Source OAuth related resources to delegate access from user.
-	DestinationOauth *destinationOauth
-	// Health - Healthchecks
-	Health        *health
-	Internal      *internal
-	Jobs          *jobs
-	Logs          *logs
-	Notifications *notifications
-	Openapi       *openapi
-	Operation     *operation
-	Scheduler     *scheduler
-	// Source - Source related resources.
-	Source *source
-	// SourceDefinition - SourceDefinition related resources.
-	SourceDefinition *sourceDefinition
-	// SourceDefinitionSpecification - SourceDefinition specification related resources.
-	SourceDefinitionSpecification *sourceDefinitionSpecification
-	// SourceOauth - Source OAuth related resources to delegate access from user.
-	SourceOauth *sourceOauth
-	// State - Interactions with state related resources.
-	State          *state
-	StreamStatuses *streamStatuses
-	Streams        *streams
-	// WebBackend - Endpoints for the Airbyte web application. Those APIs should not be called outside the web application implementation and are not
+type SDK struct {
+	// Workspace related resources.
+	Workspace     *Workspace
+	Notifications *Notifications
+	// SourceDefinition related resources.
+	SourceDefinition *SourceDefinition
+	// SourceDefinition specification related resources.
+	SourceDefinitionSpecification *SourceDefinitionSpecification
+	DeclarativeSourceDefinitions  *DeclarativeSourceDefinitions
+	ConnectorBuilderProject       *ConnectorBuilderProject
+	// Source related resources.
+	Source   *Source
+	Internal *Internal
+	// DestinationDefinition related resources.
+	DestinationDefinition *DestinationDefinition
+	// DestinationDefinitionSpecification related resources.
+	DestinationDefinitionSpecification *DestinationDefinitionSpecification
+	// Destination related resources.
+	Destination *Destination
+	// Connection between sources and destinations.
+	Connection *Connection
+	// Interactions with state related resources.
+	State     *State
+	Operation *Operation
+	Scheduler *Scheduler
+	// Source OAuth related resources to delegate access from user.
+	SourceOauth *SourceOauth
+	// Source OAuth related resources to delegate access from user.
+	DestinationOauth *DestinationOauth
+	// Endpoints for the Airbyte web application. Those APIs should not be called outside the web application implementation and are not
 	// guaranteeing any backwards compatibility.
 	//
-	WebBackend *webBackend
-	// Workspace - Workspace related resources.
-	Workspace *workspace
+	WebBackend *WebBackend
+	Jobs       *Jobs
+	// Healthchecks
+	Health  *Health
+	Logs    *Logs
+	Openapi *Openapi
+	// Interactions with attempt related resources.
+	Attempt        *Attempt
+	StreamStatuses *StreamStatuses
+	Streams        *Streams
 
 	sdkConfiguration sdkConfiguration
 }
 
-type SDKOption func(*Airbyte)
+type SDKOption func(*SDK)
 
 // WithServerURL allows the overriding of the default server URL
 func WithServerURL(serverURL string) SDKOption {
-	return func(sdk *Airbyte) {
+	return func(sdk *SDK) {
 		sdk.sdkConfiguration.ServerURL = serverURL
 	}
 }
 
 // WithTemplatedServerURL allows the overriding of the default server URL with a templated URL populated with the provided parameters
 func WithTemplatedServerURL(serverURL string, params map[string]string) SDKOption {
-	return func(sdk *Airbyte) {
+	return func(sdk *SDK) {
 		if params != nil {
 			serverURL = utils.ReplaceParameters(serverURL, params)
 		}
@@ -151,7 +154,7 @@ func WithTemplatedServerURL(serverURL string, params map[string]string) SDKOptio
 
 // WithServerIndex allows the overriding of the default server by index
 func WithServerIndex(serverIndex int) SDKOption {
-	return func(sdk *Airbyte) {
+	return func(sdk *SDK) {
 		if serverIndex < 0 || serverIndex >= len(ServerList) {
 			panic(fmt.Errorf("server index %d out of range", serverIndex))
 		}
@@ -162,26 +165,48 @@ func WithServerIndex(serverIndex int) SDKOption {
 
 // WithClient allows the overriding of the default HTTP client used by the SDK
 func WithClient(client HTTPClient) SDKOption {
-	return func(sdk *Airbyte) {
+	return func(sdk *SDK) {
 		sdk.sdkConfiguration.DefaultClient = client
+	}
+}
+
+func withSecurity(security interface{}) func(context.Context) (interface{}, error) {
+	return func(context.Context) (interface{}, error) {
+		return &security, nil
 	}
 }
 
 // WithSecurity configures the SDK to use the provided security details
 func WithSecurity(security shared.Security) SDKOption {
-	return func(sdk *Airbyte) {
-		sdk.sdkConfiguration.Security = &security
+	return func(sdk *SDK) {
+		sdk.sdkConfiguration.Security = withSecurity(security)
+	}
+}
+
+// WithSecuritySource configures the SDK to invoke the Security Source function on each method call to determine authentication
+func WithSecuritySource(security func(context.Context) (shared.Security, error)) SDKOption {
+	return func(sdk *SDK) {
+		sdk.sdkConfiguration.Security = func(ctx context.Context) (interface{}, error) {
+			return security(ctx)
+		}
+	}
+}
+
+func WithRetryConfig(retryConfig utils.RetryConfig) SDKOption {
+	return func(sdk *SDK) {
+		sdk.sdkConfiguration.RetryConfig = &retryConfig
 	}
 }
 
 // New creates a new instance of the SDK with the provided options
-func New(opts ...SDKOption) *Airbyte {
-	sdk := &Airbyte{
+func New(opts ...SDKOption) *SDK {
+	sdk := &SDK{
 		sdkConfiguration: sdkConfiguration{
-			Language:          "terraform",
+			Language:          "go",
 			OpenAPIDocVersion: "1.0.0",
 			SDKVersion:        "1.0.4",
-			GenVersion:        "2.75.1",
+			GenVersion:        "2.192.1",
+			UserAgent:         "speakeasy-sdk/go 1.0.4 2.192.1 1.0.0 airbyte",
 		},
 	}
 	for _, opt := range opts {
@@ -200,55 +225,55 @@ func New(opts ...SDKOption) *Airbyte {
 		}
 	}
 
-	sdk.Attempt = newAttempt(sdk.sdkConfiguration)
-
-	sdk.Connection = newConnection(sdk.sdkConfiguration)
-
-	sdk.ConnectorBuilderProject = newConnectorBuilderProject(sdk.sdkConfiguration)
-
-	sdk.DeclarativeSourceDefinitions = newDeclarativeSourceDefinitions(sdk.sdkConfiguration)
-
-	sdk.Destination = newDestination(sdk.sdkConfiguration)
-
-	sdk.DestinationDefinition = newDestinationDefinition(sdk.sdkConfiguration)
-
-	sdk.DestinationDefinitionSpecification = newDestinationDefinitionSpecification(sdk.sdkConfiguration)
-
-	sdk.DestinationOauth = newDestinationOauth(sdk.sdkConfiguration)
-
-	sdk.Health = newHealth(sdk.sdkConfiguration)
-
-	sdk.Internal = newInternal(sdk.sdkConfiguration)
-
-	sdk.Jobs = newJobs(sdk.sdkConfiguration)
-
-	sdk.Logs = newLogs(sdk.sdkConfiguration)
+	sdk.Workspace = newWorkspace(sdk.sdkConfiguration)
 
 	sdk.Notifications = newNotifications(sdk.sdkConfiguration)
-
-	sdk.Openapi = newOpenapi(sdk.sdkConfiguration)
-
-	sdk.Operation = newOperation(sdk.sdkConfiguration)
-
-	sdk.Scheduler = newScheduler(sdk.sdkConfiguration)
-
-	sdk.Source = newSource(sdk.sdkConfiguration)
 
 	sdk.SourceDefinition = newSourceDefinition(sdk.sdkConfiguration)
 
 	sdk.SourceDefinitionSpecification = newSourceDefinitionSpecification(sdk.sdkConfiguration)
 
-	sdk.SourceOauth = newSourceOauth(sdk.sdkConfiguration)
+	sdk.DeclarativeSourceDefinitions = newDeclarativeSourceDefinitions(sdk.sdkConfiguration)
+
+	sdk.ConnectorBuilderProject = newConnectorBuilderProject(sdk.sdkConfiguration)
+
+	sdk.Source = newSource(sdk.sdkConfiguration)
+
+	sdk.Internal = newInternal(sdk.sdkConfiguration)
+
+	sdk.DestinationDefinition = newDestinationDefinition(sdk.sdkConfiguration)
+
+	sdk.DestinationDefinitionSpecification = newDestinationDefinitionSpecification(sdk.sdkConfiguration)
+
+	sdk.Destination = newDestination(sdk.sdkConfiguration)
+
+	sdk.Connection = newConnection(sdk.sdkConfiguration)
 
 	sdk.State = newState(sdk.sdkConfiguration)
+
+	sdk.Operation = newOperation(sdk.sdkConfiguration)
+
+	sdk.Scheduler = newScheduler(sdk.sdkConfiguration)
+
+	sdk.SourceOauth = newSourceOauth(sdk.sdkConfiguration)
+
+	sdk.DestinationOauth = newDestinationOauth(sdk.sdkConfiguration)
+
+	sdk.WebBackend = newWebBackend(sdk.sdkConfiguration)
+
+	sdk.Jobs = newJobs(sdk.sdkConfiguration)
+
+	sdk.Health = newHealth(sdk.sdkConfiguration)
+
+	sdk.Logs = newLogs(sdk.sdkConfiguration)
+
+	sdk.Openapi = newOpenapi(sdk.sdkConfiguration)
+
+	sdk.Attempt = newAttempt(sdk.sdkConfiguration)
 
 	sdk.StreamStatuses = newStreamStatuses(sdk.sdkConfiguration)
 
 	sdk.Streams = newStreams(sdk.sdkConfiguration)
-
-	sdk.WebBackend = newWebBackend(sdk.sdkConfiguration)
-
-	sdk.Workspace = newWorkspace(sdk.sdkConfiguration)
 
 	return sdk
 }

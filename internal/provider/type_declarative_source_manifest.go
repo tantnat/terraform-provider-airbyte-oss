@@ -5,8 +5,8 @@ package provider
 import "github.com/hashicorp/terraform-plugin-framework/types"
 
 type DeclarativeSourceManifest struct {
-	Description types.String                  `tfsdk:"description"`
-	Manifest    DeclarativeManifest           `tfsdk:"manifest"`
-	Spec        SourceDefinitionSpecification `tfsdk:"spec"`
-	Version     types.Int64                   `tfsdk:"version"`
+	Description types.String     `tfsdk:"description"`
+	Manifest    StreamJSONSchema `tfsdk:"manifest"`
+	Spec        StreamJSONSchema `tfsdk:"spec"`
+	Version     types.Int64      `tfsdk:"version"`
 }

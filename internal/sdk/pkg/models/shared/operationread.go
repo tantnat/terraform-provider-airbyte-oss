@@ -2,10 +2,37 @@
 
 package shared
 
-// OperationRead - Successful operation
 type OperationRead struct {
-	Name                  string                `json:"name"`
-	OperationID           string                `json:"operationId"`
-	OperatorConfiguration OperatorConfiguration `json:"operatorConfiguration"`
 	WorkspaceID           string                `json:"workspaceId"`
+	OperationID           string                `json:"operationId"`
+	Name                  string                `json:"name"`
+	OperatorConfiguration OperatorConfiguration `json:"operatorConfiguration"`
+}
+
+func (o *OperationRead) GetWorkspaceID() string {
+	if o == nil {
+		return ""
+	}
+	return o.WorkspaceID
+}
+
+func (o *OperationRead) GetOperationID() string {
+	if o == nil {
+		return ""
+	}
+	return o.OperationID
+}
+
+func (o *OperationRead) GetName() string {
+	if o == nil {
+		return ""
+	}
+	return o.Name
+}
+
+func (o *OperationRead) GetOperatorConfiguration() OperatorConfiguration {
+	if o == nil {
+		return OperatorConfiguration{}
+	}
+	return o.OperatorConfiguration
 }

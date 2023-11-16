@@ -2,7 +2,13 @@
 
 package shared
 
-// StreamStatusReadList - Successfully queried stream statuses.
 type StreamStatusReadList struct {
 	StreamStatuses []StreamStatusRead `json:"streamStatuses,omitempty"`
+}
+
+func (o *StreamStatusReadList) GetStreamStatuses() []StreamStatusRead {
+	if o == nil {
+		return nil
+	}
+	return o.StreamStatuses
 }

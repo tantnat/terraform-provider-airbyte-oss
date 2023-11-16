@@ -2,7 +2,13 @@
 
 package shared
 
-// WebBackendGeographiesListResult - Successful operation
 type WebBackendGeographiesListResult struct {
 	Geographies []Geography `json:"geographies"`
+}
+
+func (o *WebBackendGeographiesListResult) GetGeographies() []Geography {
+	if o == nil {
+		return []Geography{}
+	}
+	return o.Geographies
 }

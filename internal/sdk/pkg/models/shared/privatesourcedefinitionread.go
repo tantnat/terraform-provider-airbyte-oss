@@ -2,8 +2,21 @@
 
 package shared
 
-// PrivateSourceDefinitionRead - Successful operation
 type PrivateSourceDefinitionRead struct {
-	Granted          bool                 `json:"granted"`
 	SourceDefinition SourceDefinitionRead `json:"sourceDefinition"`
+	Granted          bool                 `json:"granted"`
+}
+
+func (o *PrivateSourceDefinitionRead) GetSourceDefinition() SourceDefinitionRead {
+	if o == nil {
+		return SourceDefinitionRead{}
+	}
+	return o.SourceDefinition
+}
+
+func (o *PrivateSourceDefinitionRead) GetGranted() bool {
+	if o == nil {
+		return false
+	}
+	return o.Granted
 }

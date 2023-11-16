@@ -39,11 +39,53 @@ func (e *FieldTransformTransformType) UnmarshalJSON(data []byte) error {
 
 // FieldTransform - Describes the difference between two Streams.
 type FieldTransform struct {
-	AddField *FieldAdd `json:"addField,omitempty"`
-	Breaking bool      `json:"breaking"`
+	TransformType FieldTransformTransformType `json:"transformType"`
 	// A field name is a list of strings that form the path to the field.
-	FieldName         []string                    `json:"fieldName"`
-	RemoveField       *FieldRemove                `json:"removeField,omitempty"`
-	TransformType     FieldTransformTransformType `json:"transformType"`
-	UpdateFieldSchema *FieldSchemaUpdate          `json:"updateFieldSchema,omitempty"`
+	FieldName         []string           `json:"fieldName"`
+	Breaking          bool               `json:"breaking"`
+	AddField          *FieldAdd          `json:"addField,omitempty"`
+	RemoveField       *FieldRemove       `json:"removeField,omitempty"`
+	UpdateFieldSchema *FieldSchemaUpdate `json:"updateFieldSchema,omitempty"`
+}
+
+func (o *FieldTransform) GetTransformType() FieldTransformTransformType {
+	if o == nil {
+		return FieldTransformTransformType("")
+	}
+	return o.TransformType
+}
+
+func (o *FieldTransform) GetFieldName() []string {
+	if o == nil {
+		return []string{}
+	}
+	return o.FieldName
+}
+
+func (o *FieldTransform) GetBreaking() bool {
+	if o == nil {
+		return false
+	}
+	return o.Breaking
+}
+
+func (o *FieldTransform) GetAddField() *FieldAdd {
+	if o == nil {
+		return nil
+	}
+	return o.AddField
+}
+
+func (o *FieldTransform) GetRemoveField() *FieldRemove {
+	if o == nil {
+		return nil
+	}
+	return o.RemoveField
+}
+
+func (o *FieldTransform) GetUpdateFieldSchema() *FieldSchemaUpdate {
+	if o == nil {
+		return nil
+	}
+	return o.UpdateFieldSchema
 }

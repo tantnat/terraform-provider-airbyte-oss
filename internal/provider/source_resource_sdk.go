@@ -3,35 +3,49 @@
 package provider
 
 import (
-	"airbyte/internal/sdk/pkg/models/shared"
 	"encoding/json"
+	"github.com/aballiet/terraform-provider-airbyte/internal/sdk/pkg/models/shared"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 func (r *SourceResourceModel) ToCreateSDKType() *shared.SourceCreate {
+	sourceDefinitionID := r.SourceDefinitionID.ValueString()
 	var connectionConfiguration interface{}
 	_ = json.Unmarshal([]byte(r.ConnectionConfiguration.ValueString()), &connectionConfiguration)
-	name := r.Name.ValueString()
-	sourceDefinitionID := r.SourceDefinitionID.ValueString()
 	workspaceID := r.WorkspaceID.ValueString()
+	name := r.Name.ValueString()
+	secretID := new(string)
+	if !r.SecretID.IsUnknown() && !r.SecretID.IsNull() {
+		*secretID = r.SecretID.ValueString()
+	} else {
+		secretID = nil
+	}
 	out := shared.SourceCreate{
-		ConnectionConfiguration: connectionConfiguration,
-		Name:                    name,
 		SourceDefinitionID:      sourceDefinitionID,
+		ConnectionConfiguration: connectionConfiguration,
 		WorkspaceID:             workspaceID,
+		Name:                    name,
+		SecretID:                secretID,
 	}
 	return &out
 }
 
 func (r *SourceResourceModel) ToUpdateSDKType() *shared.SourceUpdate {
+	sourceID := r.SourceID.ValueString()
 	var connectionConfiguration interface{}
 	_ = json.Unmarshal([]byte(r.ConnectionConfiguration.ValueString()), &connectionConfiguration)
 	name := r.Name.ValueString()
-	sourceID := r.SourceID.ValueString()
+	secretID := new(string)
+	if !r.SecretID.IsUnknown() && !r.SecretID.IsNull() {
+		*secretID = r.SecretID.ValueString()
+	} else {
+		secretID = nil
+	}
 	out := shared.SourceUpdate{
+		SourceID:                sourceID,
 		ConnectionConfiguration: connectionConfiguration,
 		Name:                    name,
-		SourceID:                sourceID,
+		SecretID:                secretID,
 	}
 	return &out
 }
@@ -44,35 +58,21 @@ func (r *SourceResourceModel) ToDeleteSDKType() *shared.SourceIDRequestBody {
 	return &out
 }
 
-func (r *SourceResourceModel) RefreshFromCreateResponse(resp *shared.InvalidInputExceptionInfo) {
-	if resp.ExceptionClassName != nil {
-		r.ExceptionClassName = types.StringValue(*resp.ExceptionClassName)
+func (r *SourceResourceModel) RefreshFromCreateResponse(resp *shared.SourceRead) {
+	connectionConfigurationResult, _ := json.Marshal(resp.ConnectionConfiguration)
+	r.ConnectionConfiguration = types.StringValue(string(connectionConfigurationResult))
+	if resp.Icon != nil {
+		r.Icon = types.StringValue(*resp.Icon)
 	} else {
-		r.ExceptionClassName = types.StringNull()
+		r.Icon = types.StringNull()
 	}
-	r.ExceptionStack = nil
-	for _, v := range resp.ExceptionStack {
-		r.ExceptionStack = append(r.ExceptionStack, types.StringValue(v))
-	}
-	r.Message = types.StringValue(resp.Message)
-	r.ValidationErrors = nil
-	for _, validationErrorsItem := range resp.ValidationErrors {
-		var validationErrors1 InvalidInputProperty
-		if validationErrorsItem.InvalidValue != nil {
-			validationErrors1.InvalidValue = types.StringValue(*validationErrorsItem.InvalidValue)
-		} else {
-			validationErrors1.InvalidValue = types.StringNull()
-		}
-		if validationErrorsItem.Message != nil {
-			validationErrors1.Message = types.StringValue(*validationErrorsItem.Message)
-		} else {
-			validationErrors1.Message = types.StringNull()
-		}
-		validationErrors1.PropertyPath = types.StringValue(validationErrorsItem.PropertyPath)
-		r.ValidationErrors = append(r.ValidationErrors, validationErrors1)
-	}
+	r.Name = types.StringValue(resp.Name)
+	r.SourceDefinitionID = types.StringValue(resp.SourceDefinitionID)
+	r.SourceID = types.StringValue(resp.SourceID)
+	r.SourceName = types.StringValue(resp.SourceName)
+	r.WorkspaceID = types.StringValue(resp.WorkspaceID)
 }
 
-func (r *SourceResourceModel) RefreshFromUpdateResponse(resp *shared.InvalidInputExceptionInfo) {
+func (r *SourceResourceModel) RefreshFromUpdateResponse(resp *shared.SourceRead) {
 	r.RefreshFromCreateResponse(resp)
 }

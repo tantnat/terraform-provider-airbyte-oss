@@ -3,6 +3,20 @@
 package shared
 
 type CustomSourceDefinitionCreate struct {
-	SourceDefinition SourceDefinitionCreate `json:"sourceDefinition"`
 	WorkspaceID      string                 `json:"workspaceId"`
+	SourceDefinition SourceDefinitionCreate `json:"sourceDefinition"`
+}
+
+func (o *CustomSourceDefinitionCreate) GetWorkspaceID() string {
+	if o == nil {
+		return ""
+	}
+	return o.WorkspaceID
+}
+
+func (o *CustomSourceDefinitionCreate) GetSourceDefinition() SourceDefinitionCreate {
+	if o == nil {
+		return SourceDefinitionCreate{}
+	}
+	return o.SourceDefinition
 }

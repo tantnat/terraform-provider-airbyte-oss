@@ -2,7 +2,13 @@
 
 package shared
 
-// WebBackendConnectionReadList - Successful operation
 type WebBackendConnectionReadList struct {
 	Connections []WebBackendConnectionListItem `json:"connections"`
+}
+
+func (o *WebBackendConnectionReadList) GetConnections() []WebBackendConnectionListItem {
+	if o == nil {
+		return []WebBackendConnectionListItem{}
+	}
+	return o.Connections
 }

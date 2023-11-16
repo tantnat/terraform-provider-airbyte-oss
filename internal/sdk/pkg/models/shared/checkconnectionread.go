@@ -34,9 +34,29 @@ func (e *CheckConnectionReadStatus) UnmarshalJSON(data []byte) error {
 	}
 }
 
-// CheckConnectionRead - Successful operation
 type CheckConnectionRead struct {
-	JobInfo SynchronousJobRead         `json:"jobInfo"`
-	Message *string                    `json:"message,omitempty"`
 	Status  *CheckConnectionReadStatus `json:"status,omitempty"`
+	Message *string                    `json:"message,omitempty"`
+	JobInfo SynchronousJobRead         `json:"jobInfo"`
+}
+
+func (o *CheckConnectionRead) GetStatus() *CheckConnectionReadStatus {
+	if o == nil {
+		return nil
+	}
+	return o.Status
+}
+
+func (o *CheckConnectionRead) GetMessage() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Message
+}
+
+func (o *CheckConnectionRead) GetJobInfo() SynchronousJobRead {
+	if o == nil {
+		return SynchronousJobRead{}
+	}
+	return o.JobInfo
 }

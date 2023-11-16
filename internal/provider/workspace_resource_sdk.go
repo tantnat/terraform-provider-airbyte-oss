@@ -3,34 +3,22 @@
 package provider
 
 import (
-	"airbyte/internal/sdk/pkg/models/shared"
+	"github.com/aballiet/terraform-provider-airbyte/internal/sdk/pkg/models/shared"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 func (r *WorkspaceResourceModel) ToCreateSDKType() *shared.WorkspaceCreate {
-	anonymousDataCollection := new(bool)
-	if !r.AnonymousDataCollection.IsUnknown() && !r.AnonymousDataCollection.IsNull() {
-		*anonymousDataCollection = r.AnonymousDataCollection.ValueBool()
-	} else {
-		anonymousDataCollection = nil
-	}
-	defaultGeography := new(shared.Geography)
-	if !r.DefaultGeography.IsUnknown() && !r.DefaultGeography.IsNull() {
-		*defaultGeography = shared.Geography(r.DefaultGeography.ValueString())
-	} else {
-		defaultGeography = nil
-	}
-	displaySetupWizard := new(bool)
-	if !r.DisplaySetupWizard.IsUnknown() && !r.DisplaySetupWizard.IsNull() {
-		*displaySetupWizard = r.DisplaySetupWizard.ValueBool()
-	} else {
-		displaySetupWizard = nil
-	}
 	email := new(string)
 	if !r.Email.IsUnknown() && !r.Email.IsNull() {
 		*email = r.Email.ValueString()
 	} else {
 		email = nil
+	}
+	anonymousDataCollection := new(bool)
+	if !r.AnonymousDataCollection.IsUnknown() && !r.AnonymousDataCollection.IsNull() {
+		*anonymousDataCollection = r.AnonymousDataCollection.ValueBool()
+	} else {
+		anonymousDataCollection = nil
 	}
 	name := r.Name.ValueString()
 	news := new(bool)
@@ -39,15 +27,27 @@ func (r *WorkspaceResourceModel) ToCreateSDKType() *shared.WorkspaceCreate {
 	} else {
 		news = nil
 	}
-	notifications := make([]shared.Notification, 0)
+	securityUpdates := new(bool)
+	if !r.SecurityUpdates.IsUnknown() && !r.SecurityUpdates.IsNull() {
+		*securityUpdates = r.SecurityUpdates.ValueBool()
+	} else {
+		securityUpdates = nil
+	}
+	var notifications []shared.Notification = nil
 	for _, notificationsItem := range r.Notifications {
-		var customerioConfiguration *shared.CustomerioNotificationConfiguration
-		if notificationsItem.CustomerioConfiguration != nil {
-			customerioConfiguration = &shared.CustomerioNotificationConfiguration{}
-		}
 		notificationType := shared.NotificationType(notificationsItem.NotificationType.ValueString())
-		sendOnFailure := notificationsItem.SendOnFailure.ValueBool()
-		sendOnSuccess := notificationsItem.SendOnSuccess.ValueBool()
+		sendOnSuccess := new(bool)
+		if !notificationsItem.SendOnSuccess.IsUnknown() && !notificationsItem.SendOnSuccess.IsNull() {
+			*sendOnSuccess = notificationsItem.SendOnSuccess.ValueBool()
+		} else {
+			sendOnSuccess = nil
+		}
+		sendOnFailure := new(bool)
+		if !notificationsItem.SendOnFailure.IsUnknown() && !notificationsItem.SendOnFailure.IsNull() {
+			*sendOnFailure = notificationsItem.SendOnFailure.ValueBool()
+		} else {
+			sendOnFailure = nil
+		}
 		var slackConfiguration *shared.SlackNotificationConfiguration
 		if notificationsItem.SlackConfiguration != nil {
 			webhook := notificationsItem.SlackConfiguration.Webhook.ValueString()
@@ -55,65 +55,166 @@ func (r *WorkspaceResourceModel) ToCreateSDKType() *shared.WorkspaceCreate {
 				Webhook: webhook,
 			}
 		}
+		var customerioConfiguration *shared.CustomerioNotificationConfiguration
+		if notificationsItem.CustomerioConfiguration != nil {
+			customerioConfiguration = &shared.CustomerioNotificationConfiguration{}
+		}
 		notifications = append(notifications, shared.Notification{
-			CustomerioConfiguration: customerioConfiguration,
 			NotificationType:        notificationType,
-			SendOnFailure:           sendOnFailure,
 			SendOnSuccess:           sendOnSuccess,
+			SendOnFailure:           sendOnFailure,
 			SlackConfiguration:      slackConfiguration,
+			CustomerioConfiguration: customerioConfiguration,
 		})
 	}
-	securityUpdates := new(bool)
-	if !r.SecurityUpdates.IsUnknown() && !r.SecurityUpdates.IsNull() {
-		*securityUpdates = r.SecurityUpdates.ValueBool()
-	} else {
-		securityUpdates = nil
-	}
-	webhookConfigs := make([]shared.WebhookConfigWrite, 0)
-	for _, webhookConfigsItem := range r.WebhookConfigs {
-		authToken := new(string)
-		if !webhookConfigsItem.Name.IsUnknown() && !webhookConfigsItem.Name.IsNull() {
-			*authToken = webhookConfigsItem.Name.ValueString()
-		} else {
-			authToken = nil
+	var notificationSettings *shared.NotificationSettings
+	if r.NotificationSettings != nil {
+		var sendOnSuccess1 *shared.NotificationItem
+		if r.NotificationSettings.SendOnSuccess != nil {
+			var notificationType1 []shared.NotificationType = nil
+			for _, notificationTypeItem := range r.NotificationSettings.SendOnSuccess.NotificationType {
+				notificationType1 = append(notificationType1, shared.NotificationType(notificationTypeItem.ValueString()))
+			}
+			var slackConfiguration1 *shared.SlackNotificationConfiguration
+			if r.NotificationSettings.SendOnSuccess.SlackConfiguration != nil {
+				webhook1 := r.NotificationSettings.SendOnSuccess.SlackConfiguration.Webhook.ValueString()
+				slackConfiguration1 = &shared.SlackNotificationConfiguration{
+					Webhook: webhook1,
+				}
+			}
+			var customerioConfiguration1 *shared.CustomerioNotificationConfiguration
+			if r.NotificationSettings.SendOnSuccess.CustomerioConfiguration != nil {
+				customerioConfiguration1 = &shared.CustomerioNotificationConfiguration{}
+			}
+			sendOnSuccess1 = &shared.NotificationItem{
+				NotificationType:        notificationType1,
+				SlackConfiguration:      slackConfiguration1,
+				CustomerioConfiguration: customerioConfiguration1,
+			}
 		}
-		name1 := new(string)
-		if !webhookConfigsItem.Name.IsUnknown() && !webhookConfigsItem.Name.IsNull() {
-			*name1 = webhookConfigsItem.Name.ValueString()
-		} else {
-			name1 = nil
+		var sendOnFailure1 *shared.NotificationItem
+		if r.NotificationSettings.SendOnFailure != nil {
+			var notificationType2 []shared.NotificationType = nil
+			for _, notificationTypeItem1 := range r.NotificationSettings.SendOnFailure.NotificationType {
+				notificationType2 = append(notificationType2, shared.NotificationType(notificationTypeItem1.ValueString()))
+			}
+			var slackConfiguration2 *shared.SlackNotificationConfiguration
+			if r.NotificationSettings.SendOnFailure.SlackConfiguration != nil {
+				webhook2 := r.NotificationSettings.SendOnFailure.SlackConfiguration.Webhook.ValueString()
+				slackConfiguration2 = &shared.SlackNotificationConfiguration{
+					Webhook: webhook2,
+				}
+			}
+			var customerioConfiguration2 *shared.CustomerioNotificationConfiguration
+			if r.NotificationSettings.SendOnFailure.CustomerioConfiguration != nil {
+				customerioConfiguration2 = &shared.CustomerioNotificationConfiguration{}
+			}
+			sendOnFailure1 = &shared.NotificationItem{
+				NotificationType:        notificationType2,
+				SlackConfiguration:      slackConfiguration2,
+				CustomerioConfiguration: customerioConfiguration2,
+			}
 		}
-		webhookConfigs = append(webhookConfigs, shared.WebhookConfigWrite{
-			AuthToken: authToken,
-			Name:      name1,
-		})
-	}
-	out := shared.WorkspaceCreate{
-		AnonymousDataCollection: anonymousDataCollection,
-		DefaultGeography:        defaultGeography,
-		DisplaySetupWizard:      displaySetupWizard,
-		Email:                   email,
-		Name:                    name,
-		News:                    news,
-		Notifications:           notifications,
-		SecurityUpdates:         securityUpdates,
-		WebhookConfigs:          webhookConfigs,
-	}
-	return &out
-}
-
-func (r *WorkspaceResourceModel) ToUpdateSDKType() *shared.WorkspaceUpdate {
-	anonymousDataCollection := new(bool)
-	if !r.AnonymousDataCollection.IsUnknown() && !r.AnonymousDataCollection.IsNull() {
-		*anonymousDataCollection = r.AnonymousDataCollection.ValueBool()
-	} else {
-		anonymousDataCollection = nil
-	}
-	defaultGeography := new(shared.Geography)
-	if !r.DefaultGeography.IsUnknown() && !r.DefaultGeography.IsNull() {
-		*defaultGeography = shared.Geography(r.DefaultGeography.ValueString())
-	} else {
-		defaultGeography = nil
+		var sendOnSyncDisabled *shared.NotificationItem
+		if r.NotificationSettings.SendOnSyncDisabled != nil {
+			var notificationType3 []shared.NotificationType = nil
+			for _, notificationTypeItem2 := range r.NotificationSettings.SendOnSyncDisabled.NotificationType {
+				notificationType3 = append(notificationType3, shared.NotificationType(notificationTypeItem2.ValueString()))
+			}
+			var slackConfiguration3 *shared.SlackNotificationConfiguration
+			if r.NotificationSettings.SendOnSyncDisabled.SlackConfiguration != nil {
+				webhook3 := r.NotificationSettings.SendOnSyncDisabled.SlackConfiguration.Webhook.ValueString()
+				slackConfiguration3 = &shared.SlackNotificationConfiguration{
+					Webhook: webhook3,
+				}
+			}
+			var customerioConfiguration3 *shared.CustomerioNotificationConfiguration
+			if r.NotificationSettings.SendOnSyncDisabled.CustomerioConfiguration != nil {
+				customerioConfiguration3 = &shared.CustomerioNotificationConfiguration{}
+			}
+			sendOnSyncDisabled = &shared.NotificationItem{
+				NotificationType:        notificationType3,
+				SlackConfiguration:      slackConfiguration3,
+				CustomerioConfiguration: customerioConfiguration3,
+			}
+		}
+		var sendOnSyncDisabledWarning *shared.NotificationItem
+		if r.NotificationSettings.SendOnSyncDisabledWarning != nil {
+			var notificationType4 []shared.NotificationType = nil
+			for _, notificationTypeItem3 := range r.NotificationSettings.SendOnSyncDisabledWarning.NotificationType {
+				notificationType4 = append(notificationType4, shared.NotificationType(notificationTypeItem3.ValueString()))
+			}
+			var slackConfiguration4 *shared.SlackNotificationConfiguration
+			if r.NotificationSettings.SendOnSyncDisabledWarning.SlackConfiguration != nil {
+				webhook4 := r.NotificationSettings.SendOnSyncDisabledWarning.SlackConfiguration.Webhook.ValueString()
+				slackConfiguration4 = &shared.SlackNotificationConfiguration{
+					Webhook: webhook4,
+				}
+			}
+			var customerioConfiguration4 *shared.CustomerioNotificationConfiguration
+			if r.NotificationSettings.SendOnSyncDisabledWarning.CustomerioConfiguration != nil {
+				customerioConfiguration4 = &shared.CustomerioNotificationConfiguration{}
+			}
+			sendOnSyncDisabledWarning = &shared.NotificationItem{
+				NotificationType:        notificationType4,
+				SlackConfiguration:      slackConfiguration4,
+				CustomerioConfiguration: customerioConfiguration4,
+			}
+		}
+		var sendOnConnectionUpdate *shared.NotificationItem
+		if r.NotificationSettings.SendOnConnectionUpdate != nil {
+			var notificationType5 []shared.NotificationType = nil
+			for _, notificationTypeItem4 := range r.NotificationSettings.SendOnConnectionUpdate.NotificationType {
+				notificationType5 = append(notificationType5, shared.NotificationType(notificationTypeItem4.ValueString()))
+			}
+			var slackConfiguration5 *shared.SlackNotificationConfiguration
+			if r.NotificationSettings.SendOnConnectionUpdate.SlackConfiguration != nil {
+				webhook5 := r.NotificationSettings.SendOnConnectionUpdate.SlackConfiguration.Webhook.ValueString()
+				slackConfiguration5 = &shared.SlackNotificationConfiguration{
+					Webhook: webhook5,
+				}
+			}
+			var customerioConfiguration5 *shared.CustomerioNotificationConfiguration
+			if r.NotificationSettings.SendOnConnectionUpdate.CustomerioConfiguration != nil {
+				customerioConfiguration5 = &shared.CustomerioNotificationConfiguration{}
+			}
+			sendOnConnectionUpdate = &shared.NotificationItem{
+				NotificationType:        notificationType5,
+				SlackConfiguration:      slackConfiguration5,
+				CustomerioConfiguration: customerioConfiguration5,
+			}
+		}
+		var sendOnConnectionUpdateActionRequired *shared.NotificationItem
+		if r.NotificationSettings.SendOnConnectionUpdateActionRequired != nil {
+			var notificationType6 []shared.NotificationType = nil
+			for _, notificationTypeItem5 := range r.NotificationSettings.SendOnConnectionUpdateActionRequired.NotificationType {
+				notificationType6 = append(notificationType6, shared.NotificationType(notificationTypeItem5.ValueString()))
+			}
+			var slackConfiguration6 *shared.SlackNotificationConfiguration
+			if r.NotificationSettings.SendOnConnectionUpdateActionRequired.SlackConfiguration != nil {
+				webhook6 := r.NotificationSettings.SendOnConnectionUpdateActionRequired.SlackConfiguration.Webhook.ValueString()
+				slackConfiguration6 = &shared.SlackNotificationConfiguration{
+					Webhook: webhook6,
+				}
+			}
+			var customerioConfiguration6 *shared.CustomerioNotificationConfiguration
+			if r.NotificationSettings.SendOnConnectionUpdateActionRequired.CustomerioConfiguration != nil {
+				customerioConfiguration6 = &shared.CustomerioNotificationConfiguration{}
+			}
+			sendOnConnectionUpdateActionRequired = &shared.NotificationItem{
+				NotificationType:        notificationType6,
+				SlackConfiguration:      slackConfiguration6,
+				CustomerioConfiguration: customerioConfiguration6,
+			}
+		}
+		notificationSettings = &shared.NotificationSettings{
+			SendOnSuccess:                        sendOnSuccess1,
+			SendOnFailure:                        sendOnFailure1,
+			SendOnSyncDisabled:                   sendOnSyncDisabled,
+			SendOnSyncDisabledWarning:            sendOnSyncDisabledWarning,
+			SendOnConnectionUpdate:               sendOnConnectionUpdate,
+			SendOnConnectionUpdateActionRequired: sendOnConnectionUpdateActionRequired,
+		}
 	}
 	displaySetupWizard := new(bool)
 	if !r.DisplaySetupWizard.IsUnknown() && !r.DisplaySetupWizard.IsNull() {
@@ -121,6 +222,55 @@ func (r *WorkspaceResourceModel) ToUpdateSDKType() *shared.WorkspaceUpdate {
 	} else {
 		displaySetupWizard = nil
 	}
+	defaultGeography := new(shared.Geography)
+	if !r.DefaultGeography.IsUnknown() && !r.DefaultGeography.IsNull() {
+		*defaultGeography = shared.Geography(r.DefaultGeography.ValueString())
+	} else {
+		defaultGeography = nil
+	}
+	var webhookConfigs []shared.WebhookConfigWrite = nil
+	for _, webhookConfigsItem := range r.WebhookConfigs {
+		name1 := new(string)
+		if !webhookConfigsItem.Name.IsUnknown() && !webhookConfigsItem.Name.IsNull() {
+			*name1 = webhookConfigsItem.Name.ValueString()
+		} else {
+			name1 = nil
+		}
+		authToken := new(string)
+		if !webhookConfigsItem.AuthToken.IsUnknown() && !webhookConfigsItem.AuthToken.IsNull() {
+			*authToken = webhookConfigsItem.AuthToken.ValueString()
+		} else {
+			authToken = nil
+		}
+		validationURL := new(string)
+		if !webhookConfigsItem.ValidationURL.IsUnknown() && !webhookConfigsItem.ValidationURL.IsNull() {
+			*validationURL = webhookConfigsItem.ValidationURL.ValueString()
+		} else {
+			validationURL = nil
+		}
+		webhookConfigs = append(webhookConfigs, shared.WebhookConfigWrite{
+			Name:          name1,
+			AuthToken:     authToken,
+			ValidationURL: validationURL,
+		})
+	}
+	out := shared.WorkspaceCreate{
+		Email:                   email,
+		AnonymousDataCollection: anonymousDataCollection,
+		Name:                    name,
+		News:                    news,
+		SecurityUpdates:         securityUpdates,
+		Notifications:           notifications,
+		NotificationSettings:    notificationSettings,
+		DisplaySetupWizard:      displaySetupWizard,
+		DefaultGeography:        defaultGeography,
+		WebhookConfigs:          webhookConfigs,
+	}
+	return &out
+}
+
+func (r *WorkspaceResourceModel) ToUpdateSDKType() *shared.WorkspaceUpdate {
+	workspaceID := r.WorkspaceID.ValueString()
 	email := new(string)
 	if !r.Email.IsUnknown() && !r.Email.IsNull() {
 		*email = r.Email.ValueString()
@@ -133,35 +283,23 @@ func (r *WorkspaceResourceModel) ToUpdateSDKType() *shared.WorkspaceUpdate {
 	} else {
 		initialSetupComplete = nil
 	}
+	displaySetupWizard := new(bool)
+	if !r.DisplaySetupWizard.IsUnknown() && !r.DisplaySetupWizard.IsNull() {
+		*displaySetupWizard = r.DisplaySetupWizard.ValueBool()
+	} else {
+		displaySetupWizard = nil
+	}
+	anonymousDataCollection := new(bool)
+	if !r.AnonymousDataCollection.IsUnknown() && !r.AnonymousDataCollection.IsNull() {
+		*anonymousDataCollection = r.AnonymousDataCollection.ValueBool()
+	} else {
+		anonymousDataCollection = nil
+	}
 	news := new(bool)
 	if !r.News.IsUnknown() && !r.News.IsNull() {
 		*news = r.News.ValueBool()
 	} else {
 		news = nil
-	}
-	notifications := make([]shared.Notification, 0)
-	for _, notificationsItem := range r.Notifications {
-		var customerioConfiguration *shared.CustomerioNotificationConfiguration
-		if notificationsItem.CustomerioConfiguration != nil {
-			customerioConfiguration = &shared.CustomerioNotificationConfiguration{}
-		}
-		notificationType := shared.NotificationType(notificationsItem.NotificationType.ValueString())
-		sendOnFailure := notificationsItem.SendOnFailure.ValueBool()
-		sendOnSuccess := notificationsItem.SendOnSuccess.ValueBool()
-		var slackConfiguration *shared.SlackNotificationConfiguration
-		if notificationsItem.SlackConfiguration != nil {
-			webhook := notificationsItem.SlackConfiguration.Webhook.ValueString()
-			slackConfiguration = &shared.SlackNotificationConfiguration{
-				Webhook: webhook,
-			}
-		}
-		notifications = append(notifications, shared.Notification{
-			CustomerioConfiguration: customerioConfiguration,
-			NotificationType:        notificationType,
-			SendOnFailure:           sendOnFailure,
-			SendOnSuccess:           sendOnSuccess,
-			SlackConfiguration:      slackConfiguration,
-		})
 	}
 	securityUpdates := new(bool)
 	if !r.SecurityUpdates.IsUnknown() && !r.SecurityUpdates.IsNull() {
@@ -169,37 +307,233 @@ func (r *WorkspaceResourceModel) ToUpdateSDKType() *shared.WorkspaceUpdate {
 	} else {
 		securityUpdates = nil
 	}
-	webhookConfigs := make([]shared.WebhookConfigWrite, 0)
-	for _, webhookConfigsItem := range r.WebhookConfigs {
-		authToken := new(string)
-		if !webhookConfigsItem.Name.IsUnknown() && !webhookConfigsItem.Name.IsNull() {
-			*authToken = webhookConfigsItem.Name.ValueString()
+	var notifications []shared.Notification = nil
+	for _, notificationsItem := range r.Notifications {
+		notificationType := shared.NotificationType(notificationsItem.NotificationType.ValueString())
+		sendOnSuccess := new(bool)
+		if !notificationsItem.SendOnSuccess.IsUnknown() && !notificationsItem.SendOnSuccess.IsNull() {
+			*sendOnSuccess = notificationsItem.SendOnSuccess.ValueBool()
 		} else {
-			authToken = nil
+			sendOnSuccess = nil
 		}
+		sendOnFailure := new(bool)
+		if !notificationsItem.SendOnFailure.IsUnknown() && !notificationsItem.SendOnFailure.IsNull() {
+			*sendOnFailure = notificationsItem.SendOnFailure.ValueBool()
+		} else {
+			sendOnFailure = nil
+		}
+		var slackConfiguration *shared.SlackNotificationConfiguration
+		if notificationsItem.SlackConfiguration != nil {
+			webhook := notificationsItem.SlackConfiguration.Webhook.ValueString()
+			slackConfiguration = &shared.SlackNotificationConfiguration{
+				Webhook: webhook,
+			}
+		}
+		var customerioConfiguration *shared.CustomerioNotificationConfiguration
+		if notificationsItem.CustomerioConfiguration != nil {
+			customerioConfiguration = &shared.CustomerioNotificationConfiguration{}
+		}
+		notifications = append(notifications, shared.Notification{
+			NotificationType:        notificationType,
+			SendOnSuccess:           sendOnSuccess,
+			SendOnFailure:           sendOnFailure,
+			SlackConfiguration:      slackConfiguration,
+			CustomerioConfiguration: customerioConfiguration,
+		})
+	}
+	var notificationSettings *shared.NotificationSettings
+	if r.NotificationSettings != nil {
+		var sendOnSuccess1 *shared.NotificationItem
+		if r.NotificationSettings.SendOnSuccess != nil {
+			var notificationType1 []shared.NotificationType = nil
+			for _, notificationTypeItem := range r.NotificationSettings.SendOnSuccess.NotificationType {
+				notificationType1 = append(notificationType1, shared.NotificationType(notificationTypeItem.ValueString()))
+			}
+			var slackConfiguration1 *shared.SlackNotificationConfiguration
+			if r.NotificationSettings.SendOnSuccess.SlackConfiguration != nil {
+				webhook1 := r.NotificationSettings.SendOnSuccess.SlackConfiguration.Webhook.ValueString()
+				slackConfiguration1 = &shared.SlackNotificationConfiguration{
+					Webhook: webhook1,
+				}
+			}
+			var customerioConfiguration1 *shared.CustomerioNotificationConfiguration
+			if r.NotificationSettings.SendOnSuccess.CustomerioConfiguration != nil {
+				customerioConfiguration1 = &shared.CustomerioNotificationConfiguration{}
+			}
+			sendOnSuccess1 = &shared.NotificationItem{
+				NotificationType:        notificationType1,
+				SlackConfiguration:      slackConfiguration1,
+				CustomerioConfiguration: customerioConfiguration1,
+			}
+		}
+		var sendOnFailure1 *shared.NotificationItem
+		if r.NotificationSettings.SendOnFailure != nil {
+			var notificationType2 []shared.NotificationType = nil
+			for _, notificationTypeItem1 := range r.NotificationSettings.SendOnFailure.NotificationType {
+				notificationType2 = append(notificationType2, shared.NotificationType(notificationTypeItem1.ValueString()))
+			}
+			var slackConfiguration2 *shared.SlackNotificationConfiguration
+			if r.NotificationSettings.SendOnFailure.SlackConfiguration != nil {
+				webhook2 := r.NotificationSettings.SendOnFailure.SlackConfiguration.Webhook.ValueString()
+				slackConfiguration2 = &shared.SlackNotificationConfiguration{
+					Webhook: webhook2,
+				}
+			}
+			var customerioConfiguration2 *shared.CustomerioNotificationConfiguration
+			if r.NotificationSettings.SendOnFailure.CustomerioConfiguration != nil {
+				customerioConfiguration2 = &shared.CustomerioNotificationConfiguration{}
+			}
+			sendOnFailure1 = &shared.NotificationItem{
+				NotificationType:        notificationType2,
+				SlackConfiguration:      slackConfiguration2,
+				CustomerioConfiguration: customerioConfiguration2,
+			}
+		}
+		var sendOnSyncDisabled *shared.NotificationItem
+		if r.NotificationSettings.SendOnSyncDisabled != nil {
+			var notificationType3 []shared.NotificationType = nil
+			for _, notificationTypeItem2 := range r.NotificationSettings.SendOnSyncDisabled.NotificationType {
+				notificationType3 = append(notificationType3, shared.NotificationType(notificationTypeItem2.ValueString()))
+			}
+			var slackConfiguration3 *shared.SlackNotificationConfiguration
+			if r.NotificationSettings.SendOnSyncDisabled.SlackConfiguration != nil {
+				webhook3 := r.NotificationSettings.SendOnSyncDisabled.SlackConfiguration.Webhook.ValueString()
+				slackConfiguration3 = &shared.SlackNotificationConfiguration{
+					Webhook: webhook3,
+				}
+			}
+			var customerioConfiguration3 *shared.CustomerioNotificationConfiguration
+			if r.NotificationSettings.SendOnSyncDisabled.CustomerioConfiguration != nil {
+				customerioConfiguration3 = &shared.CustomerioNotificationConfiguration{}
+			}
+			sendOnSyncDisabled = &shared.NotificationItem{
+				NotificationType:        notificationType3,
+				SlackConfiguration:      slackConfiguration3,
+				CustomerioConfiguration: customerioConfiguration3,
+			}
+		}
+		var sendOnSyncDisabledWarning *shared.NotificationItem
+		if r.NotificationSettings.SendOnSyncDisabledWarning != nil {
+			var notificationType4 []shared.NotificationType = nil
+			for _, notificationTypeItem3 := range r.NotificationSettings.SendOnSyncDisabledWarning.NotificationType {
+				notificationType4 = append(notificationType4, shared.NotificationType(notificationTypeItem3.ValueString()))
+			}
+			var slackConfiguration4 *shared.SlackNotificationConfiguration
+			if r.NotificationSettings.SendOnSyncDisabledWarning.SlackConfiguration != nil {
+				webhook4 := r.NotificationSettings.SendOnSyncDisabledWarning.SlackConfiguration.Webhook.ValueString()
+				slackConfiguration4 = &shared.SlackNotificationConfiguration{
+					Webhook: webhook4,
+				}
+			}
+			var customerioConfiguration4 *shared.CustomerioNotificationConfiguration
+			if r.NotificationSettings.SendOnSyncDisabledWarning.CustomerioConfiguration != nil {
+				customerioConfiguration4 = &shared.CustomerioNotificationConfiguration{}
+			}
+			sendOnSyncDisabledWarning = &shared.NotificationItem{
+				NotificationType:        notificationType4,
+				SlackConfiguration:      slackConfiguration4,
+				CustomerioConfiguration: customerioConfiguration4,
+			}
+		}
+		var sendOnConnectionUpdate *shared.NotificationItem
+		if r.NotificationSettings.SendOnConnectionUpdate != nil {
+			var notificationType5 []shared.NotificationType = nil
+			for _, notificationTypeItem4 := range r.NotificationSettings.SendOnConnectionUpdate.NotificationType {
+				notificationType5 = append(notificationType5, shared.NotificationType(notificationTypeItem4.ValueString()))
+			}
+			var slackConfiguration5 *shared.SlackNotificationConfiguration
+			if r.NotificationSettings.SendOnConnectionUpdate.SlackConfiguration != nil {
+				webhook5 := r.NotificationSettings.SendOnConnectionUpdate.SlackConfiguration.Webhook.ValueString()
+				slackConfiguration5 = &shared.SlackNotificationConfiguration{
+					Webhook: webhook5,
+				}
+			}
+			var customerioConfiguration5 *shared.CustomerioNotificationConfiguration
+			if r.NotificationSettings.SendOnConnectionUpdate.CustomerioConfiguration != nil {
+				customerioConfiguration5 = &shared.CustomerioNotificationConfiguration{}
+			}
+			sendOnConnectionUpdate = &shared.NotificationItem{
+				NotificationType:        notificationType5,
+				SlackConfiguration:      slackConfiguration5,
+				CustomerioConfiguration: customerioConfiguration5,
+			}
+		}
+		var sendOnConnectionUpdateActionRequired *shared.NotificationItem
+		if r.NotificationSettings.SendOnConnectionUpdateActionRequired != nil {
+			var notificationType6 []shared.NotificationType = nil
+			for _, notificationTypeItem5 := range r.NotificationSettings.SendOnConnectionUpdateActionRequired.NotificationType {
+				notificationType6 = append(notificationType6, shared.NotificationType(notificationTypeItem5.ValueString()))
+			}
+			var slackConfiguration6 *shared.SlackNotificationConfiguration
+			if r.NotificationSettings.SendOnConnectionUpdateActionRequired.SlackConfiguration != nil {
+				webhook6 := r.NotificationSettings.SendOnConnectionUpdateActionRequired.SlackConfiguration.Webhook.ValueString()
+				slackConfiguration6 = &shared.SlackNotificationConfiguration{
+					Webhook: webhook6,
+				}
+			}
+			var customerioConfiguration6 *shared.CustomerioNotificationConfiguration
+			if r.NotificationSettings.SendOnConnectionUpdateActionRequired.CustomerioConfiguration != nil {
+				customerioConfiguration6 = &shared.CustomerioNotificationConfiguration{}
+			}
+			sendOnConnectionUpdateActionRequired = &shared.NotificationItem{
+				NotificationType:        notificationType6,
+				SlackConfiguration:      slackConfiguration6,
+				CustomerioConfiguration: customerioConfiguration6,
+			}
+		}
+		notificationSettings = &shared.NotificationSettings{
+			SendOnSuccess:                        sendOnSuccess1,
+			SendOnFailure:                        sendOnFailure1,
+			SendOnSyncDisabled:                   sendOnSyncDisabled,
+			SendOnSyncDisabledWarning:            sendOnSyncDisabledWarning,
+			SendOnConnectionUpdate:               sendOnConnectionUpdate,
+			SendOnConnectionUpdateActionRequired: sendOnConnectionUpdateActionRequired,
+		}
+	}
+	defaultGeography := new(shared.Geography)
+	if !r.DefaultGeography.IsUnknown() && !r.DefaultGeography.IsNull() {
+		*defaultGeography = shared.Geography(r.DefaultGeography.ValueString())
+	} else {
+		defaultGeography = nil
+	}
+	var webhookConfigs []shared.WebhookConfigWrite = nil
+	for _, webhookConfigsItem := range r.WebhookConfigs {
 		name := new(string)
 		if !webhookConfigsItem.Name.IsUnknown() && !webhookConfigsItem.Name.IsNull() {
 			*name = webhookConfigsItem.Name.ValueString()
 		} else {
 			name = nil
 		}
+		authToken := new(string)
+		if !webhookConfigsItem.AuthToken.IsUnknown() && !webhookConfigsItem.AuthToken.IsNull() {
+			*authToken = webhookConfigsItem.AuthToken.ValueString()
+		} else {
+			authToken = nil
+		}
+		validationURL := new(string)
+		if !webhookConfigsItem.ValidationURL.IsUnknown() && !webhookConfigsItem.ValidationURL.IsNull() {
+			*validationURL = webhookConfigsItem.ValidationURL.ValueString()
+		} else {
+			validationURL = nil
+		}
 		webhookConfigs = append(webhookConfigs, shared.WebhookConfigWrite{
-			AuthToken: authToken,
-			Name:      name,
+			Name:          name,
+			AuthToken:     authToken,
+			ValidationURL: validationURL,
 		})
 	}
-	workspaceID := r.WorkspaceID.ValueString()
 	out := shared.WorkspaceUpdate{
-		AnonymousDataCollection: anonymousDataCollection,
-		DefaultGeography:        defaultGeography,
-		DisplaySetupWizard:      displaySetupWizard,
+		WorkspaceID:             workspaceID,
 		Email:                   email,
 		InitialSetupComplete:    initialSetupComplete,
+		DisplaySetupWizard:      displaySetupWizard,
+		AnonymousDataCollection: anonymousDataCollection,
 		News:                    news,
-		Notifications:           notifications,
 		SecurityUpdates:         securityUpdates,
+		Notifications:           notifications,
+		NotificationSettings:    notificationSettings,
+		DefaultGeography:        defaultGeography,
 		WebhookConfigs:          webhookConfigs,
-		WorkspaceID:             workspaceID,
 	}
 	return &out
 }
@@ -212,35 +546,234 @@ func (r *WorkspaceResourceModel) ToDeleteSDKType() *shared.WorkspaceIDRequestBod
 	return &out
 }
 
-func (r *WorkspaceResourceModel) RefreshFromCreateResponse(resp *shared.InvalidInputExceptionInfo) {
-	if resp.ExceptionClassName != nil {
-		r.ExceptionClassName = types.StringValue(*resp.ExceptionClassName)
+func (r *WorkspaceResourceModel) RefreshFromCreateResponse(resp *shared.WorkspaceRead) {
+	if resp.AnonymousDataCollection != nil {
+		r.AnonymousDataCollection = types.BoolValue(*resp.AnonymousDataCollection)
 	} else {
-		r.ExceptionClassName = types.StringNull()
+		r.AnonymousDataCollection = types.BoolNull()
 	}
-	r.ExceptionStack = nil
-	for _, v := range resp.ExceptionStack {
-		r.ExceptionStack = append(r.ExceptionStack, types.StringValue(v))
+	r.CustomerID = types.StringValue(resp.CustomerID)
+	if resp.DefaultGeography != nil {
+		r.DefaultGeography = types.StringValue(string(*resp.DefaultGeography))
+	} else {
+		r.DefaultGeography = types.StringNull()
 	}
-	r.Message = types.StringValue(resp.Message)
-	r.ValidationErrors = nil
-	for _, validationErrorsItem := range resp.ValidationErrors {
-		var validationErrors1 InvalidInputProperty
-		if validationErrorsItem.InvalidValue != nil {
-			validationErrors1.InvalidValue = types.StringValue(*validationErrorsItem.InvalidValue)
+	if resp.DisplaySetupWizard != nil {
+		r.DisplaySetupWizard = types.BoolValue(*resp.DisplaySetupWizard)
+	} else {
+		r.DisplaySetupWizard = types.BoolNull()
+	}
+	if resp.Email != nil {
+		r.Email = types.StringValue(*resp.Email)
+	} else {
+		r.Email = types.StringNull()
+	}
+	if resp.FeedbackDone != nil {
+		r.FeedbackDone = types.BoolValue(*resp.FeedbackDone)
+	} else {
+		r.FeedbackDone = types.BoolNull()
+	}
+	if resp.FirstCompletedSync != nil {
+		r.FirstCompletedSync = types.BoolValue(*resp.FirstCompletedSync)
+	} else {
+		r.FirstCompletedSync = types.BoolNull()
+	}
+	r.InitialSetupComplete = types.BoolValue(resp.InitialSetupComplete)
+	r.Name = types.StringValue(resp.Name)
+	if resp.News != nil {
+		r.News = types.BoolValue(*resp.News)
+	} else {
+		r.News = types.BoolNull()
+	}
+	if len(r.Notifications) > len(resp.Notifications) {
+		r.Notifications = r.Notifications[:len(resp.Notifications)]
+	}
+	for notificationsCount, notificationsItem := range resp.Notifications {
+		var notifications1 Notification
+		if notificationsItem.CustomerioConfiguration == nil {
+			notifications1.CustomerioConfiguration = nil
 		} else {
-			validationErrors1.InvalidValue = types.StringNull()
+			notifications1.CustomerioConfiguration = &StreamJSONSchema{}
 		}
-		if validationErrorsItem.Message != nil {
-			validationErrors1.Message = types.StringValue(*validationErrorsItem.Message)
+		notifications1.NotificationType = types.StringValue(string(notificationsItem.NotificationType))
+		if notificationsItem.SendOnFailure != nil {
+			notifications1.SendOnFailure = types.BoolValue(*notificationsItem.SendOnFailure)
 		} else {
-			validationErrors1.Message = types.StringNull()
+			notifications1.SendOnFailure = types.BoolNull()
 		}
-		validationErrors1.PropertyPath = types.StringValue(validationErrorsItem.PropertyPath)
-		r.ValidationErrors = append(r.ValidationErrors, validationErrors1)
+		if notificationsItem.SendOnSuccess != nil {
+			notifications1.SendOnSuccess = types.BoolValue(*notificationsItem.SendOnSuccess)
+		} else {
+			notifications1.SendOnSuccess = types.BoolNull()
+		}
+		if notificationsItem.SlackConfiguration == nil {
+			notifications1.SlackConfiguration = nil
+		} else {
+			notifications1.SlackConfiguration = &SlackNotificationConfiguration{}
+			notifications1.SlackConfiguration.Webhook = types.StringValue(notificationsItem.SlackConfiguration.Webhook)
+		}
+		if notificationsCount+1 > len(r.Notifications) {
+			r.Notifications = append(r.Notifications, notifications1)
+		} else {
+			r.Notifications[notificationsCount].CustomerioConfiguration = notifications1.CustomerioConfiguration
+			r.Notifications[notificationsCount].NotificationType = notifications1.NotificationType
+			r.Notifications[notificationsCount].SendOnFailure = notifications1.SendOnFailure
+			r.Notifications[notificationsCount].SendOnSuccess = notifications1.SendOnSuccess
+			r.Notifications[notificationsCount].SlackConfiguration = notifications1.SlackConfiguration
+		}
 	}
+	if resp.NotificationSettings == nil {
+		r.NotificationSettings = nil
+	} else {
+		r.NotificationSettings = &NotificationSettings{}
+		if resp.NotificationSettings.SendOnConnectionUpdate == nil {
+			r.NotificationSettings.SendOnConnectionUpdate = nil
+		} else {
+			r.NotificationSettings.SendOnConnectionUpdate = &NotificationItem{}
+			if resp.NotificationSettings.SendOnConnectionUpdate.CustomerioConfiguration == nil {
+				r.NotificationSettings.SendOnConnectionUpdate.CustomerioConfiguration = nil
+			} else {
+				r.NotificationSettings.SendOnConnectionUpdate.CustomerioConfiguration = &StreamJSONSchema{}
+			}
+			r.NotificationSettings.SendOnConnectionUpdate.NotificationType = nil
+			for _, v := range resp.NotificationSettings.SendOnConnectionUpdate.NotificationType {
+				r.NotificationSettings.SendOnConnectionUpdate.NotificationType = append(r.NotificationSettings.SendOnConnectionUpdate.NotificationType, types.StringValue(string(v)))
+			}
+			if resp.NotificationSettings.SendOnConnectionUpdate.SlackConfiguration == nil {
+				r.NotificationSettings.SendOnConnectionUpdate.SlackConfiguration = nil
+			} else {
+				r.NotificationSettings.SendOnConnectionUpdate.SlackConfiguration = &SlackNotificationConfiguration{}
+				r.NotificationSettings.SendOnConnectionUpdate.SlackConfiguration.Webhook = types.StringValue(resp.NotificationSettings.SendOnConnectionUpdate.SlackConfiguration.Webhook)
+			}
+		}
+		if resp.NotificationSettings.SendOnConnectionUpdateActionRequired == nil {
+			r.NotificationSettings.SendOnConnectionUpdateActionRequired = nil
+		} else {
+			r.NotificationSettings.SendOnConnectionUpdateActionRequired = &NotificationItem{}
+			if resp.NotificationSettings.SendOnConnectionUpdateActionRequired.CustomerioConfiguration == nil {
+				r.NotificationSettings.SendOnConnectionUpdateActionRequired.CustomerioConfiguration = nil
+			} else {
+				r.NotificationSettings.SendOnConnectionUpdateActionRequired.CustomerioConfiguration = &StreamJSONSchema{}
+			}
+			r.NotificationSettings.SendOnConnectionUpdateActionRequired.NotificationType = nil
+			for _, v := range resp.NotificationSettings.SendOnConnectionUpdateActionRequired.NotificationType {
+				r.NotificationSettings.SendOnConnectionUpdateActionRequired.NotificationType = append(r.NotificationSettings.SendOnConnectionUpdateActionRequired.NotificationType, types.StringValue(string(v)))
+			}
+			if resp.NotificationSettings.SendOnConnectionUpdateActionRequired.SlackConfiguration == nil {
+				r.NotificationSettings.SendOnConnectionUpdateActionRequired.SlackConfiguration = nil
+			} else {
+				r.NotificationSettings.SendOnConnectionUpdateActionRequired.SlackConfiguration = &SlackNotificationConfiguration{}
+				r.NotificationSettings.SendOnConnectionUpdateActionRequired.SlackConfiguration.Webhook = types.StringValue(resp.NotificationSettings.SendOnConnectionUpdateActionRequired.SlackConfiguration.Webhook)
+			}
+		}
+		if resp.NotificationSettings.SendOnFailure == nil {
+			r.NotificationSettings.SendOnFailure = nil
+		} else {
+			r.NotificationSettings.SendOnFailure = &NotificationItem{}
+			if resp.NotificationSettings.SendOnFailure.CustomerioConfiguration == nil {
+				r.NotificationSettings.SendOnFailure.CustomerioConfiguration = nil
+			} else {
+				r.NotificationSettings.SendOnFailure.CustomerioConfiguration = &StreamJSONSchema{}
+			}
+			r.NotificationSettings.SendOnFailure.NotificationType = nil
+			for _, v := range resp.NotificationSettings.SendOnFailure.NotificationType {
+				r.NotificationSettings.SendOnFailure.NotificationType = append(r.NotificationSettings.SendOnFailure.NotificationType, types.StringValue(string(v)))
+			}
+			if resp.NotificationSettings.SendOnFailure.SlackConfiguration == nil {
+				r.NotificationSettings.SendOnFailure.SlackConfiguration = nil
+			} else {
+				r.NotificationSettings.SendOnFailure.SlackConfiguration = &SlackNotificationConfiguration{}
+				r.NotificationSettings.SendOnFailure.SlackConfiguration.Webhook = types.StringValue(resp.NotificationSettings.SendOnFailure.SlackConfiguration.Webhook)
+			}
+		}
+		if resp.NotificationSettings.SendOnSuccess == nil {
+			r.NotificationSettings.SendOnSuccess = nil
+		} else {
+			r.NotificationSettings.SendOnSuccess = &NotificationItem{}
+			if resp.NotificationSettings.SendOnSuccess.CustomerioConfiguration == nil {
+				r.NotificationSettings.SendOnSuccess.CustomerioConfiguration = nil
+			} else {
+				r.NotificationSettings.SendOnSuccess.CustomerioConfiguration = &StreamJSONSchema{}
+			}
+			r.NotificationSettings.SendOnSuccess.NotificationType = nil
+			for _, v := range resp.NotificationSettings.SendOnSuccess.NotificationType {
+				r.NotificationSettings.SendOnSuccess.NotificationType = append(r.NotificationSettings.SendOnSuccess.NotificationType, types.StringValue(string(v)))
+			}
+			if resp.NotificationSettings.SendOnSuccess.SlackConfiguration == nil {
+				r.NotificationSettings.SendOnSuccess.SlackConfiguration = nil
+			} else {
+				r.NotificationSettings.SendOnSuccess.SlackConfiguration = &SlackNotificationConfiguration{}
+				r.NotificationSettings.SendOnSuccess.SlackConfiguration.Webhook = types.StringValue(resp.NotificationSettings.SendOnSuccess.SlackConfiguration.Webhook)
+			}
+		}
+		if resp.NotificationSettings.SendOnSyncDisabled == nil {
+			r.NotificationSettings.SendOnSyncDisabled = nil
+		} else {
+			r.NotificationSettings.SendOnSyncDisabled = &NotificationItem{}
+			if resp.NotificationSettings.SendOnSyncDisabled.CustomerioConfiguration == nil {
+				r.NotificationSettings.SendOnSyncDisabled.CustomerioConfiguration = nil
+			} else {
+				r.NotificationSettings.SendOnSyncDisabled.CustomerioConfiguration = &StreamJSONSchema{}
+			}
+			r.NotificationSettings.SendOnSyncDisabled.NotificationType = nil
+			for _, v := range resp.NotificationSettings.SendOnSyncDisabled.NotificationType {
+				r.NotificationSettings.SendOnSyncDisabled.NotificationType = append(r.NotificationSettings.SendOnSyncDisabled.NotificationType, types.StringValue(string(v)))
+			}
+			if resp.NotificationSettings.SendOnSyncDisabled.SlackConfiguration == nil {
+				r.NotificationSettings.SendOnSyncDisabled.SlackConfiguration = nil
+			} else {
+				r.NotificationSettings.SendOnSyncDisabled.SlackConfiguration = &SlackNotificationConfiguration{}
+				r.NotificationSettings.SendOnSyncDisabled.SlackConfiguration.Webhook = types.StringValue(resp.NotificationSettings.SendOnSyncDisabled.SlackConfiguration.Webhook)
+			}
+		}
+		if resp.NotificationSettings.SendOnSyncDisabledWarning == nil {
+			r.NotificationSettings.SendOnSyncDisabledWarning = nil
+		} else {
+			r.NotificationSettings.SendOnSyncDisabledWarning = &NotificationItem{}
+			if resp.NotificationSettings.SendOnSyncDisabledWarning.CustomerioConfiguration == nil {
+				r.NotificationSettings.SendOnSyncDisabledWarning.CustomerioConfiguration = nil
+			} else {
+				r.NotificationSettings.SendOnSyncDisabledWarning.CustomerioConfiguration = &StreamJSONSchema{}
+			}
+			r.NotificationSettings.SendOnSyncDisabledWarning.NotificationType = nil
+			for _, v := range resp.NotificationSettings.SendOnSyncDisabledWarning.NotificationType {
+				r.NotificationSettings.SendOnSyncDisabledWarning.NotificationType = append(r.NotificationSettings.SendOnSyncDisabledWarning.NotificationType, types.StringValue(string(v)))
+			}
+			if resp.NotificationSettings.SendOnSyncDisabledWarning.SlackConfiguration == nil {
+				r.NotificationSettings.SendOnSyncDisabledWarning.SlackConfiguration = nil
+			} else {
+				r.NotificationSettings.SendOnSyncDisabledWarning.SlackConfiguration = &SlackNotificationConfiguration{}
+				r.NotificationSettings.SendOnSyncDisabledWarning.SlackConfiguration.Webhook = types.StringValue(resp.NotificationSettings.SendOnSyncDisabledWarning.SlackConfiguration.Webhook)
+			}
+		}
+	}
+	if resp.SecurityUpdates != nil {
+		r.SecurityUpdates = types.BoolValue(*resp.SecurityUpdates)
+	} else {
+		r.SecurityUpdates = types.BoolNull()
+	}
+	r.Slug = types.StringValue(resp.Slug)
+	if len(r.WebhookConfigs) > len(resp.WebhookConfigs) {
+		r.WebhookConfigs = r.WebhookConfigs[:len(resp.WebhookConfigs)]
+	}
+	for webhookConfigsCount, webhookConfigsItem := range resp.WebhookConfigs {
+		var webhookConfigs1 WebhookConfigRead
+		webhookConfigs1.ID = types.StringValue(webhookConfigsItem.ID)
+		if webhookConfigsItem.Name != nil {
+			webhookConfigs1.Name = types.StringValue(*webhookConfigsItem.Name)
+		} else {
+			webhookConfigs1.Name = types.StringNull()
+		}
+		if webhookConfigsCount+1 > len(r.WebhookConfigs) {
+			r.WebhookConfigs = append(r.WebhookConfigs, webhookConfigs1)
+		} else {
+			r.WebhookConfigs[webhookConfigsCount].ID = webhookConfigs1.ID
+			r.WebhookConfigs[webhookConfigsCount].Name = webhookConfigs1.Name
+		}
+	}
+	r.WorkspaceID = types.StringValue(resp.WorkspaceID)
 }
 
-func (r *WorkspaceResourceModel) RefreshFromUpdateResponse(resp *shared.InvalidInputExceptionInfo) {
+func (r *WorkspaceResourceModel) RefreshFromUpdateResponse(resp *shared.WorkspaceRead) {
 	r.RefreshFromCreateResponse(resp)
 }

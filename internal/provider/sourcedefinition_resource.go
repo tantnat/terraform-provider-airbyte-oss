@@ -3,10 +3,11 @@
 package provider
 
 import (
-	"airbyte/internal/sdk"
 	"context"
 	"fmt"
+	"github.com/aballiet/terraform-provider-airbyte/internal/sdk"
 
+	"github.com/aballiet/terraform-provider-airbyte/internal/validators"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -29,19 +30,25 @@ func NewSourceDefinitionResource() resource.Resource {
 
 // SourceDefinitionResource defines the resource implementation.
 type SourceDefinitionResource struct {
-	client *sdk.Airbyte
+	client *sdk.SDK
 }
 
 // SourceDefinitionResourceModel describes the resource data model.
 type SourceDefinitionResourceModel struct {
-	DockerImageTag     types.String           `tfsdk:"docker_image_tag"`
-	ExceptionClassName types.String           `tfsdk:"exception_class_name"`
-	ExceptionStack     []types.String         `tfsdk:"exception_stack"`
-	Message            types.String           `tfsdk:"message"`
-	SourceDefinition   SourceDefinitionCreate `tfsdk:"source_definition"`
-	SourceDefinitionID types.String           `tfsdk:"source_definition_id"`
-	ValidationErrors   []InvalidInputProperty `tfsdk:"validation_errors"`
-	WorkspaceID        types.String           `tfsdk:"workspace_id"`
+	DockerImageTag            types.String                         `tfsdk:"docker_image_tag"`
+	DockerRepository          types.String                         `tfsdk:"docker_repository"`
+	DocumentationURL          types.String                         `tfsdk:"documentation_url"`
+	Icon                      types.String                         `tfsdk:"icon"`
+	MaxSecondsBetweenMessages types.Int64                          `tfsdk:"max_seconds_between_messages"`
+	Name                      types.String                         `tfsdk:"name"`
+	ProtocolVersion           types.String                         `tfsdk:"protocol_version"`
+	ReleaseDate               types.String                         `tfsdk:"release_date"`
+	ReleaseStage              types.String                         `tfsdk:"release_stage"`
+	ResourceRequirements      *ActorDefinitionResourceRequirements `tfsdk:"resource_requirements"`
+	SourceDefinition          SourceDefinitionCreate               `tfsdk:"source_definition"`
+	SourceDefinitionID        types.String                         `tfsdk:"source_definition_id"`
+	SourceType                types.String                         `tfsdk:"source_type"`
+	WorkspaceID               types.String                         `tfsdk:"workspace_id"`
 }
 
 func (r *SourceDefinitionResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -54,17 +61,111 @@ func (r *SourceDefinitionResource) Schema(ctx context.Context, req resource.Sche
 
 		Attributes: map[string]schema.Attribute{
 			"docker_image_tag": schema.StringAttribute{
-				Required: true,
-			},
-			"exception_class_name": schema.StringAttribute{
 				Computed: true,
 			},
-			"exception_stack": schema.ListAttribute{
+			"docker_repository": schema.StringAttribute{
+				Computed: true,
+			},
+			"documentation_url": schema.StringAttribute{
+				Computed: true,
+			},
+			"icon": schema.StringAttribute{
+				Computed: true,
+			},
+			"max_seconds_between_messages": schema.Int64Attribute{
 				Computed:    true,
-				ElementType: types.StringType,
+				Description: `Number of seconds allowed between 2 airbyte protocol messages. The source will timeout if this delay is reach`,
 			},
-			"message": schema.StringAttribute{
+			"name": schema.StringAttribute{
 				Computed: true,
+			},
+			"protocol_version": schema.StringAttribute{
+				Computed:    true,
+				Description: `The Airbyte Protocol version supported by the connector`,
+			},
+			"release_date": schema.StringAttribute{
+				Computed:    true,
+				Description: `The date when this connector was first released, in yyyy-mm-dd format.`,
+				Validators: []validator.String{
+					validators.IsValidDate(),
+				},
+			},
+			"release_stage": schema.StringAttribute{
+				Computed:    true,
+				Description: `must be one of ["alpha", "beta", "generally_available", "custom"]`,
+				Validators: []validator.String{
+					stringvalidator.OneOf(
+						"alpha",
+						"beta",
+						"generally_available",
+						"custom",
+					),
+				},
+			},
+			"resource_requirements": schema.SingleNestedAttribute{
+				Computed: true,
+				Attributes: map[string]schema.Attribute{
+					"default": schema.SingleNestedAttribute{
+						Computed: true,
+						Attributes: map[string]schema.Attribute{
+							"cpu_limit": schema.StringAttribute{
+								Computed: true,
+							},
+							"cpu_request": schema.StringAttribute{
+								Computed: true,
+							},
+							"memory_limit": schema.StringAttribute{
+								Computed: true,
+							},
+							"memory_request": schema.StringAttribute{
+								Computed: true,
+							},
+						},
+						Description: `optional resource requirements to run workers (blank for unbounded allocations)`,
+					},
+					"job_specific": schema.ListNestedAttribute{
+						Computed: true,
+						NestedObject: schema.NestedAttributeObject{
+							Attributes: map[string]schema.Attribute{
+								"job_type": schema.StringAttribute{
+									Computed: true,
+									MarkdownDescription: `must be one of ["get_spec", "check_connection", "discover_schema", "sync", "reset_connection", "connection_updater", "replicate"]` + "\n" +
+										`enum that describes the different types of jobs that the platform runs.`,
+									Validators: []validator.String{
+										stringvalidator.OneOf(
+											"get_spec",
+											"check_connection",
+											"discover_schema",
+											"sync",
+											"reset_connection",
+											"connection_updater",
+											"replicate",
+										),
+									},
+								},
+								"resource_requirements": schema.SingleNestedAttribute{
+									Computed: true,
+									Attributes: map[string]schema.Attribute{
+										"cpu_limit": schema.StringAttribute{
+											Computed: true,
+										},
+										"cpu_request": schema.StringAttribute{
+											Computed: true,
+										},
+										"memory_limit": schema.StringAttribute{
+											Computed: true,
+										},
+										"memory_request": schema.StringAttribute{
+											Computed: true,
+										},
+									},
+									Description: `optional resource requirements to run workers (blank for unbounded allocations)`,
+								},
+							},
+						},
+					},
+				},
+				Description: `actor definition specific resource requirements. if default is set, these are the requirements that should be set for ALL jobs run for this actor definition. it is overriden by the job type specific configurations. if not set, the platform will use defaults. these values will be overriden by configuration at the connection level.`,
 			},
 			"source_definition": schema.SingleNestedAttribute{
 				PlanModifiers: []planmodifier.Object{
@@ -153,6 +254,8 @@ func (r *SourceDefinitionResource) Schema(ctx context.Context, req resource.Sche
 												stringplanmodifier.RequiresReplace(),
 											},
 											Required: true,
+											MarkdownDescription: `must be one of ["get_spec", "check_connection", "discover_schema", "sync", "reset_connection", "connection_updater", "replicate"]` + "\n" +
+												`enum that describes the different types of jobs that the platform runs.`,
 											Validators: []validator.String{
 												stringvalidator.OneOf(
 													"get_spec",
@@ -164,8 +267,6 @@ func (r *SourceDefinitionResource) Schema(ctx context.Context, req resource.Sche
 													"replicate",
 												),
 											},
-											MarkdownDescription: `must be one of [get_spec, check_connection, discover_schema, sync, reset_connection, connection_updater, replicate]` + "\n" +
-												`enum that describes the different types of jobs that the platform runs.`,
 										},
 										"resource_requirements": schema.SingleNestedAttribute{
 											PlanModifiers: []planmodifier.Object{
@@ -209,22 +310,18 @@ func (r *SourceDefinitionResource) Schema(ctx context.Context, req resource.Sche
 				},
 			},
 			"source_definition_id": schema.StringAttribute{
-				Required: true,
-			},
-			"validation_errors": schema.ListNestedAttribute{
 				Computed: true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"invalid_value": schema.StringAttribute{
-							Computed: true,
-						},
-						"message": schema.StringAttribute{
-							Computed: true,
-						},
-						"property_path": schema.StringAttribute{
-							Computed: true,
-						},
-					},
+			},
+			"source_type": schema.StringAttribute{
+				Computed:    true,
+				Description: `must be one of ["api", "file", "database", "custom"]`,
+				Validators: []validator.String{
+					stringvalidator.OneOf(
+						"api",
+						"file",
+						"database",
+						"custom",
+					),
 				},
 			},
 			"workspace_id": schema.StringAttribute{
@@ -243,12 +340,12 @@ func (r *SourceDefinitionResource) Configure(ctx context.Context, req resource.C
 		return
 	}
 
-	client, ok := req.ProviderData.(*sdk.Airbyte)
+	client, ok := req.ProviderData.(*sdk.SDK)
 
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Unexpected Resource Configure Type",
-			fmt.Sprintf("Expected *sdk.Airbyte, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+			fmt.Sprintf("Expected *sdk.SDK, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
 		return
@@ -275,10 +372,13 @@ func (r *SourceDefinitionResource) Create(ctx context.Context, req resource.Crea
 		return
 	}
 
-	request := *data.ToCreateSDKType()
+	request := data.ToCreateSDKType()
 	res, err := r.client.SourceDefinition.CreateCustomSourceDefinition(ctx, request)
 	if err != nil {
 		resp.Diagnostics.AddError("failure to invoke API", err.Error())
+		if res != nil && res.RawResponse != nil {
+			resp.Diagnostics.AddError("unexpected http request/response", debugResponse(res.RawResponse))
+		}
 		return
 	}
 	if res == nil {
@@ -289,11 +389,11 @@ func (r *SourceDefinitionResource) Create(ctx context.Context, req resource.Crea
 		resp.Diagnostics.AddError(fmt.Sprintf("unexpected response from API. Got an unexpected response code %v", res.StatusCode), debugResponse(res.RawResponse))
 		return
 	}
-	if res.InvalidInputExceptionInfo == nil {
+	if res.SourceDefinitionRead == nil {
 		resp.Diagnostics.AddError("unexpected response from API. No response body", debugResponse(res.RawResponse))
 		return
 	}
-	data.RefreshFromCreateResponse(res.InvalidInputExceptionInfo)
+	data.RefreshFromCreateResponse(res.SourceDefinitionRead)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -330,10 +430,13 @@ func (r *SourceDefinitionResource) Update(ctx context.Context, req resource.Upda
 		return
 	}
 
-	request := *data.ToUpdateSDKType()
+	request := data.ToUpdateSDKType()
 	res, err := r.client.SourceDefinition.UpdateSourceDefinition(ctx, request)
 	if err != nil {
 		resp.Diagnostics.AddError("failure to invoke API", err.Error())
+		if res != nil && res.RawResponse != nil {
+			resp.Diagnostics.AddError("unexpected http request/response", debugResponse(res.RawResponse))
+		}
 		return
 	}
 	if res == nil {
@@ -344,11 +447,11 @@ func (r *SourceDefinitionResource) Update(ctx context.Context, req resource.Upda
 		resp.Diagnostics.AddError(fmt.Sprintf("unexpected response from API. Got an unexpected response code %v", res.StatusCode), debugResponse(res.RawResponse))
 		return
 	}
-	if res.InvalidInputExceptionInfo == nil {
+	if res.SourceDefinitionRead == nil {
 		resp.Diagnostics.AddError("unexpected response from API. No response body", debugResponse(res.RawResponse))
 		return
 	}
-	data.RefreshFromUpdateResponse(res.InvalidInputExceptionInfo)
+	data.RefreshFromUpdateResponse(res.SourceDefinitionRead)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -376,6 +479,9 @@ func (r *SourceDefinitionResource) Delete(ctx context.Context, req resource.Dele
 	res, err := r.client.SourceDefinition.DeleteSourceDefinition(ctx, request)
 	if err != nil {
 		resp.Diagnostics.AddError("failure to invoke API", err.Error())
+		if res != nil && res.RawResponse != nil {
+			resp.Diagnostics.AddError("unexpected http request/response", debugResponse(res.RawResponse))
+		}
 		return
 	}
 	if res == nil {

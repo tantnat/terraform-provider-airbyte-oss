@@ -3,9 +3,9 @@
 package provider
 
 import (
-	"airbyte/internal/sdk"
 	"context"
 	"fmt"
+	"github.com/aballiet/terraform-provider-airbyte/internal/sdk"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -27,7 +27,7 @@ func NewConnectionResource() resource.Resource {
 
 // ConnectionResource defines the resource implementation.
 type ConnectionResource struct {
-	client *sdk.Airbyte
+	client *sdk.SDK
 }
 
 // ConnectionResourceModel describes the resource data model.
@@ -77,8 +77,9 @@ func (r *ConnectionResource) Schema(ctx context.Context, req resource.SchemaRequ
 				Required: true,
 			},
 			"geography": schema.StringAttribute{
-				Computed: true,
-				Optional: true,
+				Computed:    true,
+				Optional:    true,
+				Description: `must be one of ["auto", "us", "eu"]`,
 				Validators: []validator.String{
 					stringvalidator.OneOf(
 						"auto",
@@ -86,7 +87,6 @@ func (r *ConnectionResource) Schema(ctx context.Context, req resource.SchemaRequ
 						"eu",
 					),
 				},
-				Description: `must be one of [auto, us, eu]`,
 			},
 			"name": schema.StringAttribute{
 				Computed:    true,
@@ -96,6 +96,8 @@ func (r *ConnectionResource) Schema(ctx context.Context, req resource.SchemaRequ
 			"namespace_definition": schema.StringAttribute{
 				Computed: true,
 				Optional: true,
+				MarkdownDescription: `must be one of ["source", "destination", "customformat"]` + "\n" +
+					`Method used for computing final namespace in destination`,
 				Validators: []validator.String{
 					stringvalidator.OneOf(
 						"source",
@@ -103,17 +105,17 @@ func (r *ConnectionResource) Schema(ctx context.Context, req resource.SchemaRequ
 						"customformat",
 					),
 				},
-				MarkdownDescription: `must be one of [source, destination, customformat]` + "\n" +
-					`Method used for computing final namespace in destination`,
 			},
 			"namespace_format": schema.StringAttribute{
-				Computed:    true,
-				Optional:    true,
-				Description: `Used when namespaceDefinition is 'customformat'. If blank then behaves like namespaceDefinition = 'destination'. If "${SOURCE_NAMESPACE}" then behaves like namespaceDefinition = 'source'.`,
-			},
-			"non_breaking_changes_preference": schema.StringAttribute{
 				Computed: true,
 				Optional: true,
+				MarkdownDescription: `Default: null` + "\n" +
+					`Used when namespaceDefinition is 'customformat'. If blank then behaves like namespaceDefinition = 'destination'. If "${SOURCE_NAMESPACE}" then behaves like namespaceDefinition = 'source'.`,
+			},
+			"non_breaking_changes_preference": schema.StringAttribute{
+				Computed:    true,
+				Optional:    true,
+				Description: `must be one of ["ignore", "disable", "propagate_columns", "propagate_fully"]`,
 				Validators: []validator.String{
 					stringvalidator.OneOf(
 						"ignore",
@@ -122,7 +124,6 @@ func (r *ConnectionResource) Schema(ctx context.Context, req resource.SchemaRequ
 						"propagate_fully",
 					),
 				},
-				Description: `must be one of [ignore, disable, propagate_columns, propagate_fully]`,
 			},
 			"notify_schema_changes": schema.BoolAttribute{
 				Computed: true,
@@ -170,7 +171,8 @@ func (r *ConnectionResource) Schema(ctx context.Context, req resource.SchemaRequ
 				Optional: true,
 				Attributes: map[string]schema.Attribute{
 					"time_unit": schema.StringAttribute{
-						Required: true,
+						Required:    true,
+						Description: `must be one of ["minutes", "hours", "days", "weeks", "months"]`,
 						Validators: []validator.String{
 							stringvalidator.OneOf(
 								"minutes",
@@ -180,7 +182,6 @@ func (r *ConnectionResource) Schema(ctx context.Context, req resource.SchemaRequ
 								"months",
 							),
 						},
-						Description: `must be one of [minutes, hours, days, weeks, months]`,
 					},
 					"units": schema.Int64Attribute{
 						Required: true,
@@ -197,7 +198,8 @@ func (r *ConnectionResource) Schema(ctx context.Context, req resource.SchemaRequ
 						Optional: true,
 						Attributes: map[string]schema.Attribute{
 							"time_unit": schema.StringAttribute{
-								Required: true,
+								Required:    true,
+								Description: `must be one of ["minutes", "hours", "days", "weeks", "months"]`,
 								Validators: []validator.String{
 									stringvalidator.OneOf(
 										"minutes",
@@ -207,7 +209,6 @@ func (r *ConnectionResource) Schema(ctx context.Context, req resource.SchemaRequ
 										"months",
 									),
 								},
-								Description: `must be one of [minutes, hours, days, weeks, months]`,
 							},
 							"units": schema.Int64Attribute{
 								Required: true,
@@ -232,6 +233,8 @@ func (r *ConnectionResource) Schema(ctx context.Context, req resource.SchemaRequ
 			"schedule_type": schema.StringAttribute{
 				Computed: true,
 				Optional: true,
+				MarkdownDescription: `must be one of ["manual", "basic", "cron"]` + "\n" +
+					`determine how the schedule data should be interpreted`,
 				Validators: []validator.String{
 					stringvalidator.OneOf(
 						"manual",
@@ -239,8 +242,6 @@ func (r *ConnectionResource) Schema(ctx context.Context, req resource.SchemaRequ
 						"cron",
 					),
 				},
-				MarkdownDescription: `must be one of [manual, basic, cron]` + "\n" +
-					`determine how the schedule data should be interpreted`,
 			},
 			"source_catalog_id": schema.StringAttribute{
 				Computed: true,
@@ -254,6 +255,8 @@ func (r *ConnectionResource) Schema(ctx context.Context, req resource.SchemaRequ
 			},
 			"status": schema.StringAttribute{
 				Required: true,
+				MarkdownDescription: `must be one of ["active", "inactive", "deprecated"]` + "\n" +
+					`Active means that data is flowing through the connection. Inactive means it is not. Deprecated means the connection is off and cannot be re-activated. the schema field describes the elements of the schema that will be synced.`,
 				Validators: []validator.String{
 					stringvalidator.OneOf(
 						"active",
@@ -261,8 +264,6 @@ func (r *ConnectionResource) Schema(ctx context.Context, req resource.SchemaRequ
 						"deprecated",
 					),
 				},
-				MarkdownDescription: `must be one of [active, inactive, deprecated]` + "\n" +
-					`Active means that data is flowing through the connection. Inactive means it is not. Deprecated means the connection is off and cannot be re-activated. the schema field describes the elements of the schema that will be synced.`,
 			},
 			"sync_catalog": schema.SingleNestedAttribute{
 				Computed: true,
@@ -288,7 +289,8 @@ func (r *ConnectionResource) Schema(ctx context.Context, req resource.SchemaRequ
 											Description: `Path to the field that will be used to determine if a record is new or modified since the last sync. This field is REQUIRED if ` + "`" + `sync_mode` + "`" + ` is ` + "`" + `incremental` + "`" + `. Otherwise it is ignored.`,
 										},
 										"destination_sync_mode": schema.StringAttribute{
-											Required: true,
+											Required:    true,
+											Description: `must be one of ["append", "overwrite", "append_dedup"]`,
 											Validators: []validator.String{
 												stringvalidator.OneOf(
 													"append",
@@ -296,7 +298,6 @@ func (r *ConnectionResource) Schema(ctx context.Context, req resource.SchemaRequ
 													"append_dedup",
 												),
 											},
-											Description: `must be one of [append, overwrite, append_dedup]`,
 										},
 										"field_selection_enabled": schema.BoolAttribute{
 											Computed:    true,
@@ -336,14 +337,14 @@ func (r *ConnectionResource) Schema(ctx context.Context, req resource.SchemaRequ
 											Description: `Does the connector suggest that this stream be enabled by default?`,
 										},
 										"sync_mode": schema.StringAttribute{
-											Required: true,
+											Required:    true,
+											Description: `must be one of ["full_refresh", "incremental"]`,
 											Validators: []validator.String{
 												stringvalidator.OneOf(
 													"full_refresh",
 													"incremental",
 												),
 											},
-											Description: `must be one of [full_refresh, incremental]`,
 										},
 									},
 									Description: `the mutable part of the stream to configure the destination`,
@@ -413,12 +414,12 @@ func (r *ConnectionResource) Configure(ctx context.Context, req resource.Configu
 		return
 	}
 
-	client, ok := req.ProviderData.(*sdk.Airbyte)
+	client, ok := req.ProviderData.(*sdk.SDK)
 
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Unexpected Resource Configure Type",
-			fmt.Sprintf("Expected *sdk.Airbyte, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+			fmt.Sprintf("Expected *sdk.SDK, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
 		return
@@ -449,6 +450,9 @@ func (r *ConnectionResource) Create(ctx context.Context, req resource.CreateRequ
 	res, err := r.client.Connection.CreateConnection(ctx, request)
 	if err != nil {
 		resp.Diagnostics.AddError("failure to invoke API", err.Error())
+		if res != nil && res.RawResponse != nil {
+			resp.Diagnostics.AddError("unexpected http request/response", debugResponse(res.RawResponse))
+		}
 		return
 	}
 	if res == nil {
@@ -504,6 +508,9 @@ func (r *ConnectionResource) Update(ctx context.Context, req resource.UpdateRequ
 	res, err := r.client.Connection.UpdateConnection(ctx, request)
 	if err != nil {
 		resp.Diagnostics.AddError("failure to invoke API", err.Error())
+		if res != nil && res.RawResponse != nil {
+			resp.Diagnostics.AddError("unexpected http request/response", debugResponse(res.RawResponse))
+		}
 		return
 	}
 	if res == nil {
@@ -546,6 +553,9 @@ func (r *ConnectionResource) Delete(ctx context.Context, req resource.DeleteRequ
 	res, err := r.client.Connection.DeleteConnection(ctx, request)
 	if err != nil {
 		resp.Diagnostics.AddError("failure to invoke API", err.Error())
+		if res != nil && res.RawResponse != nil {
+			resp.Diagnostics.AddError("unexpected http request/response", debugResponse(res.RawResponse))
+		}
 		return
 	}
 	if res == nil {

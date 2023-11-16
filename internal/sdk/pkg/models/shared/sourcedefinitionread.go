@@ -3,25 +3,26 @@
 package shared
 
 import (
-	"airbyte/internal/sdk/pkg/types"
 	"encoding/json"
 	"fmt"
+	"github.com/aballiet/terraform-provider-airbyte/internal/sdk/pkg/types"
+	"github.com/aballiet/terraform-provider-airbyte/internal/sdk/pkg/utils"
 )
 
-type SourceDefinitionReadSourceType string
+type SourceType string
 
 const (
-	SourceDefinitionReadSourceTypeAPI      SourceDefinitionReadSourceType = "api"
-	SourceDefinitionReadSourceTypeFile     SourceDefinitionReadSourceType = "file"
-	SourceDefinitionReadSourceTypeDatabase SourceDefinitionReadSourceType = "database"
-	SourceDefinitionReadSourceTypeCustom   SourceDefinitionReadSourceType = "custom"
+	SourceTypeAPI      SourceType = "api"
+	SourceTypeFile     SourceType = "file"
+	SourceTypeDatabase SourceType = "database"
+	SourceTypeCustom   SourceType = "custom"
 )
 
-func (e SourceDefinitionReadSourceType) ToPointer() *SourceDefinitionReadSourceType {
+func (e SourceType) ToPointer() *SourceType {
 	return &e
 }
 
-func (e *SourceDefinitionReadSourceType) UnmarshalJSON(data []byte) error {
+func (e *SourceType) UnmarshalJSON(data []byte) error {
 	var v string
 	if err := json.Unmarshal(data, &v); err != nil {
 		return err
@@ -34,29 +35,123 @@ func (e *SourceDefinitionReadSourceType) UnmarshalJSON(data []byte) error {
 	case "database":
 		fallthrough
 	case "custom":
-		*e = SourceDefinitionReadSourceType(v)
+		*e = SourceType(v)
 		return nil
 	default:
-		return fmt.Errorf("invalid value for SourceDefinitionReadSourceType: %v", v)
+		return fmt.Errorf("invalid value for SourceType: %v", v)
 	}
 }
 
-// SourceDefinitionRead - Successful operation
 type SourceDefinitionRead struct {
-	DockerImageTag   string  `json:"dockerImageTag"`
-	DockerRepository string  `json:"dockerRepository"`
-	DocumentationURL *string `json:"documentationUrl,omitempty"`
-	Icon             *string `json:"icon,omitempty"`
-	// Number of seconds allowed between 2 airbyte protocol messages. The source will timeout if this delay is reach
-	MaxSecondsBetweenMessages *int64 `json:"maxSecondsBetweenMessages,omitempty"`
-	Name                      string `json:"name"`
+	SourceDefinitionID string  `json:"sourceDefinitionId"`
+	Name               string  `json:"name"`
+	DockerRepository   string  `json:"dockerRepository"`
+	DockerImageTag     string  `json:"dockerImageTag"`
+	DocumentationURL   *string `json:"documentationUrl,omitempty"`
+	Icon               *string `json:"icon,omitempty"`
 	// The Airbyte Protocol version supported by the connector
-	ProtocolVersion *string `json:"protocolVersion,omitempty"`
+	ProtocolVersion *string       `json:"protocolVersion,omitempty"`
+	ReleaseStage    *ReleaseStage `json:"releaseStage,omitempty"`
 	// The date when this connector was first released, in yyyy-mm-dd format.
-	ReleaseDate  *types.Date   `json:"releaseDate,omitempty"`
-	ReleaseStage *ReleaseStage `json:"releaseStage,omitempty"`
+	ReleaseDate *types.Date `json:"releaseDate,omitempty"`
+	SourceType  *SourceType `json:"sourceType,omitempty"`
 	// actor definition specific resource requirements. if default is set, these are the requirements that should be set for ALL jobs run for this actor definition. it is overriden by the job type specific configurations. if not set, the platform will use defaults. these values will be overriden by configuration at the connection level.
 	ResourceRequirements *ActorDefinitionResourceRequirements `json:"resourceRequirements,omitempty"`
-	SourceDefinitionID   string                               `json:"sourceDefinitionId"`
-	SourceType           *SourceDefinitionReadSourceType      `json:"sourceType,omitempty"`
+	// Number of seconds allowed between 2 airbyte protocol messages. The source will timeout if this delay is reach
+	MaxSecondsBetweenMessages *int64 `json:"maxSecondsBetweenMessages,omitempty"`
+}
+
+func (s SourceDefinitionRead) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *SourceDefinitionRead) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, false); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (o *SourceDefinitionRead) GetSourceDefinitionID() string {
+	if o == nil {
+		return ""
+	}
+	return o.SourceDefinitionID
+}
+
+func (o *SourceDefinitionRead) GetName() string {
+	if o == nil {
+		return ""
+	}
+	return o.Name
+}
+
+func (o *SourceDefinitionRead) GetDockerRepository() string {
+	if o == nil {
+		return ""
+	}
+	return o.DockerRepository
+}
+
+func (o *SourceDefinitionRead) GetDockerImageTag() string {
+	if o == nil {
+		return ""
+	}
+	return o.DockerImageTag
+}
+
+func (o *SourceDefinitionRead) GetDocumentationURL() *string {
+	if o == nil {
+		return nil
+	}
+	return o.DocumentationURL
+}
+
+func (o *SourceDefinitionRead) GetIcon() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Icon
+}
+
+func (o *SourceDefinitionRead) GetProtocolVersion() *string {
+	if o == nil {
+		return nil
+	}
+	return o.ProtocolVersion
+}
+
+func (o *SourceDefinitionRead) GetReleaseStage() *ReleaseStage {
+	if o == nil {
+		return nil
+	}
+	return o.ReleaseStage
+}
+
+func (o *SourceDefinitionRead) GetReleaseDate() *types.Date {
+	if o == nil {
+		return nil
+	}
+	return o.ReleaseDate
+}
+
+func (o *SourceDefinitionRead) GetSourceType() *SourceType {
+	if o == nil {
+		return nil
+	}
+	return o.SourceType
+}
+
+func (o *SourceDefinitionRead) GetResourceRequirements() *ActorDefinitionResourceRequirements {
+	if o == nil {
+		return nil
+	}
+	return o.ResourceRequirements
+}
+
+func (o *SourceDefinitionRead) GetMaxSecondsBetweenMessages() *int64 {
+	if o == nil {
+		return nil
+	}
+	return o.MaxSecondsBetweenMessages
 }

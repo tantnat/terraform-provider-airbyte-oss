@@ -2,9 +2,29 @@
 
 package shared
 
-// CompleteOAuthResponse - Successful operation
 type CompleteOAuthResponse struct {
-	AuthPayload      map[string]interface{} `json:"auth_payload"`
-	RequestError     *string                `json:"request_error,omitempty"`
 	RequestSucceeded bool                   `json:"request_succeeded"`
+	RequestError     *string                `json:"request_error,omitempty"`
+	AuthPayload      map[string]interface{} `json:"auth_payload"`
+}
+
+func (o *CompleteOAuthResponse) GetRequestSucceeded() bool {
+	if o == nil {
+		return false
+	}
+	return o.RequestSucceeded
+}
+
+func (o *CompleteOAuthResponse) GetRequestError() *string {
+	if o == nil {
+		return nil
+	}
+	return o.RequestError
+}
+
+func (o *CompleteOAuthResponse) GetAuthPayload() map[string]interface{} {
+	if o == nil {
+		return map[string]interface{}{}
+	}
+	return o.AuthPayload
 }

@@ -2,7 +2,13 @@
 
 package shared
 
-// OAuthConsentRead - Successful operation
 type OAuthConsentRead struct {
 	ConsentURL string `json:"consentUrl"`
+}
+
+func (o *OAuthConsentRead) GetConsentURL() string {
+	if o == nil {
+		return ""
+	}
+	return o.ConsentURL
 }

@@ -3,11 +3,60 @@
 package shared
 
 type AttemptStats struct {
-	BytesCommitted       *int64 `json:"bytesCommitted,omitempty"`
-	BytesEmitted         *int64 `json:"bytesEmitted,omitempty"`
-	EstimatedBytes       *int64 `json:"estimatedBytes,omitempty"`
-	EstimatedRecords     *int64 `json:"estimatedRecords,omitempty"`
-	RecordsCommitted     *int64 `json:"recordsCommitted,omitempty"`
 	RecordsEmitted       *int64 `json:"recordsEmitted,omitempty"`
+	BytesEmitted         *int64 `json:"bytesEmitted,omitempty"`
 	StateMessagesEmitted *int64 `json:"stateMessagesEmitted,omitempty"`
+	BytesCommitted       *int64 `json:"bytesCommitted,omitempty"`
+	RecordsCommitted     *int64 `json:"recordsCommitted,omitempty"`
+	EstimatedRecords     *int64 `json:"estimatedRecords,omitempty"`
+	EstimatedBytes       *int64 `json:"estimatedBytes,omitempty"`
+}
+
+func (o *AttemptStats) GetRecordsEmitted() *int64 {
+	if o == nil {
+		return nil
+	}
+	return o.RecordsEmitted
+}
+
+func (o *AttemptStats) GetBytesEmitted() *int64 {
+	if o == nil {
+		return nil
+	}
+	return o.BytesEmitted
+}
+
+func (o *AttemptStats) GetStateMessagesEmitted() *int64 {
+	if o == nil {
+		return nil
+	}
+	return o.StateMessagesEmitted
+}
+
+func (o *AttemptStats) GetBytesCommitted() *int64 {
+	if o == nil {
+		return nil
+	}
+	return o.BytesCommitted
+}
+
+func (o *AttemptStats) GetRecordsCommitted() *int64 {
+	if o == nil {
+		return nil
+	}
+	return o.RecordsCommitted
+}
+
+func (o *AttemptStats) GetEstimatedRecords() *int64 {
+	if o == nil {
+		return nil
+	}
+	return o.EstimatedRecords
+}
+
+func (o *AttemptStats) GetEstimatedBytes() *int64 {
+	if o == nil {
+		return nil
+	}
+	return o.EstimatedBytes
 }

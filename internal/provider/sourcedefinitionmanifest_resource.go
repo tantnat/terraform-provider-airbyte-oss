@@ -3,9 +3,9 @@
 package provider
 
 import (
-	"airbyte/internal/sdk"
 	"context"
 	"fmt"
+	"github.com/aballiet/terraform-provider-airbyte/internal/sdk"
 
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -28,7 +28,7 @@ func NewSourceDefinitionManifestResource() resource.Resource {
 
 // SourceDefinitionManifestResource defines the resource implementation.
 type SourceDefinitionManifestResource struct {
-	client *sdk.Airbyte
+	client *sdk.SDK
 }
 
 // SourceDefinitionManifestResourceModel describes the resource data model.
@@ -41,6 +41,8 @@ type SourceDefinitionManifestResourceModel struct {
 	RootCauseExceptionClassName types.String              `tfsdk:"root_cause_exception_class_name"`
 	RootCauseExceptionStack     []types.String            `tfsdk:"root_cause_exception_stack"`
 	SetAsActiveManifest         types.Bool                `tfsdk:"set_as_active_manifest"`
+	SourceDefinitionID          types.String              `tfsdk:"source_definition_id"`
+	WorkspaceID                 types.String              `tfsdk:"workspace_id"`
 }
 
 func (r *SourceDefinitionManifestResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -114,6 +116,12 @@ func (r *SourceDefinitionManifestResource) Schema(ctx context.Context, req resou
 				},
 				Required: true,
 			},
+			"source_definition_id": schema.StringAttribute{
+				Required: true,
+			},
+			"workspace_id": schema.StringAttribute{
+				Required: true,
+			},
 		},
 	}
 }
@@ -124,12 +132,12 @@ func (r *SourceDefinitionManifestResource) Configure(ctx context.Context, req re
 		return
 	}
 
-	client, ok := req.ProviderData.(*sdk.Airbyte)
+	client, ok := req.ProviderData.(*sdk.SDK)
 
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Unexpected Resource Configure Type",
-			fmt.Sprintf("Expected *sdk.Airbyte, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+			fmt.Sprintf("Expected *sdk.SDK, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
 		return
@@ -160,6 +168,9 @@ func (r *SourceDefinitionManifestResource) Create(ctx context.Context, req resou
 	res, err := r.client.DeclarativeSourceDefinitions.CreateDeclarativeSourceDefinitionManifest(ctx, request)
 	if err != nil {
 		resp.Diagnostics.AddError("failure to invoke API", err.Error())
+		if res != nil && res.RawResponse != nil {
+			resp.Diagnostics.AddError("unexpected http request/response", debugResponse(res.RawResponse))
+		}
 		return
 	}
 	if res == nil {
@@ -215,6 +226,9 @@ func (r *SourceDefinitionManifestResource) Update(ctx context.Context, req resou
 	res, err := r.client.DeclarativeSourceDefinitions.UpdateDeclarativeManifestVersion(ctx, request)
 	if err != nil {
 		resp.Diagnostics.AddError("failure to invoke API", err.Error())
+		if res != nil && res.RawResponse != nil {
+			resp.Diagnostics.AddError("unexpected http request/response", debugResponse(res.RawResponse))
+		}
 		return
 	}
 	if res == nil {

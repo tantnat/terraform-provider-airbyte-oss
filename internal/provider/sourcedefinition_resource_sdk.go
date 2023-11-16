@@ -3,13 +3,15 @@
 package provider
 
 import (
-	"airbyte/internal/sdk/pkg/models/shared"
+	"github.com/aballiet/terraform-provider-airbyte/internal/sdk/pkg/models/shared"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 func (r *SourceDefinitionResourceModel) ToCreateSDKType() *shared.CustomSourceDefinitionCreate {
-	dockerImageTag := r.SourceDefinition.DockerImageTag.ValueString()
+	workspaceID := r.WorkspaceID.ValueString()
+	name := r.SourceDefinition.Name.ValueString()
 	dockerRepository := r.SourceDefinition.DockerRepository.ValueString()
+	dockerImageTag := r.SourceDefinition.DockerImageTag.ValueString()
 	documentationURL := r.SourceDefinition.DocumentationURL.ValueString()
 	icon := new(string)
 	if !r.SourceDefinition.Icon.IsUnknown() && !r.SourceDefinition.Icon.IsNull() {
@@ -17,28 +19,21 @@ func (r *SourceDefinitionResourceModel) ToCreateSDKType() *shared.CustomSourceDe
 	} else {
 		icon = nil
 	}
-	name := r.SourceDefinition.Name.ValueString()
 	var resourceRequirements *shared.ActorDefinitionResourceRequirements
 	if r.SourceDefinition.ResourceRequirements != nil {
-		var default1 *shared.ResourceRequirements
+		var defaultVar *shared.ResourceRequirements
 		if r.SourceDefinition.ResourceRequirements.Default != nil {
-			cpuLimit := new(string)
-			if !r.SourceDefinition.ResourceRequirements.Default.CPULimit.IsUnknown() && !r.SourceDefinition.ResourceRequirements.Default.CPULimit.IsNull() {
-				*cpuLimit = r.SourceDefinition.ResourceRequirements.Default.CPULimit.ValueString()
-			} else {
-				cpuLimit = nil
-			}
 			cpuRequest := new(string)
 			if !r.SourceDefinition.ResourceRequirements.Default.CPURequest.IsUnknown() && !r.SourceDefinition.ResourceRequirements.Default.CPURequest.IsNull() {
 				*cpuRequest = r.SourceDefinition.ResourceRequirements.Default.CPURequest.ValueString()
 			} else {
 				cpuRequest = nil
 			}
-			memoryLimit := new(string)
-			if !r.SourceDefinition.ResourceRequirements.Default.MemoryLimit.IsUnknown() && !r.SourceDefinition.ResourceRequirements.Default.MemoryLimit.IsNull() {
-				*memoryLimit = r.SourceDefinition.ResourceRequirements.Default.MemoryLimit.ValueString()
+			cpuLimit := new(string)
+			if !r.SourceDefinition.ResourceRequirements.Default.CPULimit.IsUnknown() && !r.SourceDefinition.ResourceRequirements.Default.CPULimit.IsNull() {
+				*cpuLimit = r.SourceDefinition.ResourceRequirements.Default.CPULimit.ValueString()
 			} else {
-				memoryLimit = nil
+				cpuLimit = nil
 			}
 			memoryRequest := new(string)
 			if !r.SourceDefinition.ResourceRequirements.Default.MemoryRequest.IsUnknown() && !r.SourceDefinition.ResourceRequirements.Default.MemoryRequest.IsNull() {
@@ -46,33 +41,33 @@ func (r *SourceDefinitionResourceModel) ToCreateSDKType() *shared.CustomSourceDe
 			} else {
 				memoryRequest = nil
 			}
-			default1 = &shared.ResourceRequirements{
-				CPULimit:      cpuLimit,
+			memoryLimit := new(string)
+			if !r.SourceDefinition.ResourceRequirements.Default.MemoryLimit.IsUnknown() && !r.SourceDefinition.ResourceRequirements.Default.MemoryLimit.IsNull() {
+				*memoryLimit = r.SourceDefinition.ResourceRequirements.Default.MemoryLimit.ValueString()
+			} else {
+				memoryLimit = nil
+			}
+			defaultVar = &shared.ResourceRequirements{
 				CPURequest:    cpuRequest,
-				MemoryLimit:   memoryLimit,
+				CPULimit:      cpuLimit,
 				MemoryRequest: memoryRequest,
+				MemoryLimit:   memoryLimit,
 			}
 		}
-		jobSpecific := make([]shared.JobTypeResourceLimit, 0)
+		var jobSpecific []shared.JobTypeResourceLimit = nil
 		for _, jobSpecificItem := range r.SourceDefinition.ResourceRequirements.JobSpecific {
 			jobType := shared.JobType(jobSpecificItem.JobType.ValueString())
-			cpuLimit1 := new(string)
-			if !jobSpecificItem.ResourceRequirements.CPULimit.IsUnknown() && !jobSpecificItem.ResourceRequirements.CPULimit.IsNull() {
-				*cpuLimit1 = jobSpecificItem.ResourceRequirements.CPULimit.ValueString()
-			} else {
-				cpuLimit1 = nil
-			}
 			cpuRequest1 := new(string)
 			if !jobSpecificItem.ResourceRequirements.CPURequest.IsUnknown() && !jobSpecificItem.ResourceRequirements.CPURequest.IsNull() {
 				*cpuRequest1 = jobSpecificItem.ResourceRequirements.CPURequest.ValueString()
 			} else {
 				cpuRequest1 = nil
 			}
-			memoryLimit1 := new(string)
-			if !jobSpecificItem.ResourceRequirements.MemoryLimit.IsUnknown() && !jobSpecificItem.ResourceRequirements.MemoryLimit.IsNull() {
-				*memoryLimit1 = jobSpecificItem.ResourceRequirements.MemoryLimit.ValueString()
+			cpuLimit1 := new(string)
+			if !jobSpecificItem.ResourceRequirements.CPULimit.IsUnknown() && !jobSpecificItem.ResourceRequirements.CPULimit.IsNull() {
+				*cpuLimit1 = jobSpecificItem.ResourceRequirements.CPULimit.ValueString()
 			} else {
-				memoryLimit1 = nil
+				cpuLimit1 = nil
 			}
 			memoryRequest1 := new(string)
 			if !jobSpecificItem.ResourceRequirements.MemoryRequest.IsUnknown() && !jobSpecificItem.ResourceRequirements.MemoryRequest.IsNull() {
@@ -80,11 +75,17 @@ func (r *SourceDefinitionResourceModel) ToCreateSDKType() *shared.CustomSourceDe
 			} else {
 				memoryRequest1 = nil
 			}
+			memoryLimit1 := new(string)
+			if !jobSpecificItem.ResourceRequirements.MemoryLimit.IsUnknown() && !jobSpecificItem.ResourceRequirements.MemoryLimit.IsNull() {
+				*memoryLimit1 = jobSpecificItem.ResourceRequirements.MemoryLimit.ValueString()
+			} else {
+				memoryLimit1 = nil
+			}
 			resourceRequirements1 := shared.ResourceRequirements{
-				CPULimit:      cpuLimit1,
 				CPURequest:    cpuRequest1,
-				MemoryLimit:   memoryLimit1,
+				CPULimit:      cpuLimit1,
 				MemoryRequest: memoryRequest1,
+				MemoryLimit:   memoryLimit1,
 			}
 			jobSpecific = append(jobSpecific, shared.JobTypeResourceLimit{
 				JobType:              jobType,
@@ -92,32 +93,110 @@ func (r *SourceDefinitionResourceModel) ToCreateSDKType() *shared.CustomSourceDe
 			})
 		}
 		resourceRequirements = &shared.ActorDefinitionResourceRequirements{
-			Default:     default1,
+			Default:     defaultVar,
 			JobSpecific: jobSpecific,
 		}
 	}
 	sourceDefinition := shared.SourceDefinitionCreate{
-		DockerImageTag:       dockerImageTag,
+		Name:                 name,
 		DockerRepository:     dockerRepository,
+		DockerImageTag:       dockerImageTag,
 		DocumentationURL:     documentationURL,
 		Icon:                 icon,
-		Name:                 name,
 		ResourceRequirements: resourceRequirements,
 	}
-	workspaceID := r.WorkspaceID.ValueString()
 	out := shared.CustomSourceDefinitionCreate{
-		SourceDefinition: sourceDefinition,
 		WorkspaceID:      workspaceID,
+		SourceDefinition: sourceDefinition,
 	}
 	return &out
 }
 
 func (r *SourceDefinitionResourceModel) ToUpdateSDKType() *shared.SourceDefinitionUpdate {
-	dockerImageTag := r.DockerImageTag.ValueString()
 	sourceDefinitionID := r.SourceDefinitionID.ValueString()
+	dockerImageTag := r.DockerImageTag.ValueString()
+	var resourceRequirements *shared.ActorDefinitionResourceRequirements
+	if r.ResourceRequirements != nil {
+		var defaultVar *shared.ResourceRequirements
+		if r.ResourceRequirements.Default != nil {
+			cpuRequest := new(string)
+			if !r.ResourceRequirements.Default.CPURequest.IsUnknown() && !r.ResourceRequirements.Default.CPURequest.IsNull() {
+				*cpuRequest = r.ResourceRequirements.Default.CPURequest.ValueString()
+			} else {
+				cpuRequest = nil
+			}
+			cpuLimit := new(string)
+			if !r.ResourceRequirements.Default.CPULimit.IsUnknown() && !r.ResourceRequirements.Default.CPULimit.IsNull() {
+				*cpuLimit = r.ResourceRequirements.Default.CPULimit.ValueString()
+			} else {
+				cpuLimit = nil
+			}
+			memoryRequest := new(string)
+			if !r.ResourceRequirements.Default.MemoryRequest.IsUnknown() && !r.ResourceRequirements.Default.MemoryRequest.IsNull() {
+				*memoryRequest = r.ResourceRequirements.Default.MemoryRequest.ValueString()
+			} else {
+				memoryRequest = nil
+			}
+			memoryLimit := new(string)
+			if !r.ResourceRequirements.Default.MemoryLimit.IsUnknown() && !r.ResourceRequirements.Default.MemoryLimit.IsNull() {
+				*memoryLimit = r.ResourceRequirements.Default.MemoryLimit.ValueString()
+			} else {
+				memoryLimit = nil
+			}
+			defaultVar = &shared.ResourceRequirements{
+				CPURequest:    cpuRequest,
+				CPULimit:      cpuLimit,
+				MemoryRequest: memoryRequest,
+				MemoryLimit:   memoryLimit,
+			}
+		}
+		var jobSpecific []shared.JobTypeResourceLimit = nil
+		for _, jobSpecificItem := range r.ResourceRequirements.JobSpecific {
+			jobType := shared.JobType(jobSpecificItem.JobType.ValueString())
+			cpuRequest1 := new(string)
+			if !jobSpecificItem.ResourceRequirements.CPURequest.IsUnknown() && !jobSpecificItem.ResourceRequirements.CPURequest.IsNull() {
+				*cpuRequest1 = jobSpecificItem.ResourceRequirements.CPURequest.ValueString()
+			} else {
+				cpuRequest1 = nil
+			}
+			cpuLimit1 := new(string)
+			if !jobSpecificItem.ResourceRequirements.CPULimit.IsUnknown() && !jobSpecificItem.ResourceRequirements.CPULimit.IsNull() {
+				*cpuLimit1 = jobSpecificItem.ResourceRequirements.CPULimit.ValueString()
+			} else {
+				cpuLimit1 = nil
+			}
+			memoryRequest1 := new(string)
+			if !jobSpecificItem.ResourceRequirements.MemoryRequest.IsUnknown() && !jobSpecificItem.ResourceRequirements.MemoryRequest.IsNull() {
+				*memoryRequest1 = jobSpecificItem.ResourceRequirements.MemoryRequest.ValueString()
+			} else {
+				memoryRequest1 = nil
+			}
+			memoryLimit1 := new(string)
+			if !jobSpecificItem.ResourceRequirements.MemoryLimit.IsUnknown() && !jobSpecificItem.ResourceRequirements.MemoryLimit.IsNull() {
+				*memoryLimit1 = jobSpecificItem.ResourceRequirements.MemoryLimit.ValueString()
+			} else {
+				memoryLimit1 = nil
+			}
+			resourceRequirements1 := shared.ResourceRequirements{
+				CPURequest:    cpuRequest1,
+				CPULimit:      cpuLimit1,
+				MemoryRequest: memoryRequest1,
+				MemoryLimit:   memoryLimit1,
+			}
+			jobSpecific = append(jobSpecific, shared.JobTypeResourceLimit{
+				JobType:              jobType,
+				ResourceRequirements: resourceRequirements1,
+			})
+		}
+		resourceRequirements = &shared.ActorDefinitionResourceRequirements{
+			Default:     defaultVar,
+			JobSpecific: jobSpecific,
+		}
+	}
 	out := shared.SourceDefinitionUpdate{
-		DockerImageTag:     dockerImageTag,
-		SourceDefinitionID: sourceDefinitionID,
+		SourceDefinitionID:   sourceDefinitionID,
+		DockerImageTag:       dockerImageTag,
+		ResourceRequirements: resourceRequirements,
 	}
 	return &out
 }
@@ -130,35 +209,111 @@ func (r *SourceDefinitionResourceModel) ToDeleteSDKType() *shared.SourceDefiniti
 	return &out
 }
 
-func (r *SourceDefinitionResourceModel) RefreshFromCreateResponse(resp *shared.InvalidInputExceptionInfo) {
-	if resp.ExceptionClassName != nil {
-		r.ExceptionClassName = types.StringValue(*resp.ExceptionClassName)
+func (r *SourceDefinitionResourceModel) RefreshFromCreateResponse(resp *shared.SourceDefinitionRead) {
+	r.DockerImageTag = types.StringValue(resp.DockerImageTag)
+	r.DockerRepository = types.StringValue(resp.DockerRepository)
+	if resp.DocumentationURL != nil {
+		r.DocumentationURL = types.StringValue(*resp.DocumentationURL)
 	} else {
-		r.ExceptionClassName = types.StringNull()
+		r.DocumentationURL = types.StringNull()
 	}
-	r.ExceptionStack = nil
-	for _, v := range resp.ExceptionStack {
-		r.ExceptionStack = append(r.ExceptionStack, types.StringValue(v))
+	if resp.Icon != nil {
+		r.Icon = types.StringValue(*resp.Icon)
+	} else {
+		r.Icon = types.StringNull()
 	}
-	r.Message = types.StringValue(resp.Message)
-	r.ValidationErrors = nil
-	for _, validationErrorsItem := range resp.ValidationErrors {
-		var validationErrors1 InvalidInputProperty
-		if validationErrorsItem.InvalidValue != nil {
-			validationErrors1.InvalidValue = types.StringValue(*validationErrorsItem.InvalidValue)
+	if resp.MaxSecondsBetweenMessages != nil {
+		r.MaxSecondsBetweenMessages = types.Int64Value(*resp.MaxSecondsBetweenMessages)
+	} else {
+		r.MaxSecondsBetweenMessages = types.Int64Null()
+	}
+	r.Name = types.StringValue(resp.Name)
+	if resp.ProtocolVersion != nil {
+		r.ProtocolVersion = types.StringValue(*resp.ProtocolVersion)
+	} else {
+		r.ProtocolVersion = types.StringNull()
+	}
+	if resp.ReleaseDate != nil {
+		r.ReleaseDate = types.StringValue(resp.ReleaseDate.String())
+	} else {
+		r.ReleaseDate = types.StringNull()
+	}
+	if resp.ReleaseStage != nil {
+		r.ReleaseStage = types.StringValue(string(*resp.ReleaseStage))
+	} else {
+		r.ReleaseStage = types.StringNull()
+	}
+	if resp.ResourceRequirements == nil {
+		r.ResourceRequirements = nil
+	} else {
+		r.ResourceRequirements = &ActorDefinitionResourceRequirements{}
+		if resp.ResourceRequirements.Default == nil {
+			r.ResourceRequirements.Default = nil
 		} else {
-			validationErrors1.InvalidValue = types.StringNull()
+			r.ResourceRequirements.Default = &ResourceRequirements{}
+			if resp.ResourceRequirements.Default.CPULimit != nil {
+				r.ResourceRequirements.Default.CPULimit = types.StringValue(*resp.ResourceRequirements.Default.CPULimit)
+			} else {
+				r.ResourceRequirements.Default.CPULimit = types.StringNull()
+			}
+			if resp.ResourceRequirements.Default.CPURequest != nil {
+				r.ResourceRequirements.Default.CPURequest = types.StringValue(*resp.ResourceRequirements.Default.CPURequest)
+			} else {
+				r.ResourceRequirements.Default.CPURequest = types.StringNull()
+			}
+			if resp.ResourceRequirements.Default.MemoryLimit != nil {
+				r.ResourceRequirements.Default.MemoryLimit = types.StringValue(*resp.ResourceRequirements.Default.MemoryLimit)
+			} else {
+				r.ResourceRequirements.Default.MemoryLimit = types.StringNull()
+			}
+			if resp.ResourceRequirements.Default.MemoryRequest != nil {
+				r.ResourceRequirements.Default.MemoryRequest = types.StringValue(*resp.ResourceRequirements.Default.MemoryRequest)
+			} else {
+				r.ResourceRequirements.Default.MemoryRequest = types.StringNull()
+			}
 		}
-		if validationErrorsItem.Message != nil {
-			validationErrors1.Message = types.StringValue(*validationErrorsItem.Message)
-		} else {
-			validationErrors1.Message = types.StringNull()
+		if len(r.ResourceRequirements.JobSpecific) > len(resp.ResourceRequirements.JobSpecific) {
+			r.ResourceRequirements.JobSpecific = r.ResourceRequirements.JobSpecific[:len(resp.ResourceRequirements.JobSpecific)]
 		}
-		validationErrors1.PropertyPath = types.StringValue(validationErrorsItem.PropertyPath)
-		r.ValidationErrors = append(r.ValidationErrors, validationErrors1)
+		for jobSpecificCount, jobSpecificItem := range resp.ResourceRequirements.JobSpecific {
+			var jobSpecific1 JobTypeResourceLimit
+			jobSpecific1.JobType = types.StringValue(string(jobSpecificItem.JobType))
+			if jobSpecificItem.ResourceRequirements.CPULimit != nil {
+				jobSpecific1.ResourceRequirements.CPULimit = types.StringValue(*jobSpecificItem.ResourceRequirements.CPULimit)
+			} else {
+				jobSpecific1.ResourceRequirements.CPULimit = types.StringNull()
+			}
+			if jobSpecificItem.ResourceRequirements.CPURequest != nil {
+				jobSpecific1.ResourceRequirements.CPURequest = types.StringValue(*jobSpecificItem.ResourceRequirements.CPURequest)
+			} else {
+				jobSpecific1.ResourceRequirements.CPURequest = types.StringNull()
+			}
+			if jobSpecificItem.ResourceRequirements.MemoryLimit != nil {
+				jobSpecific1.ResourceRequirements.MemoryLimit = types.StringValue(*jobSpecificItem.ResourceRequirements.MemoryLimit)
+			} else {
+				jobSpecific1.ResourceRequirements.MemoryLimit = types.StringNull()
+			}
+			if jobSpecificItem.ResourceRequirements.MemoryRequest != nil {
+				jobSpecific1.ResourceRequirements.MemoryRequest = types.StringValue(*jobSpecificItem.ResourceRequirements.MemoryRequest)
+			} else {
+				jobSpecific1.ResourceRequirements.MemoryRequest = types.StringNull()
+			}
+			if jobSpecificCount+1 > len(r.ResourceRequirements.JobSpecific) {
+				r.ResourceRequirements.JobSpecific = append(r.ResourceRequirements.JobSpecific, jobSpecific1)
+			} else {
+				r.ResourceRequirements.JobSpecific[jobSpecificCount].JobType = jobSpecific1.JobType
+				r.ResourceRequirements.JobSpecific[jobSpecificCount].ResourceRequirements = jobSpecific1.ResourceRequirements
+			}
+		}
+	}
+	r.SourceDefinitionID = types.StringValue(resp.SourceDefinitionID)
+	if resp.SourceType != nil {
+		r.SourceType = types.StringValue(string(*resp.SourceType))
+	} else {
+		r.SourceType = types.StringNull()
 	}
 }
 
-func (r *SourceDefinitionResourceModel) RefreshFromUpdateResponse(resp *shared.InvalidInputExceptionInfo) {
+func (r *SourceDefinitionResourceModel) RefreshFromUpdateResponse(resp *shared.SourceDefinitionRead) {
 	r.RefreshFromCreateResponse(resp)
 }

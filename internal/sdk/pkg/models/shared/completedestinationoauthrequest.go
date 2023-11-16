@@ -3,13 +3,55 @@
 package shared
 
 type CompleteDestinationOAuthRequest struct {
-	DestinationDefinitionID string  `json:"destinationDefinitionId"`
-	DestinationID           *string `json:"destinationId,omitempty"`
-	// The values required to configure OAuth flows. The schema for this must match the `OAuthConfigSpecification.oauthUserInputFromConnectorConfigSpecification` schema.
-	OAuthInputConfiguration interface{} `json:"oAuthInputConfiguration,omitempty"`
-	// The query parameters present in the redirect URL after a user granted consent e.g auth code
-	QueryParams map[string]interface{} `json:"queryParams,omitempty"`
+	DestinationDefinitionID string `json:"destinationDefinitionId"`
+	WorkspaceID             string `json:"workspaceId"`
 	// When completing OAuth flow to gain an access token, some API sometimes requires to verify that the app re-send the redirectUrl that was used when consent was given.
 	RedirectURL *string `json:"redirectUrl,omitempty"`
-	WorkspaceID string  `json:"workspaceId"`
+	// The query parameters present in the redirect URL after a user granted consent e.g auth code
+	QueryParams map[string]interface{} `json:"queryParams,omitempty"`
+	// The values required to configure OAuth flows. The schema for this must match the `OAuthConfigSpecification.oauthUserInputFromConnectorConfigSpecification` schema.
+	OAuthInputConfiguration interface{} `json:"oAuthInputConfiguration,omitempty"`
+	DestinationID           *string     `json:"destinationId,omitempty"`
+}
+
+func (o *CompleteDestinationOAuthRequest) GetDestinationDefinitionID() string {
+	if o == nil {
+		return ""
+	}
+	return o.DestinationDefinitionID
+}
+
+func (o *CompleteDestinationOAuthRequest) GetWorkspaceID() string {
+	if o == nil {
+		return ""
+	}
+	return o.WorkspaceID
+}
+
+func (o *CompleteDestinationOAuthRequest) GetRedirectURL() *string {
+	if o == nil {
+		return nil
+	}
+	return o.RedirectURL
+}
+
+func (o *CompleteDestinationOAuthRequest) GetQueryParams() map[string]interface{} {
+	if o == nil {
+		return nil
+	}
+	return o.QueryParams
+}
+
+func (o *CompleteDestinationOAuthRequest) GetOAuthInputConfiguration() interface{} {
+	if o == nil {
+		return nil
+	}
+	return o.OAuthInputConfiguration
+}
+
+func (o *CompleteDestinationOAuthRequest) GetDestinationID() *string {
+	if o == nil {
+		return nil
+	}
+	return o.DestinationID
 }

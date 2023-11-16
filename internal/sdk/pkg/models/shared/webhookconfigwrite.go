@@ -3,10 +3,31 @@
 package shared
 
 type WebhookConfigWrite struct {
-	// an auth token, to be passed as the value for an HTTP Authorization header.
-	AuthToken *string `json:"authToken,omitempty"`
 	// human readable name for this webhook e.g. for UI display.
 	Name *string `json:"name,omitempty"`
+	// an auth token, to be passed as the value for an HTTP Authorization header.
+	AuthToken *string `json:"authToken,omitempty"`
 	// if supplied, the webhook config will be validated by checking that this URL returns a 2xx response.
 	ValidationURL *string `json:"validationUrl,omitempty"`
+}
+
+func (o *WebhookConfigWrite) GetName() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Name
+}
+
+func (o *WebhookConfigWrite) GetAuthToken() *string {
+	if o == nil {
+		return nil
+	}
+	return o.AuthToken
+}
+
+func (o *WebhookConfigWrite) GetValidationURL() *string {
+	if o == nil {
+		return nil
+	}
+	return o.ValidationURL
 }

@@ -3,8 +3,36 @@
 package shared
 
 type WebBackendOperationCreateOrUpdate struct {
-	Name                  string                `json:"name"`
 	OperationID           *string               `json:"operationId,omitempty"`
-	OperatorConfiguration OperatorConfiguration `json:"operatorConfiguration"`
 	WorkspaceID           string                `json:"workspaceId"`
+	Name                  string                `json:"name"`
+	OperatorConfiguration OperatorConfiguration `json:"operatorConfiguration"`
+}
+
+func (o *WebBackendOperationCreateOrUpdate) GetOperationID() *string {
+	if o == nil {
+		return nil
+	}
+	return o.OperationID
+}
+
+func (o *WebBackendOperationCreateOrUpdate) GetWorkspaceID() string {
+	if o == nil {
+		return ""
+	}
+	return o.WorkspaceID
+}
+
+func (o *WebBackendOperationCreateOrUpdate) GetName() string {
+	if o == nil {
+		return ""
+	}
+	return o.Name
+}
+
+func (o *WebBackendOperationCreateOrUpdate) GetOperatorConfiguration() OperatorConfiguration {
+	if o == nil {
+		return OperatorConfiguration{}
+	}
+	return o.OperatorConfiguration
 }

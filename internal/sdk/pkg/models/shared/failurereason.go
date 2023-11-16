@@ -3,14 +3,63 @@
 package shared
 
 type FailureReason struct {
-	ExternalMessage *string `json:"externalMessage,omitempty"`
 	// Indicates where the error originated. If not set, the origin of error is not well known.
 	FailureOrigin *FailureOrigin `json:"failureOrigin,omitempty"`
 	// Categorizes well known errors into types for programmatic handling. If not set, the type of error is not well known.
 	FailureType     *FailureType `json:"failureType,omitempty"`
+	ExternalMessage *string      `json:"externalMessage,omitempty"`
 	InternalMessage *string      `json:"internalMessage,omitempty"`
+	Stacktrace      *string      `json:"stacktrace,omitempty"`
 	// True if it is known that retrying may succeed, e.g. for a transient failure. False if it is known that a retry will not succeed, e.g. for a configuration issue. If not set, retryable status is not well known.
-	Retryable  *bool   `json:"retryable,omitempty"`
-	Stacktrace *string `json:"stacktrace,omitempty"`
-	Timestamp  int64   `json:"timestamp"`
+	Retryable *bool `json:"retryable,omitempty"`
+	Timestamp int64 `json:"timestamp"`
+}
+
+func (o *FailureReason) GetFailureOrigin() *FailureOrigin {
+	if o == nil {
+		return nil
+	}
+	return o.FailureOrigin
+}
+
+func (o *FailureReason) GetFailureType() *FailureType {
+	if o == nil {
+		return nil
+	}
+	return o.FailureType
+}
+
+func (o *FailureReason) GetExternalMessage() *string {
+	if o == nil {
+		return nil
+	}
+	return o.ExternalMessage
+}
+
+func (o *FailureReason) GetInternalMessage() *string {
+	if o == nil {
+		return nil
+	}
+	return o.InternalMessage
+}
+
+func (o *FailureReason) GetStacktrace() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Stacktrace
+}
+
+func (o *FailureReason) GetRetryable() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.Retryable
+}
+
+func (o *FailureReason) GetTimestamp() int64 {
+	if o == nil {
+		return 0
+	}
+	return o.Timestamp
 }

@@ -3,9 +3,37 @@
 package shared
 
 type SourceCoreConfig struct {
+	SourceID           *string `json:"sourceId,omitempty"`
+	SourceDefinitionID string  `json:"sourceDefinitionId"`
 	// The values required to configure the source. The schema for this must match the schema return by source_definition_specifications/get for the source.
 	ConnectionConfiguration interface{} `json:"connectionConfiguration"`
-	SourceDefinitionID      string      `json:"sourceDefinitionId"`
-	SourceID                *string     `json:"sourceId,omitempty"`
 	WorkspaceID             string      `json:"workspaceId"`
+}
+
+func (o *SourceCoreConfig) GetSourceID() *string {
+	if o == nil {
+		return nil
+	}
+	return o.SourceID
+}
+
+func (o *SourceCoreConfig) GetSourceDefinitionID() string {
+	if o == nil {
+		return ""
+	}
+	return o.SourceDefinitionID
+}
+
+func (o *SourceCoreConfig) GetConnectionConfiguration() interface{} {
+	if o == nil {
+		return nil
+	}
+	return o.ConnectionConfiguration
+}
+
+func (o *SourceCoreConfig) GetWorkspaceID() string {
+	if o == nil {
+		return ""
+	}
+	return o.WorkspaceID
 }

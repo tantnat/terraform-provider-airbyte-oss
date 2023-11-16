@@ -3,7 +3,28 @@
 package shared
 
 type OperationUpdate struct {
-	Name                  string                `json:"name"`
 	OperationID           string                `json:"operationId"`
+	Name                  string                `json:"name"`
 	OperatorConfiguration OperatorConfiguration `json:"operatorConfiguration"`
+}
+
+func (o *OperationUpdate) GetOperationID() string {
+	if o == nil {
+		return ""
+	}
+	return o.OperationID
+}
+
+func (o *OperationUpdate) GetName() string {
+	if o == nil {
+		return ""
+	}
+	return o.Name
+}
+
+func (o *OperationUpdate) GetOperatorConfiguration() OperatorConfiguration {
+	if o == nil {
+		return OperatorConfiguration{}
+	}
+	return o.OperatorConfiguration
 }

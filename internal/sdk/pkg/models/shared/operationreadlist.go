@@ -2,7 +2,13 @@
 
 package shared
 
-// OperationReadList - Successful operation
 type OperationReadList struct {
 	Operations []OperationRead `json:"operations"`
+}
+
+func (o *OperationReadList) GetOperations() []OperationRead {
+	if o == nil {
+		return []OperationRead{}
+	}
+	return o.Operations
 }
