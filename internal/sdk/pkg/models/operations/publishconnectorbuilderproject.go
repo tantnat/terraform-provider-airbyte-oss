@@ -3,14 +3,45 @@
 package operations
 
 import (
-	"airbyte/internal/sdk/pkg/models/shared"
+	"github.com/aballiet/terraform-provider-airbyte/internal/sdk/pkg/models/shared"
 	"net/http"
 )
 
 type PublishConnectorBuilderProjectResponse struct {
+	// HTTP response content type for this operation
 	ContentType string
+	// HTTP response status code for this operation
+	StatusCode int
+	// Raw HTTP response; suitable for custom response parsing
+	RawResponse *http.Response
 	// Successful operation
 	SourceDefinitionIDBody *shared.SourceDefinitionIDBody
-	StatusCode             int
-	RawResponse            *http.Response
+}
+
+func (o *PublishConnectorBuilderProjectResponse) GetContentType() string {
+	if o == nil {
+		return ""
+	}
+	return o.ContentType
+}
+
+func (o *PublishConnectorBuilderProjectResponse) GetStatusCode() int {
+	if o == nil {
+		return 0
+	}
+	return o.StatusCode
+}
+
+func (o *PublishConnectorBuilderProjectResponse) GetRawResponse() *http.Response {
+	if o == nil {
+		return nil
+	}
+	return o.RawResponse
+}
+
+func (o *PublishConnectorBuilderProjectResponse) GetSourceDefinitionIDBody() *shared.SourceDefinitionIDBody {
+	if o == nil {
+		return nil
+	}
+	return o.SourceDefinitionIDBody
 }

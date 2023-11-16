@@ -3,6 +3,20 @@
 package shared
 
 type WorkspaceUpdateName struct {
-	Name        string `json:"name"`
 	WorkspaceID string `json:"workspaceId"`
+	Name        string `json:"name"`
+}
+
+func (o *WorkspaceUpdateName) GetWorkspaceID() string {
+	if o == nil {
+		return ""
+	}
+	return o.WorkspaceID
+}
+
+func (o *WorkspaceUpdateName) GetName() string {
+	if o == nil {
+		return ""
+	}
+	return o.Name
 }

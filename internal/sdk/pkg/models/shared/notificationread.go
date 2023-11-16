@@ -7,18 +7,18 @@ import (
 	"fmt"
 )
 
-type NotificationReadStatus string
+type Status string
 
 const (
-	NotificationReadStatusSucceeded NotificationReadStatus = "succeeded"
-	NotificationReadStatusFailed    NotificationReadStatus = "failed"
+	StatusSucceeded Status = "succeeded"
+	StatusFailed    Status = "failed"
 )
 
-func (e NotificationReadStatus) ToPointer() *NotificationReadStatus {
+func (e Status) ToPointer() *Status {
 	return &e
 }
 
-func (e *NotificationReadStatus) UnmarshalJSON(data []byte) error {
+func (e *Status) UnmarshalJSON(data []byte) error {
 	var v string
 	if err := json.Unmarshal(data, &v); err != nil {
 		return err
@@ -27,15 +27,28 @@ func (e *NotificationReadStatus) UnmarshalJSON(data []byte) error {
 	case "succeeded":
 		fallthrough
 	case "failed":
-		*e = NotificationReadStatus(v)
+		*e = Status(v)
 		return nil
 	default:
-		return fmt.Errorf("invalid value for NotificationReadStatus: %v", v)
+		return fmt.Errorf("invalid value for Status: %v", v)
 	}
 }
 
-// NotificationRead - Successful operation
 type NotificationRead struct {
-	Message *string                `json:"message,omitempty"`
-	Status  NotificationReadStatus `json:"status"`
+	Status  Status  `json:"status"`
+	Message *string `json:"message,omitempty"`
+}
+
+func (o *NotificationRead) GetStatus() Status {
+	if o == nil {
+		return Status("")
+	}
+	return o.Status
+}
+
+func (o *NotificationRead) GetMessage() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Message
 }

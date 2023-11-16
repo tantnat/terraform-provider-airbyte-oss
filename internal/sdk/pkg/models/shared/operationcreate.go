@@ -3,7 +3,28 @@
 package shared
 
 type OperationCreate struct {
+	WorkspaceID           string                `json:"workspaceId"`
 	Name                  string                `json:"name"`
 	OperatorConfiguration OperatorConfiguration `json:"operatorConfiguration"`
-	WorkspaceID           string                `json:"workspaceId"`
+}
+
+func (o *OperationCreate) GetWorkspaceID() string {
+	if o == nil {
+		return ""
+	}
+	return o.WorkspaceID
+}
+
+func (o *OperationCreate) GetName() string {
+	if o == nil {
+		return ""
+	}
+	return o.Name
+}
+
+func (o *OperationCreate) GetOperatorConfiguration() OperatorConfiguration {
+	if o == nil {
+		return OperatorConfiguration{}
+	}
+	return o.OperatorConfiguration
 }

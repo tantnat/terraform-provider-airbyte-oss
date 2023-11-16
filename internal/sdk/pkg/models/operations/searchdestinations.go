@@ -3,16 +3,54 @@
 package operations
 
 import (
-	"airbyte/internal/sdk/pkg/models/shared"
+	"github.com/aballiet/terraform-provider-airbyte/internal/sdk/pkg/models/shared"
 	"net/http"
 )
 
 type SearchDestinationsResponse struct {
+	// HTTP response content type for this operation
 	ContentType string
+	// HTTP response status code for this operation
+	StatusCode int
+	// Raw HTTP response; suitable for custom response parsing
+	RawResponse *http.Response
 	// Successful operation
 	DestinationReadList *shared.DestinationReadList
 	// Input failed validation
 	InvalidInputExceptionInfo *shared.InvalidInputExceptionInfo
-	StatusCode                int
-	RawResponse               *http.Response
+}
+
+func (o *SearchDestinationsResponse) GetContentType() string {
+	if o == nil {
+		return ""
+	}
+	return o.ContentType
+}
+
+func (o *SearchDestinationsResponse) GetStatusCode() int {
+	if o == nil {
+		return 0
+	}
+	return o.StatusCode
+}
+
+func (o *SearchDestinationsResponse) GetRawResponse() *http.Response {
+	if o == nil {
+		return nil
+	}
+	return o.RawResponse
+}
+
+func (o *SearchDestinationsResponse) GetDestinationReadList() *shared.DestinationReadList {
+	if o == nil {
+		return nil
+	}
+	return o.DestinationReadList
+}
+
+func (o *SearchDestinationsResponse) GetInvalidInputExceptionInfo() *shared.InvalidInputExceptionInfo {
+	if o == nil {
+		return nil
+	}
+	return o.InvalidInputExceptionInfo
 }

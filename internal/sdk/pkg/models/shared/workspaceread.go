@@ -2,22 +2,133 @@
 
 package shared
 
-// WorkspaceRead - Successful operation
 type WorkspaceRead struct {
-	AnonymousDataCollection *bool                 `json:"anonymousDataCollection,omitempty"`
-	CustomerID              string                `json:"customerId"`
-	DefaultGeography        *Geography            `json:"defaultGeography,omitempty"`
-	DisplaySetupWizard      *bool                 `json:"displaySetupWizard,omitempty"`
-	Email                   *string               `json:"email,omitempty"`
-	FeedbackDone            *bool                 `json:"feedbackDone,omitempty"`
-	FirstCompletedSync      *bool                 `json:"firstCompletedSync,omitempty"`
-	InitialSetupComplete    bool                  `json:"initialSetupComplete"`
-	Name                    string                `json:"name"`
-	News                    *bool                 `json:"news,omitempty"`
-	NotificationSettings    *NotificationSettings `json:"notificationSettings,omitempty"`
-	Notifications           []Notification        `json:"notifications,omitempty"`
-	SecurityUpdates         *bool                 `json:"securityUpdates,omitempty"`
-	Slug                    string                `json:"slug"`
-	WebhookConfigs          []WebhookConfigRead   `json:"webhookConfigs,omitempty"`
 	WorkspaceID             string                `json:"workspaceId"`
+	CustomerID              string                `json:"customerId"`
+	Email                   *string               `json:"email,omitempty"`
+	Name                    string                `json:"name"`
+	Slug                    string                `json:"slug"`
+	InitialSetupComplete    bool                  `json:"initialSetupComplete"`
+	DisplaySetupWizard      *bool                 `json:"displaySetupWizard,omitempty"`
+	AnonymousDataCollection *bool                 `json:"anonymousDataCollection,omitempty"`
+	News                    *bool                 `json:"news,omitempty"`
+	SecurityUpdates         *bool                 `json:"securityUpdates,omitempty"`
+	Notifications           []Notification        `json:"notifications,omitempty"`
+	NotificationSettings    *NotificationSettings `json:"notificationSettings,omitempty"`
+	FirstCompletedSync      *bool                 `json:"firstCompletedSync,omitempty"`
+	FeedbackDone            *bool                 `json:"feedbackDone,omitempty"`
+	DefaultGeography        *Geography            `json:"defaultGeography,omitempty"`
+	WebhookConfigs          []WebhookConfigRead   `json:"webhookConfigs,omitempty"`
+}
+
+func (o *WorkspaceRead) GetWorkspaceID() string {
+	if o == nil {
+		return ""
+	}
+	return o.WorkspaceID
+}
+
+func (o *WorkspaceRead) GetCustomerID() string {
+	if o == nil {
+		return ""
+	}
+	return o.CustomerID
+}
+
+func (o *WorkspaceRead) GetEmail() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Email
+}
+
+func (o *WorkspaceRead) GetName() string {
+	if o == nil {
+		return ""
+	}
+	return o.Name
+}
+
+func (o *WorkspaceRead) GetSlug() string {
+	if o == nil {
+		return ""
+	}
+	return o.Slug
+}
+
+func (o *WorkspaceRead) GetInitialSetupComplete() bool {
+	if o == nil {
+		return false
+	}
+	return o.InitialSetupComplete
+}
+
+func (o *WorkspaceRead) GetDisplaySetupWizard() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.DisplaySetupWizard
+}
+
+func (o *WorkspaceRead) GetAnonymousDataCollection() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.AnonymousDataCollection
+}
+
+func (o *WorkspaceRead) GetNews() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.News
+}
+
+func (o *WorkspaceRead) GetSecurityUpdates() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.SecurityUpdates
+}
+
+func (o *WorkspaceRead) GetNotifications() []Notification {
+	if o == nil {
+		return nil
+	}
+	return o.Notifications
+}
+
+func (o *WorkspaceRead) GetNotificationSettings() *NotificationSettings {
+	if o == nil {
+		return nil
+	}
+	return o.NotificationSettings
+}
+
+func (o *WorkspaceRead) GetFirstCompletedSync() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.FirstCompletedSync
+}
+
+func (o *WorkspaceRead) GetFeedbackDone() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.FeedbackDone
+}
+
+func (o *WorkspaceRead) GetDefaultGeography() *Geography {
+	if o == nil {
+		return nil
+	}
+	return o.DefaultGeography
+}
+
+func (o *WorkspaceRead) GetWebhookConfigs() []WebhookConfigRead {
+	if o == nil {
+		return nil
+	}
+	return o.WebhookConfigs
 }

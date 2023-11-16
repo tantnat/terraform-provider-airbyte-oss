@@ -2,16 +2,80 @@
 
 package shared
 
+import (
+	"github.com/aballiet/terraform-provider-airbyte/internal/sdk/pkg/utils"
+)
+
 type CompleteSourceOauthRequest struct {
-	// The values required to configure OAuth flows. The schema for this must match the `OAuthConfigSpecification.oauthUserInputFromConnectorConfigSpecification` schema.
-	OAuthInputConfiguration interface{} `json:"oAuthInputConfiguration,omitempty"`
-	// The query parameters present in the redirect URL after a user granted consent e.g auth code
-	QueryParams map[string]interface{} `json:"queryParams,omitempty"`
+	SourceDefinitionID string `json:"sourceDefinitionId"`
+	WorkspaceID        string `json:"workspaceId"`
 	// When completing OAuth flow to gain an access token, some API sometimes requires to verify that the app re-send the redirectUrl that was used when consent was given.
 	RedirectURL *string `json:"redirectUrl,omitempty"`
+	// The query parameters present in the redirect URL after a user granted consent e.g auth code
+	QueryParams map[string]interface{} `json:"queryParams,omitempty"`
+	// The values required to configure OAuth flows. The schema for this must match the `OAuthConfigSpecification.oauthUserInputFromConnectorConfigSpecification` schema.
+	OAuthInputConfiguration interface{} `json:"oAuthInputConfiguration,omitempty"`
 	// If set to true, returns a secret coordinate which references the stored tokens. By default, returns raw tokens.
-	ReturnSecretCoordinate *bool   `json:"returnSecretCoordinate,omitempty"`
-	SourceDefinitionID     string  `json:"sourceDefinitionId"`
+	ReturnSecretCoordinate *bool   `default:"false" json:"returnSecretCoordinate"`
 	SourceID               *string `json:"sourceId,omitempty"`
-	WorkspaceID            string  `json:"workspaceId"`
+}
+
+func (c CompleteSourceOauthRequest) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(c, "", false)
+}
+
+func (c *CompleteSourceOauthRequest) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &c, "", false, false); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (o *CompleteSourceOauthRequest) GetSourceDefinitionID() string {
+	if o == nil {
+		return ""
+	}
+	return o.SourceDefinitionID
+}
+
+func (o *CompleteSourceOauthRequest) GetWorkspaceID() string {
+	if o == nil {
+		return ""
+	}
+	return o.WorkspaceID
+}
+
+func (o *CompleteSourceOauthRequest) GetRedirectURL() *string {
+	if o == nil {
+		return nil
+	}
+	return o.RedirectURL
+}
+
+func (o *CompleteSourceOauthRequest) GetQueryParams() map[string]interface{} {
+	if o == nil {
+		return nil
+	}
+	return o.QueryParams
+}
+
+func (o *CompleteSourceOauthRequest) GetOAuthInputConfiguration() interface{} {
+	if o == nil {
+		return nil
+	}
+	return o.OAuthInputConfiguration
+}
+
+func (o *CompleteSourceOauthRequest) GetReturnSecretCoordinate() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.ReturnSecretCoordinate
+}
+
+func (o *CompleteSourceOauthRequest) GetSourceID() *string {
+	if o == nil {
+		return nil
+	}
+	return o.SourceID
 }

@@ -3,11 +3,46 @@
 package shared
 
 type SourceOauthConsentRequest struct {
+	SourceDefinitionID string `json:"sourceDefinitionId"`
+	WorkspaceID        string `json:"workspaceId"`
+	// The url to redirect to after getting the user consent
+	RedirectURL string `json:"redirectUrl"`
 	// The values required to configure OAuth flows. The schema for this must match the `OAuthConfigSpecification.oauthUserInputFromConnectorConfigSpecification` schema.
 	OAuthInputConfiguration interface{} `json:"oAuthInputConfiguration,omitempty"`
-	// The url to redirect to after getting the user consent
-	RedirectURL        string  `json:"redirectUrl"`
-	SourceDefinitionID string  `json:"sourceDefinitionId"`
-	SourceID           *string `json:"sourceId,omitempty"`
-	WorkspaceID        string  `json:"workspaceId"`
+	SourceID                *string     `json:"sourceId,omitempty"`
+}
+
+func (o *SourceOauthConsentRequest) GetSourceDefinitionID() string {
+	if o == nil {
+		return ""
+	}
+	return o.SourceDefinitionID
+}
+
+func (o *SourceOauthConsentRequest) GetWorkspaceID() string {
+	if o == nil {
+		return ""
+	}
+	return o.WorkspaceID
+}
+
+func (o *SourceOauthConsentRequest) GetRedirectURL() string {
+	if o == nil {
+		return ""
+	}
+	return o.RedirectURL
+}
+
+func (o *SourceOauthConsentRequest) GetOAuthInputConfiguration() interface{} {
+	if o == nil {
+		return nil
+	}
+	return o.OAuthInputConfiguration
+}
+
+func (o *SourceOauthConsentRequest) GetSourceID() *string {
+	if o == nil {
+		return nil
+	}
+	return o.SourceID
 }

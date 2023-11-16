@@ -2,7 +2,13 @@
 
 package shared
 
-// AttemptNormalizationStatusReadList - Successful operation
 type AttemptNormalizationStatusReadList struct {
 	AttemptNormalizationStatuses []AttemptNormalizationStatusRead `json:"attemptNormalizationStatuses,omitempty"`
+}
+
+func (o *AttemptNormalizationStatusReadList) GetAttemptNormalizationStatuses() []AttemptNormalizationStatusRead {
+	if o == nil {
+		return nil
+	}
+	return o.AttemptNormalizationStatuses
 }

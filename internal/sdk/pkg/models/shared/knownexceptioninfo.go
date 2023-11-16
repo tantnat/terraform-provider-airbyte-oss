@@ -2,11 +2,45 @@
 
 package shared
 
-// KnownExceptionInfo - Exception occurred; see message for details.
 type KnownExceptionInfo struct {
+	Message                     string   `json:"message"`
 	ExceptionClassName          *string  `json:"exceptionClassName,omitempty"`
 	ExceptionStack              []string `json:"exceptionStack,omitempty"`
-	Message                     string   `json:"message"`
 	RootCauseExceptionClassName *string  `json:"rootCauseExceptionClassName,omitempty"`
 	RootCauseExceptionStack     []string `json:"rootCauseExceptionStack,omitempty"`
+}
+
+func (o *KnownExceptionInfo) GetMessage() string {
+	if o == nil {
+		return ""
+	}
+	return o.Message
+}
+
+func (o *KnownExceptionInfo) GetExceptionClassName() *string {
+	if o == nil {
+		return nil
+	}
+	return o.ExceptionClassName
+}
+
+func (o *KnownExceptionInfo) GetExceptionStack() []string {
+	if o == nil {
+		return nil
+	}
+	return o.ExceptionStack
+}
+
+func (o *KnownExceptionInfo) GetRootCauseExceptionClassName() *string {
+	if o == nil {
+		return nil
+	}
+	return o.RootCauseExceptionClassName
+}
+
+func (o *KnownExceptionInfo) GetRootCauseExceptionStack() []string {
+	if o == nil {
+		return nil
+	}
+	return o.RootCauseExceptionStack
 }

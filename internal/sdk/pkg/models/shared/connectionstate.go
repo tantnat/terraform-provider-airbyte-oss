@@ -4,9 +4,44 @@ package shared
 
 // ConnectionState - Contains the state for a connection. The stateType field identifies what type of state it is. Only the field corresponding to that type will be set, the rest will be null. If stateType=not_set, then none of the fields will be set.
 type ConnectionState struct {
-	ConnectionID string              `json:"connectionId"`
-	GlobalState  *GlobalState        `json:"globalState,omitempty"`
-	State        *StateBlob          `json:"state,omitempty"`
 	StateType    ConnectionStateType `json:"stateType"`
+	ConnectionID string              `json:"connectionId"`
+	State        *StateBlob          `json:"state,omitempty"`
 	StreamState  []StreamState       `json:"streamState,omitempty"`
+	GlobalState  *GlobalState        `json:"globalState,omitempty"`
+}
+
+func (o *ConnectionState) GetStateType() ConnectionStateType {
+	if o == nil {
+		return ConnectionStateType("")
+	}
+	return o.StateType
+}
+
+func (o *ConnectionState) GetConnectionID() string {
+	if o == nil {
+		return ""
+	}
+	return o.ConnectionID
+}
+
+func (o *ConnectionState) GetState() *StateBlob {
+	if o == nil {
+		return nil
+	}
+	return o.State
+}
+
+func (o *ConnectionState) GetStreamState() []StreamState {
+	if o == nil {
+		return nil
+	}
+	return o.StreamState
+}
+
+func (o *ConnectionState) GetGlobalState() *GlobalState {
+	if o == nil {
+		return nil
+	}
+	return o.GlobalState
 }

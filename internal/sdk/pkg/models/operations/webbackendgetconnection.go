@@ -3,18 +3,63 @@
 package operations
 
 import (
-	"airbyte/internal/sdk/pkg/models/shared"
+	"github.com/aballiet/terraform-provider-airbyte/internal/sdk/pkg/models/shared"
 	"net/http"
 )
 
 type WebBackendGetConnectionResponse struct {
+	// HTTP response content type for this operation
 	ContentType string
-	// Input failed validation
-	InvalidInputExceptionInfo *shared.InvalidInputExceptionInfo
-	// Object with given id was not found.
-	NotFoundKnownExceptionInfo *shared.NotFoundKnownExceptionInfo
-	StatusCode                 int
-	RawResponse                *http.Response
+	// HTTP response status code for this operation
+	StatusCode int
+	// Raw HTTP response; suitable for custom response parsing
+	RawResponse *http.Response
 	// Successful operation
 	WebBackendConnectionRead *shared.WebBackendConnectionRead
+	// Object with given id was not found.
+	NotFoundKnownExceptionInfo *shared.NotFoundKnownExceptionInfo
+	// Input failed validation
+	InvalidInputExceptionInfo *shared.InvalidInputExceptionInfo
+}
+
+func (o *WebBackendGetConnectionResponse) GetContentType() string {
+	if o == nil {
+		return ""
+	}
+	return o.ContentType
+}
+
+func (o *WebBackendGetConnectionResponse) GetStatusCode() int {
+	if o == nil {
+		return 0
+	}
+	return o.StatusCode
+}
+
+func (o *WebBackendGetConnectionResponse) GetRawResponse() *http.Response {
+	if o == nil {
+		return nil
+	}
+	return o.RawResponse
+}
+
+func (o *WebBackendGetConnectionResponse) GetWebBackendConnectionRead() *shared.WebBackendConnectionRead {
+	if o == nil {
+		return nil
+	}
+	return o.WebBackendConnectionRead
+}
+
+func (o *WebBackendGetConnectionResponse) GetNotFoundKnownExceptionInfo() *shared.NotFoundKnownExceptionInfo {
+	if o == nil {
+		return nil
+	}
+	return o.NotFoundKnownExceptionInfo
+}
+
+func (o *WebBackendGetConnectionResponse) GetInvalidInputExceptionInfo() *shared.InvalidInputExceptionInfo {
+	if o == nil {
+		return nil
+	}
+	return o.InvalidInputExceptionInfo
 }

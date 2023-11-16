@@ -3,11 +3,11 @@
 package provider
 
 import (
-	"airbyte/internal/sdk"
 	"context"
 	"fmt"
+	"github.com/aballiet/terraform-provider-airbyte/internal/sdk"
 
-	"airbyte/internal/validators"
+	"github.com/aballiet/terraform-provider-airbyte/internal/validators"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
@@ -27,20 +27,19 @@ func NewSourceResource() resource.Resource {
 
 // SourceResource defines the resource implementation.
 type SourceResource struct {
-	client *sdk.Airbyte
+	client *sdk.SDK
 }
 
 // SourceResourceModel describes the resource data model.
 type SourceResourceModel struct {
-	ConnectionConfiguration types.String           `tfsdk:"connection_configuration"`
-	ExceptionClassName      types.String           `tfsdk:"exception_class_name"`
-	ExceptionStack          []types.String         `tfsdk:"exception_stack"`
-	Message                 types.String           `tfsdk:"message"`
-	Name                    types.String           `tfsdk:"name"`
-	SourceDefinitionID      types.String           `tfsdk:"source_definition_id"`
-	SourceID                types.String           `tfsdk:"source_id"`
-	ValidationErrors        []InvalidInputProperty `tfsdk:"validation_errors"`
-	WorkspaceID             types.String           `tfsdk:"workspace_id"`
+	ConnectionConfiguration types.String `tfsdk:"connection_configuration"`
+	Icon                    types.String `tfsdk:"icon"`
+	Name                    types.String `tfsdk:"name"`
+	SecretID                types.String `tfsdk:"secret_id"`
+	SourceDefinitionID      types.String `tfsdk:"source_definition_id"`
+	SourceID                types.String `tfsdk:"source_id"`
+	SourceName              types.String `tfsdk:"source_name"`
+	WorkspaceID             types.String `tfsdk:"workspace_id"`
 }
 
 func (r *SourceResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -54,24 +53,20 @@ func (r *SourceResource) Schema(ctx context.Context, req resource.SchemaRequest,
 		Attributes: map[string]schema.Attribute{
 			"connection_configuration": schema.StringAttribute{
 				Required: true,
+				MarkdownDescription: `Parsed as JSON.` + "\n" +
+					`The values required to configure the source. The schema for this must match the schema return by source_definition_specifications/get for the source.`,
 				Validators: []validator.String{
 					validators.IsValidJSON(),
 				},
-				MarkdownDescription: `Parsed as JSON.` + "\n" +
-					`The values required to configure the source. The schema for this must match the schema return by source_definition_specifications/get for the source.`,
 			},
-			"exception_class_name": schema.StringAttribute{
-				Computed: true,
-			},
-			"exception_stack": schema.ListAttribute{
-				Computed:    true,
-				ElementType: types.StringType,
-			},
-			"message": schema.StringAttribute{
+			"icon": schema.StringAttribute{
 				Computed: true,
 			},
 			"name": schema.StringAttribute{
 				Required: true,
+			},
+			"secret_id": schema.StringAttribute{
+				Optional: true,
 			},
 			"source_definition_id": schema.StringAttribute{
 				PlanModifiers: []planmodifier.String{
@@ -80,23 +75,10 @@ func (r *SourceResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Required: true,
 			},
 			"source_id": schema.StringAttribute{
-				Required: true,
-			},
-			"validation_errors": schema.ListNestedAttribute{
 				Computed: true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"invalid_value": schema.StringAttribute{
-							Computed: true,
-						},
-						"message": schema.StringAttribute{
-							Computed: true,
-						},
-						"property_path": schema.StringAttribute{
-							Computed: true,
-						},
-					},
-				},
+			},
+			"source_name": schema.StringAttribute{
+				Computed: true,
 			},
 			"workspace_id": schema.StringAttribute{
 				PlanModifiers: []planmodifier.String{
@@ -114,12 +96,12 @@ func (r *SourceResource) Configure(ctx context.Context, req resource.ConfigureRe
 		return
 	}
 
-	client, ok := req.ProviderData.(*sdk.Airbyte)
+	client, ok := req.ProviderData.(*sdk.SDK)
 
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Unexpected Resource Configure Type",
-			fmt.Sprintf("Expected *sdk.Airbyte, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+			fmt.Sprintf("Expected *sdk.SDK, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
 		return
@@ -150,6 +132,9 @@ func (r *SourceResource) Create(ctx context.Context, req resource.CreateRequest,
 	res, err := r.client.Source.CreateSource(ctx, request)
 	if err != nil {
 		resp.Diagnostics.AddError("failure to invoke API", err.Error())
+		if res != nil && res.RawResponse != nil {
+			resp.Diagnostics.AddError("unexpected http request/response", debugResponse(res.RawResponse))
+		}
 		return
 	}
 	if res == nil {
@@ -160,11 +145,11 @@ func (r *SourceResource) Create(ctx context.Context, req resource.CreateRequest,
 		resp.Diagnostics.AddError(fmt.Sprintf("unexpected response from API. Got an unexpected response code %v", res.StatusCode), debugResponse(res.RawResponse))
 		return
 	}
-	if res.InvalidInputExceptionInfo == nil {
+	if res.SourceRead == nil {
 		resp.Diagnostics.AddError("unexpected response from API. No response body", debugResponse(res.RawResponse))
 		return
 	}
-	data.RefreshFromCreateResponse(res.InvalidInputExceptionInfo)
+	data.RefreshFromCreateResponse(res.SourceRead)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -205,6 +190,9 @@ func (r *SourceResource) Update(ctx context.Context, req resource.UpdateRequest,
 	res, err := r.client.Source.UpdateSource(ctx, request)
 	if err != nil {
 		resp.Diagnostics.AddError("failure to invoke API", err.Error())
+		if res != nil && res.RawResponse != nil {
+			resp.Diagnostics.AddError("unexpected http request/response", debugResponse(res.RawResponse))
+		}
 		return
 	}
 	if res == nil {
@@ -215,11 +203,11 @@ func (r *SourceResource) Update(ctx context.Context, req resource.UpdateRequest,
 		resp.Diagnostics.AddError(fmt.Sprintf("unexpected response from API. Got an unexpected response code %v", res.StatusCode), debugResponse(res.RawResponse))
 		return
 	}
-	if res.InvalidInputExceptionInfo == nil {
+	if res.SourceRead == nil {
 		resp.Diagnostics.AddError("unexpected response from API. No response body", debugResponse(res.RawResponse))
 		return
 	}
-	data.RefreshFromUpdateResponse(res.InvalidInputExceptionInfo)
+	data.RefreshFromUpdateResponse(res.SourceRead)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -247,6 +235,9 @@ func (r *SourceResource) Delete(ctx context.Context, req resource.DeleteRequest,
 	res, err := r.client.Source.DeleteSource(ctx, request)
 	if err != nil {
 		resp.Diagnostics.AddError("failure to invoke API", err.Error())
+		if res != nil && res.RawResponse != nil {
+			resp.Diagnostics.AddError("unexpected http request/response", debugResponse(res.RawResponse))
+		}
 		return
 	}
 	if res == nil {

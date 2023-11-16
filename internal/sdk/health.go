@@ -3,30 +3,31 @@
 package sdk
 
 import (
-	"airbyte/internal/sdk/pkg/models/operations"
-	"airbyte/internal/sdk/pkg/models/shared"
-	"airbyte/internal/sdk/pkg/utils"
 	"bytes"
 	"context"
 	"fmt"
+	"github.com/aballiet/terraform-provider-airbyte/internal/sdk/pkg/models/operations"
+	"github.com/aballiet/terraform-provider-airbyte/internal/sdk/pkg/models/sdkerrors"
+	"github.com/aballiet/terraform-provider-airbyte/internal/sdk/pkg/models/shared"
+	"github.com/aballiet/terraform-provider-airbyte/internal/sdk/pkg/utils"
 	"io"
 	"net/http"
 	"strings"
 )
 
-// health - Healthchecks
-type health struct {
+// Health - Healthchecks
+type Health struct {
 	sdkConfiguration sdkConfiguration
 }
 
-func newHealth(sdkConfig sdkConfiguration) *health {
-	return &health{
+func newHealth(sdkConfig sdkConfiguration) *Health {
+	return &Health{
 		sdkConfiguration: sdkConfig,
 	}
 }
 
 // GetHealthCheck - Health Check
-func (s *health) GetHealthCheck(ctx context.Context) (*operations.GetHealthCheckResponse, error) {
+func (s *Health) GetHealthCheck(ctx context.Context) (*operations.GetHealthCheckResponse, error) {
 	baseURL := utils.ReplaceParameters(s.sdkConfiguration.GetServerDetails())
 	url := strings.TrimSuffix(baseURL, "/") + "/v1/health"
 
@@ -35,9 +36,9 @@ func (s *health) GetHealthCheck(ctx context.Context) (*operations.GetHealthCheck
 		return nil, fmt.Errorf("error creating request: %w", err)
 	}
 	req.Header.Set("Accept", "application/json")
-	req.Header.Set("user-agent", fmt.Sprintf("speakeasy-sdk/%s %s %s %s", s.sdkConfiguration.Language, s.sdkConfiguration.SDKVersion, s.sdkConfiguration.GenVersion, s.sdkConfiguration.OpenAPIDocVersion))
+	req.Header.Set("user-agent", s.sdkConfiguration.UserAgent)
 
-	client := s.sdkConfiguration.DefaultClient
+	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil {
@@ -65,12 +66,14 @@ func (s *health) GetHealthCheck(ctx context.Context) (*operations.GetHealthCheck
 	case httpRes.StatusCode == 200:
 		switch {
 		case utils.MatchContentType(contentType, `application/json`):
-			var out *shared.HealthCheckRead
-			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out); err != nil {
+			var out shared.HealthCheckRead
+			if err := utils.UnmarshalJsonFromResponseBody(bytes.NewBuffer(rawBody), &out, ""); err != nil {
 				return nil, err
 			}
 
-			res.HealthCheckRead = out
+			res.HealthCheckRead = &out
+		default:
+			return nil, sdkerrors.NewSDKError(fmt.Sprintf("unknown content-type received: %s", contentType), httpRes.StatusCode, string(rawBody), httpRes)
 		}
 	}
 

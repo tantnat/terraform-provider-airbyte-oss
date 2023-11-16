@@ -7,21 +7,21 @@ import (
 	"fmt"
 )
 
-type ConnectionScheduleTimeUnit string
+type TimeUnit string
 
 const (
-	ConnectionScheduleTimeUnitMinutes ConnectionScheduleTimeUnit = "minutes"
-	ConnectionScheduleTimeUnitHours   ConnectionScheduleTimeUnit = "hours"
-	ConnectionScheduleTimeUnitDays    ConnectionScheduleTimeUnit = "days"
-	ConnectionScheduleTimeUnitWeeks   ConnectionScheduleTimeUnit = "weeks"
-	ConnectionScheduleTimeUnitMonths  ConnectionScheduleTimeUnit = "months"
+	TimeUnitMinutes TimeUnit = "minutes"
+	TimeUnitHours   TimeUnit = "hours"
+	TimeUnitDays    TimeUnit = "days"
+	TimeUnitWeeks   TimeUnit = "weeks"
+	TimeUnitMonths  TimeUnit = "months"
 )
 
-func (e ConnectionScheduleTimeUnit) ToPointer() *ConnectionScheduleTimeUnit {
+func (e TimeUnit) ToPointer() *TimeUnit {
 	return &e
 }
 
-func (e *ConnectionScheduleTimeUnit) UnmarshalJSON(data []byte) error {
+func (e *TimeUnit) UnmarshalJSON(data []byte) error {
 	var v string
 	if err := json.Unmarshal(data, &v); err != nil {
 		return err
@@ -36,15 +36,29 @@ func (e *ConnectionScheduleTimeUnit) UnmarshalJSON(data []byte) error {
 	case "weeks":
 		fallthrough
 	case "months":
-		*e = ConnectionScheduleTimeUnit(v)
+		*e = TimeUnit(v)
 		return nil
 	default:
-		return fmt.Errorf("invalid value for ConnectionScheduleTimeUnit: %v", v)
+		return fmt.Errorf("invalid value for TimeUnit: %v", v)
 	}
 }
 
 // ConnectionSchedule - if null, then no schedule is set.
 type ConnectionSchedule struct {
-	TimeUnit ConnectionScheduleTimeUnit `json:"timeUnit"`
-	Units    int64                      `json:"units"`
+	Units    int64    `json:"units"`
+	TimeUnit TimeUnit `json:"timeUnit"`
+}
+
+func (o *ConnectionSchedule) GetUnits() int64 {
+	if o == nil {
+		return 0
+	}
+	return o.Units
+}
+
+func (o *ConnectionSchedule) GetTimeUnit() TimeUnit {
+	if o == nil {
+		return TimeUnit("")
+	}
+	return o.TimeUnit
 }

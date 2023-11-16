@@ -2,9 +2,29 @@
 
 package shared
 
-// WebBackendWorkspaceStateResult - Successful operation
 type WebBackendWorkspaceStateResult struct {
 	HasConnections  bool `json:"hasConnections"`
-	HasDestinations bool `json:"hasDestinations"`
 	HasSources      bool `json:"hasSources"`
+	HasDestinations bool `json:"hasDestinations"`
+}
+
+func (o *WebBackendWorkspaceStateResult) GetHasConnections() bool {
+	if o == nil {
+		return false
+	}
+	return o.HasConnections
+}
+
+func (o *WebBackendWorkspaceStateResult) GetHasSources() bool {
+	if o == nil {
+		return false
+	}
+	return o.HasSources
+}
+
+func (o *WebBackendWorkspaceStateResult) GetHasDestinations() bool {
+	if o == nil {
+		return false
+	}
+	return o.HasDestinations
 }

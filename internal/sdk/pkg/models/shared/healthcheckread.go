@@ -2,7 +2,13 @@
 
 package shared
 
-// HealthCheckRead - Successful operation
 type HealthCheckRead struct {
 	Available bool `json:"available"`
+}
+
+func (o *HealthCheckRead) GetAvailable() bool {
+	if o == nil {
+		return false
+	}
+	return o.Available
 }

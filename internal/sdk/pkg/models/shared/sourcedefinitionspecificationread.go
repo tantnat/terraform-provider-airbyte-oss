@@ -2,12 +2,46 @@
 
 package shared
 
-// SourceDefinitionSpecificationRead - Successful operation
 type SourceDefinitionSpecificationRead struct {
-	AdvancedAuth *AdvancedAuth `json:"advancedAuth,omitempty"`
+	SourceDefinitionID string  `json:"sourceDefinitionId"`
+	DocumentationURL   *string `json:"documentationUrl,omitempty"`
 	// The specification for what values are required to configure the sourceDefinition.
 	ConnectionSpecification *SourceDefinitionSpecification `json:"connectionSpecification,omitempty"`
-	DocumentationURL        *string                        `json:"documentationUrl,omitempty"`
+	AdvancedAuth            *AdvancedAuth                  `json:"advancedAuth,omitempty"`
 	JobInfo                 SynchronousJobRead             `json:"jobInfo"`
-	SourceDefinitionID      string                         `json:"sourceDefinitionId"`
+}
+
+func (o *SourceDefinitionSpecificationRead) GetSourceDefinitionID() string {
+	if o == nil {
+		return ""
+	}
+	return o.SourceDefinitionID
+}
+
+func (o *SourceDefinitionSpecificationRead) GetDocumentationURL() *string {
+	if o == nil {
+		return nil
+	}
+	return o.DocumentationURL
+}
+
+func (o *SourceDefinitionSpecificationRead) GetConnectionSpecification() *SourceDefinitionSpecification {
+	if o == nil {
+		return nil
+	}
+	return o.ConnectionSpecification
+}
+
+func (o *SourceDefinitionSpecificationRead) GetAdvancedAuth() *AdvancedAuth {
+	if o == nil {
+		return nil
+	}
+	return o.AdvancedAuth
+}
+
+func (o *SourceDefinitionSpecificationRead) GetJobInfo() SynchronousJobRead {
+	if o == nil {
+		return SynchronousJobRead{}
+	}
+	return o.JobInfo
 }

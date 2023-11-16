@@ -3,14 +3,45 @@
 package operations
 
 import (
-	"airbyte/internal/sdk/pkg/models/shared"
+	"github.com/aballiet/terraform-provider-airbyte/internal/sdk/pkg/models/shared"
 	"net/http"
 )
 
 type SetWorkflowInAttemptResponse struct {
+	// HTTP response content type for this operation
 	ContentType string
+	// HTTP response status code for this operation
+	StatusCode int
+	// Raw HTTP response; suitable for custom response parsing
+	RawResponse *http.Response
 	// Successful Operation
 	InternalOperationResult *shared.InternalOperationResult
-	StatusCode              int
-	RawResponse             *http.Response
+}
+
+func (o *SetWorkflowInAttemptResponse) GetContentType() string {
+	if o == nil {
+		return ""
+	}
+	return o.ContentType
+}
+
+func (o *SetWorkflowInAttemptResponse) GetStatusCode() int {
+	if o == nil {
+		return 0
+	}
+	return o.StatusCode
+}
+
+func (o *SetWorkflowInAttemptResponse) GetRawResponse() *http.Response {
+	if o == nil {
+		return nil
+	}
+	return o.RawResponse
+}
+
+func (o *SetWorkflowInAttemptResponse) GetInternalOperationResult() *shared.InternalOperationResult {
+	if o == nil {
+		return nil
+	}
+	return o.InternalOperationResult
 }

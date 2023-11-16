@@ -2,9 +2,29 @@
 
 package shared
 
-// JobDebugInfoRead - Successful operation
 type JobDebugInfoRead struct {
-	Attempts      []AttemptInfoRead  `json:"attempts"`
 	Job           JobDebugRead       `json:"job"`
+	Attempts      []AttemptInfoRead  `json:"attempts"`
 	WorkflowState *WorkflowStateRead `json:"workflowState,omitempty"`
+}
+
+func (o *JobDebugInfoRead) GetJob() JobDebugRead {
+	if o == nil {
+		return JobDebugRead{}
+	}
+	return o.Job
+}
+
+func (o *JobDebugInfoRead) GetAttempts() []AttemptInfoRead {
+	if o == nil {
+		return []AttemptInfoRead{}
+	}
+	return o.Attempts
+}
+
+func (o *JobDebugInfoRead) GetWorkflowState() *WorkflowStateRead {
+	if o == nil {
+		return nil
+	}
+	return o.WorkflowState
 }

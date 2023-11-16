@@ -2,7 +2,13 @@
 
 package shared
 
-// DestinationDefinitionReadList - Successful operation
 type DestinationDefinitionReadList struct {
 	DestinationDefinitions []DestinationDefinitionRead `json:"destinationDefinitions"`
+}
+
+func (o *DestinationDefinitionReadList) GetDestinationDefinitions() []DestinationDefinitionRead {
+	if o == nil {
+		return []DestinationDefinitionRead{}
+	}
+	return o.DestinationDefinitions
 }

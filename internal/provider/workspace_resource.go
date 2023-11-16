@@ -3,9 +3,9 @@
 package provider
 
 import (
-	"airbyte/internal/sdk"
 	"context"
 	"fmt"
+	"github.com/aballiet/terraform-provider-airbyte/internal/sdk"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -27,26 +27,27 @@ func NewWorkspaceResource() resource.Resource {
 
 // WorkspaceResource defines the resource implementation.
 type WorkspaceResource struct {
-	client *sdk.Airbyte
+	client *sdk.SDK
 }
 
 // WorkspaceResourceModel describes the resource data model.
 type WorkspaceResourceModel struct {
-	AnonymousDataCollection types.Bool             `tfsdk:"anonymous_data_collection"`
-	DefaultGeography        types.String           `tfsdk:"default_geography"`
-	DisplaySetupWizard      types.Bool             `tfsdk:"display_setup_wizard"`
-	Email                   types.String           `tfsdk:"email"`
-	ExceptionClassName      types.String           `tfsdk:"exception_class_name"`
-	ExceptionStack          []types.String         `tfsdk:"exception_stack"`
-	InitialSetupComplete    types.Bool             `tfsdk:"initial_setup_complete"`
-	Message                 types.String           `tfsdk:"message"`
-	Name                    types.String           `tfsdk:"name"`
-	News                    types.Bool             `tfsdk:"news"`
-	Notifications           []Notification         `tfsdk:"notifications"`
-	SecurityUpdates         types.Bool             `tfsdk:"security_updates"`
-	ValidationErrors        []InvalidInputProperty `tfsdk:"validation_errors"`
-	WebhookConfigs          []WebhookConfigWrite   `tfsdk:"webhook_configs"`
-	WorkspaceID             types.String           `tfsdk:"workspace_id"`
+	AnonymousDataCollection types.Bool            `tfsdk:"anonymous_data_collection"`
+	CustomerID              types.String          `tfsdk:"customer_id"`
+	DefaultGeography        types.String          `tfsdk:"default_geography"`
+	DisplaySetupWizard      types.Bool            `tfsdk:"display_setup_wizard"`
+	Email                   types.String          `tfsdk:"email"`
+	FeedbackDone            types.Bool            `tfsdk:"feedback_done"`
+	FirstCompletedSync      types.Bool            `tfsdk:"first_completed_sync"`
+	InitialSetupComplete    types.Bool            `tfsdk:"initial_setup_complete"`
+	Name                    types.String          `tfsdk:"name"`
+	News                    types.Bool            `tfsdk:"news"`
+	Notifications           []Notification        `tfsdk:"notifications"`
+	NotificationSettings    *NotificationSettings `tfsdk:"notification_settings"`
+	SecurityUpdates         types.Bool            `tfsdk:"security_updates"`
+	Slug                    types.String          `tfsdk:"slug"`
+	WebhookConfigs          []WebhookConfigRead   `tfsdk:"webhook_configs"`
+	WorkspaceID             types.String          `tfsdk:"workspace_id"`
 }
 
 func (r *WorkspaceResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -59,10 +60,16 @@ func (r *WorkspaceResource) Schema(ctx context.Context, req resource.SchemaReque
 
 		Attributes: map[string]schema.Attribute{
 			"anonymous_data_collection": schema.BoolAttribute{
+				Computed: true,
 				Optional: true,
 			},
+			"customer_id": schema.StringAttribute{
+				Computed: true,
+			},
 			"default_geography": schema.StringAttribute{
-				Optional: true,
+				Computed:    true,
+				Optional:    true,
+				Description: `must be one of ["auto", "us", "eu"]`,
 				Validators: []validator.String{
 					stringvalidator.OneOf(
 						"auto",
@@ -70,25 +77,22 @@ func (r *WorkspaceResource) Schema(ctx context.Context, req resource.SchemaReque
 						"eu",
 					),
 				},
-				Description: `must be one of [auto, us, eu]`,
 			},
 			"display_setup_wizard": schema.BoolAttribute{
+				Computed: true,
 				Optional: true,
 			},
 			"email": schema.StringAttribute{
+				Computed: true,
 				Optional: true,
 			},
-			"exception_class_name": schema.StringAttribute{
+			"feedback_done": schema.BoolAttribute{
 				Computed: true,
 			},
-			"exception_stack": schema.ListAttribute{
-				Computed:    true,
-				ElementType: types.StringType,
+			"first_completed_sync": schema.BoolAttribute{
+				Computed: true,
 			},
 			"initial_setup_complete": schema.BoolAttribute{
-				Optional: true,
-			},
-			"message": schema.StringAttribute{
 				Computed: true,
 			},
 			"name": schema.StringAttribute{
@@ -98,33 +102,41 @@ func (r *WorkspaceResource) Schema(ctx context.Context, req resource.SchemaReque
 				Required: true,
 			},
 			"news": schema.BoolAttribute{
+				Computed: true,
 				Optional: true,
 			},
 			"notifications": schema.ListNestedAttribute{
+				Computed: true,
 				Optional: true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"customerio_configuration": schema.SingleNestedAttribute{
+							Computed:   true,
 							Optional:   true,
 							Attributes: map[string]schema.Attribute{},
 						},
 						"notification_type": schema.StringAttribute{
-							Required: true,
+							Required:    true,
+							Description: `must be one of ["slack", "customerio"]`,
 							Validators: []validator.String{
 								stringvalidator.OneOf(
 									"slack",
 									"customerio",
 								),
 							},
-							Description: `must be one of [slack, customerio]`,
 						},
 						"send_on_failure": schema.BoolAttribute{
-							Required: true,
+							Computed:    true,
+							Optional:    true,
+							Description: `Default: true`,
 						},
 						"send_on_success": schema.BoolAttribute{
-							Required: true,
+							Computed:    true,
+							Optional:    true,
+							Description: `Default: false`,
 						},
 						"slack_configuration": schema.SingleNestedAttribute{
+							Computed: true,
 							Optional: true,
 							Attributes: map[string]schema.Attribute{
 								"webhook": schema.StringAttribute{
@@ -135,38 +147,195 @@ func (r *WorkspaceResource) Schema(ctx context.Context, req resource.SchemaReque
 					},
 				},
 			},
-			"security_updates": schema.BoolAttribute{
-				Optional: true,
-			},
-			"validation_errors": schema.ListNestedAttribute{
+			"notification_settings": schema.SingleNestedAttribute{
 				Computed: true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"invalid_value": schema.StringAttribute{
-							Computed: true,
+				Optional: true,
+				Attributes: map[string]schema.Attribute{
+					"send_on_connection_update": schema.SingleNestedAttribute{
+						Computed: true,
+						Optional: true,
+						Attributes: map[string]schema.Attribute{
+							"customerio_configuration": schema.SingleNestedAttribute{
+								Computed:   true,
+								Optional:   true,
+								Attributes: map[string]schema.Attribute{},
+							},
+							"notification_type": schema.ListAttribute{
+								Computed:    true,
+								Optional:    true,
+								ElementType: types.StringType,
+							},
+							"slack_configuration": schema.SingleNestedAttribute{
+								Computed: true,
+								Optional: true,
+								Attributes: map[string]schema.Attribute{
+									"webhook": schema.StringAttribute{
+										Required: true,
+									},
+								},
+							},
 						},
-						"message": schema.StringAttribute{
-							Computed: true,
+					},
+					"send_on_connection_update_action_required": schema.SingleNestedAttribute{
+						Computed: true,
+						Optional: true,
+						Attributes: map[string]schema.Attribute{
+							"customerio_configuration": schema.SingleNestedAttribute{
+								Computed:   true,
+								Optional:   true,
+								Attributes: map[string]schema.Attribute{},
+							},
+							"notification_type": schema.ListAttribute{
+								Computed:    true,
+								Optional:    true,
+								ElementType: types.StringType,
+							},
+							"slack_configuration": schema.SingleNestedAttribute{
+								Computed: true,
+								Optional: true,
+								Attributes: map[string]schema.Attribute{
+									"webhook": schema.StringAttribute{
+										Required: true,
+									},
+								},
+							},
 						},
-						"property_path": schema.StringAttribute{
-							Computed: true,
+					},
+					"send_on_failure": schema.SingleNestedAttribute{
+						Computed: true,
+						Optional: true,
+						Attributes: map[string]schema.Attribute{
+							"customerio_configuration": schema.SingleNestedAttribute{
+								Computed:   true,
+								Optional:   true,
+								Attributes: map[string]schema.Attribute{},
+							},
+							"notification_type": schema.ListAttribute{
+								Computed:    true,
+								Optional:    true,
+								ElementType: types.StringType,
+							},
+							"slack_configuration": schema.SingleNestedAttribute{
+								Computed: true,
+								Optional: true,
+								Attributes: map[string]schema.Attribute{
+									"webhook": schema.StringAttribute{
+										Required: true,
+									},
+								},
+							},
+						},
+					},
+					"send_on_success": schema.SingleNestedAttribute{
+						Computed: true,
+						Optional: true,
+						Attributes: map[string]schema.Attribute{
+							"customerio_configuration": schema.SingleNestedAttribute{
+								Computed:   true,
+								Optional:   true,
+								Attributes: map[string]schema.Attribute{},
+							},
+							"notification_type": schema.ListAttribute{
+								Computed:    true,
+								Optional:    true,
+								ElementType: types.StringType,
+							},
+							"slack_configuration": schema.SingleNestedAttribute{
+								Computed: true,
+								Optional: true,
+								Attributes: map[string]schema.Attribute{
+									"webhook": schema.StringAttribute{
+										Required: true,
+									},
+								},
+							},
+						},
+					},
+					"send_on_sync_disabled": schema.SingleNestedAttribute{
+						Computed: true,
+						Optional: true,
+						Attributes: map[string]schema.Attribute{
+							"customerio_configuration": schema.SingleNestedAttribute{
+								Computed:   true,
+								Optional:   true,
+								Attributes: map[string]schema.Attribute{},
+							},
+							"notification_type": schema.ListAttribute{
+								Computed:    true,
+								Optional:    true,
+								ElementType: types.StringType,
+							},
+							"slack_configuration": schema.SingleNestedAttribute{
+								Computed: true,
+								Optional: true,
+								Attributes: map[string]schema.Attribute{
+									"webhook": schema.StringAttribute{
+										Required: true,
+									},
+								},
+							},
+						},
+					},
+					"send_on_sync_disabled_warning": schema.SingleNestedAttribute{
+						Computed: true,
+						Optional: true,
+						Attributes: map[string]schema.Attribute{
+							"customerio_configuration": schema.SingleNestedAttribute{
+								Computed:   true,
+								Optional:   true,
+								Attributes: map[string]schema.Attribute{},
+							},
+							"notification_type": schema.ListAttribute{
+								Computed:    true,
+								Optional:    true,
+								ElementType: types.StringType,
+							},
+							"slack_configuration": schema.SingleNestedAttribute{
+								Computed: true,
+								Optional: true,
+								Attributes: map[string]schema.Attribute{
+									"webhook": schema.StringAttribute{
+										Required: true,
+									},
+								},
+							},
 						},
 					},
 				},
 			},
+			"security_updates": schema.BoolAttribute{
+				Computed: true,
+				Optional: true,
+			},
+			"slug": schema.StringAttribute{
+				Computed: true,
+			},
 			"webhook_configs": schema.ListNestedAttribute{
+				Computed: true,
 				Optional: true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
+						"auth_token": schema.StringAttribute{
+							Optional:    true,
+							Description: `an auth token, to be passed as the value for an HTTP Authorization header.`,
+						},
+						"id": schema.StringAttribute{
+							Computed: true,
+						},
 						"name": schema.StringAttribute{
+							Computed:    true,
 							Optional:    true,
 							Description: `human readable name for this webhook e.g. for UI display.`,
+						},
+						"validation_url": schema.StringAttribute{
+							Optional:    true,
+							Description: `if supplied, the webhook config will be validated by checking that this URL returns a 2xx response.`,
 						},
 					},
 				},
 			},
 			"workspace_id": schema.StringAttribute{
-				Required: true,
+				Computed: true,
 			},
 		},
 	}
@@ -178,12 +347,12 @@ func (r *WorkspaceResource) Configure(ctx context.Context, req resource.Configur
 		return
 	}
 
-	client, ok := req.ProviderData.(*sdk.Airbyte)
+	client, ok := req.ProviderData.(*sdk.SDK)
 
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Unexpected Resource Configure Type",
-			fmt.Sprintf("Expected *sdk.Airbyte, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+			fmt.Sprintf("Expected *sdk.SDK, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
 		return
@@ -214,6 +383,9 @@ func (r *WorkspaceResource) Create(ctx context.Context, req resource.CreateReque
 	res, err := r.client.Workspace.CreateWorkspace(ctx, request)
 	if err != nil {
 		resp.Diagnostics.AddError("failure to invoke API", err.Error())
+		if res != nil && res.RawResponse != nil {
+			resp.Diagnostics.AddError("unexpected http request/response", debugResponse(res.RawResponse))
+		}
 		return
 	}
 	if res == nil {
@@ -224,11 +396,11 @@ func (r *WorkspaceResource) Create(ctx context.Context, req resource.CreateReque
 		resp.Diagnostics.AddError(fmt.Sprintf("unexpected response from API. Got an unexpected response code %v", res.StatusCode), debugResponse(res.RawResponse))
 		return
 	}
-	if res.InvalidInputExceptionInfo == nil {
+	if res.WorkspaceRead == nil {
 		resp.Diagnostics.AddError("unexpected response from API. No response body", debugResponse(res.RawResponse))
 		return
 	}
-	data.RefreshFromCreateResponse(res.InvalidInputExceptionInfo)
+	data.RefreshFromCreateResponse(res.WorkspaceRead)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -269,6 +441,9 @@ func (r *WorkspaceResource) Update(ctx context.Context, req resource.UpdateReque
 	res, err := r.client.Workspace.UpdateWorkspace(ctx, request)
 	if err != nil {
 		resp.Diagnostics.AddError("failure to invoke API", err.Error())
+		if res != nil && res.RawResponse != nil {
+			resp.Diagnostics.AddError("unexpected http request/response", debugResponse(res.RawResponse))
+		}
 		return
 	}
 	if res == nil {
@@ -279,11 +454,11 @@ func (r *WorkspaceResource) Update(ctx context.Context, req resource.UpdateReque
 		resp.Diagnostics.AddError(fmt.Sprintf("unexpected response from API. Got an unexpected response code %v", res.StatusCode), debugResponse(res.RawResponse))
 		return
 	}
-	if res.InvalidInputExceptionInfo == nil {
+	if res.WorkspaceRead == nil {
 		resp.Diagnostics.AddError("unexpected response from API. No response body", debugResponse(res.RawResponse))
 		return
 	}
-	data.RefreshFromUpdateResponse(res.InvalidInputExceptionInfo)
+	data.RefreshFromUpdateResponse(res.WorkspaceRead)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -311,6 +486,9 @@ func (r *WorkspaceResource) Delete(ctx context.Context, req resource.DeleteReque
 	res, err := r.client.Workspace.DeleteWorkspace(ctx, request)
 	if err != nil {
 		resp.Diagnostics.AddError("failure to invoke API", err.Error())
+		if res != nil && res.RawResponse != nil {
+			resp.Diagnostics.AddError("unexpected http request/response", debugResponse(res.RawResponse))
+		}
 		return
 	}
 	if res == nil {

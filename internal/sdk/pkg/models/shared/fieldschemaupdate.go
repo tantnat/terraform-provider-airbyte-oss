@@ -4,7 +4,21 @@ package shared
 
 type FieldSchemaUpdate struct {
 	// JSONSchema representation of the field
-	NewSchema FieldSchema `json:"newSchema"`
-	// JSONSchema representation of the field
 	OldSchema FieldSchema `json:"oldSchema"`
+	// JSONSchema representation of the field
+	NewSchema FieldSchema `json:"newSchema"`
+}
+
+func (o *FieldSchemaUpdate) GetOldSchema() FieldSchema {
+	if o == nil {
+		return FieldSchema{}
+	}
+	return o.OldSchema
+}
+
+func (o *FieldSchemaUpdate) GetNewSchema() FieldSchema {
+	if o == nil {
+		return FieldSchema{}
+	}
+	return o.NewSchema
 }

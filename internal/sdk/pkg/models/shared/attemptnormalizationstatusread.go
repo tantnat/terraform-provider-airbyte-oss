@@ -4,7 +4,35 @@ package shared
 
 type AttemptNormalizationStatusRead struct {
 	AttemptNumber          *int   `json:"attemptNumber,omitempty"`
-	HasNormalizationFailed *bool  `json:"hasNormalizationFailed,omitempty"`
 	HasRecordsCommitted    *bool  `json:"hasRecordsCommitted,omitempty"`
 	RecordsCommitted       *int64 `json:"recordsCommitted,omitempty"`
+	HasNormalizationFailed *bool  `json:"hasNormalizationFailed,omitempty"`
+}
+
+func (o *AttemptNormalizationStatusRead) GetAttemptNumber() *int {
+	if o == nil {
+		return nil
+	}
+	return o.AttemptNumber
+}
+
+func (o *AttemptNormalizationStatusRead) GetHasRecordsCommitted() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.HasRecordsCommitted
+}
+
+func (o *AttemptNormalizationStatusRead) GetRecordsCommitted() *int64 {
+	if o == nil {
+		return nil
+	}
+	return o.RecordsCommitted
+}
+
+func (o *AttemptNormalizationStatusRead) GetHasNormalizationFailed() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.HasNormalizationFailed
 }

@@ -3,7 +3,28 @@
 package shared
 
 type InvalidInputProperty struct {
+	PropertyPath string  `json:"propertyPath"`
 	InvalidValue *string `json:"invalidValue,omitempty"`
 	Message      *string `json:"message,omitempty"`
-	PropertyPath string  `json:"propertyPath"`
+}
+
+func (o *InvalidInputProperty) GetPropertyPath() string {
+	if o == nil {
+		return ""
+	}
+	return o.PropertyPath
+}
+
+func (o *InvalidInputProperty) GetInvalidValue() *string {
+	if o == nil {
+		return nil
+	}
+	return o.InvalidValue
+}
+
+func (o *InvalidInputProperty) GetMessage() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Message
 }

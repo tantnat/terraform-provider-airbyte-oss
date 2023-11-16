@@ -3,6 +3,20 @@
 package shared
 
 type ListDeclarativeManifestsRequestBody struct {
-	SourceDefinitionID string `json:"sourceDefinitionId"`
 	WorkspaceID        string `json:"workspaceId"`
+	SourceDefinitionID string `json:"sourceDefinitionId"`
+}
+
+func (o *ListDeclarativeManifestsRequestBody) GetWorkspaceID() string {
+	if o == nil {
+		return ""
+	}
+	return o.WorkspaceID
+}
+
+func (o *ListDeclarativeManifestsRequestBody) GetSourceDefinitionID() string {
+	if o == nil {
+		return ""
+	}
+	return o.SourceDefinitionID
 }

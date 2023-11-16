@@ -4,15 +4,92 @@ package shared
 
 // WorkspaceUpdate - Used to apply a patch-style update to a workspace, which means that null properties remain unchanged
 type WorkspaceUpdate struct {
-	AnonymousDataCollection *bool                 `json:"anonymousDataCollection,omitempty"`
-	DefaultGeography        *Geography            `json:"defaultGeography,omitempty"`
-	DisplaySetupWizard      *bool                 `json:"displaySetupWizard,omitempty"`
+	WorkspaceID             string                `json:"workspaceId"`
 	Email                   *string               `json:"email,omitempty"`
 	InitialSetupComplete    *bool                 `json:"initialSetupComplete,omitempty"`
+	DisplaySetupWizard      *bool                 `json:"displaySetupWizard,omitempty"`
+	AnonymousDataCollection *bool                 `json:"anonymousDataCollection,omitempty"`
 	News                    *bool                 `json:"news,omitempty"`
-	NotificationSettings    *NotificationSettings `json:"notificationSettings,omitempty"`
-	Notifications           []Notification        `json:"notifications,omitempty"`
 	SecurityUpdates         *bool                 `json:"securityUpdates,omitempty"`
+	Notifications           []Notification        `json:"notifications,omitempty"`
+	NotificationSettings    *NotificationSettings `json:"notificationSettings,omitempty"`
+	DefaultGeography        *Geography            `json:"defaultGeography,omitempty"`
 	WebhookConfigs          []WebhookConfigWrite  `json:"webhookConfigs,omitempty"`
-	WorkspaceID             string                `json:"workspaceId"`
+}
+
+func (o *WorkspaceUpdate) GetWorkspaceID() string {
+	if o == nil {
+		return ""
+	}
+	return o.WorkspaceID
+}
+
+func (o *WorkspaceUpdate) GetEmail() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Email
+}
+
+func (o *WorkspaceUpdate) GetInitialSetupComplete() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.InitialSetupComplete
+}
+
+func (o *WorkspaceUpdate) GetDisplaySetupWizard() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.DisplaySetupWizard
+}
+
+func (o *WorkspaceUpdate) GetAnonymousDataCollection() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.AnonymousDataCollection
+}
+
+func (o *WorkspaceUpdate) GetNews() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.News
+}
+
+func (o *WorkspaceUpdate) GetSecurityUpdates() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.SecurityUpdates
+}
+
+func (o *WorkspaceUpdate) GetNotifications() []Notification {
+	if o == nil {
+		return nil
+	}
+	return o.Notifications
+}
+
+func (o *WorkspaceUpdate) GetNotificationSettings() *NotificationSettings {
+	if o == nil {
+		return nil
+	}
+	return o.NotificationSettings
+}
+
+func (o *WorkspaceUpdate) GetDefaultGeography() *Geography {
+	if o == nil {
+		return nil
+	}
+	return o.DefaultGeography
+}
+
+func (o *WorkspaceUpdate) GetWebhookConfigs() []WebhookConfigWrite {
+	if o == nil {
+		return nil
+	}
+	return o.WebhookConfigs
 }

@@ -3,7 +3,28 @@
 package shared
 
 type AttemptStreamStats struct {
-	Stats           AttemptStats `json:"stats"`
 	StreamName      string       `json:"streamName"`
 	StreamNamespace *string      `json:"streamNamespace,omitempty"`
+	Stats           AttemptStats `json:"stats"`
+}
+
+func (o *AttemptStreamStats) GetStreamName() string {
+	if o == nil {
+		return ""
+	}
+	return o.StreamName
+}
+
+func (o *AttemptStreamStats) GetStreamNamespace() *string {
+	if o == nil {
+		return nil
+	}
+	return o.StreamNamespace
+}
+
+func (o *AttemptStreamStats) GetStats() AttemptStats {
+	if o == nil {
+		return AttemptStats{}
+	}
+	return o.Stats
 }

@@ -7,7 +7,6 @@ import (
 	"fmt"
 )
 
-// ConnectionStateType - Successful operation
 type ConnectionStateType string
 
 const (

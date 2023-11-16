@@ -3,8 +3,36 @@
 package shared
 
 type OperatorDbt struct {
-	DbtArguments  *string `json:"dbtArguments,omitempty"`
-	DockerImage   *string `json:"dockerImage,omitempty"`
-	GitRepoBranch *string `json:"gitRepoBranch,omitempty"`
 	GitRepoURL    string  `json:"gitRepoUrl"`
+	GitRepoBranch *string `json:"gitRepoBranch,omitempty"`
+	DockerImage   *string `json:"dockerImage,omitempty"`
+	DbtArguments  *string `json:"dbtArguments,omitempty"`
+}
+
+func (o *OperatorDbt) GetGitRepoURL() string {
+	if o == nil {
+		return ""
+	}
+	return o.GitRepoURL
+}
+
+func (o *OperatorDbt) GetGitRepoBranch() *string {
+	if o == nil {
+		return nil
+	}
+	return o.GitRepoBranch
+}
+
+func (o *OperatorDbt) GetDockerImage() *string {
+	if o == nil {
+		return nil
+	}
+	return o.DockerImage
+}
+
+func (o *OperatorDbt) GetDbtArguments() *string {
+	if o == nil {
+		return nil
+	}
+	return o.DbtArguments
 }

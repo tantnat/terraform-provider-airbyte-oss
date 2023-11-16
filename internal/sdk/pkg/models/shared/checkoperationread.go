@@ -34,8 +34,21 @@ func (e *CheckOperationReadStatus) UnmarshalJSON(data []byte) error {
 	}
 }
 
-// CheckOperationRead - Successful operation
 type CheckOperationRead struct {
-	Message *string                  `json:"message,omitempty"`
 	Status  CheckOperationReadStatus `json:"status"`
+	Message *string                  `json:"message,omitempty"`
+}
+
+func (o *CheckOperationRead) GetStatus() CheckOperationReadStatus {
+	if o == nil {
+		return CheckOperationReadStatus("")
+	}
+	return o.Status
+}
+
+func (o *CheckOperationRead) GetMessage() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Message
 }

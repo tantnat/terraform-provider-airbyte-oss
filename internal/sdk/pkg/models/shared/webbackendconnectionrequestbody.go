@@ -3,6 +3,20 @@
 package shared
 
 type WebBackendConnectionRequestBody struct {
-	ConnectionID         string `json:"connectionId"`
 	WithRefreshedCatalog *bool  `json:"withRefreshedCatalog,omitempty"`
+	ConnectionID         string `json:"connectionId"`
+}
+
+func (o *WebBackendConnectionRequestBody) GetWithRefreshedCatalog() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.WithRefreshedCatalog
+}
+
+func (o *WebBackendConnectionRequestBody) GetConnectionID() string {
+	if o == nil {
+		return ""
+	}
+	return o.ConnectionID
 }

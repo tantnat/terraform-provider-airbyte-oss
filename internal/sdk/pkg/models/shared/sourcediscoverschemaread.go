@@ -4,13 +4,55 @@ package shared
 
 // SourceDiscoverSchemaRead - Returns the results of a discover catalog job. If the job was not successful, the catalog field will not be present. jobInfo will aways be present and its status be used to determine if the job was successful or not.
 type SourceDiscoverSchemaRead struct {
-	BreakingChange *bool `json:"breakingChange,omitempty"`
 	// describes the available schema (catalog).
-	Catalog *AirbyteCatalog `json:"catalog,omitempty"`
+	Catalog   *AirbyteCatalog    `json:"catalog,omitempty"`
+	JobInfo   SynchronousJobRead `json:"jobInfo"`
+	CatalogID *string            `json:"catalogId,omitempty"`
 	// Describes the difference between two Airbyte catalogs.
-	CatalogDiff *CatalogDiff `json:"catalogDiff,omitempty"`
-	CatalogID   *string      `json:"catalogId,omitempty"`
+	CatalogDiff    *CatalogDiff `json:"catalogDiff,omitempty"`
+	BreakingChange *bool        `json:"breakingChange,omitempty"`
 	// Active means that data is flowing through the connection. Inactive means it is not. Deprecated means the connection is off and cannot be re-activated. the schema field describes the elements of the schema that will be synced.
-	ConnectionStatus *ConnectionStatus  `json:"connectionStatus,omitempty"`
-	JobInfo          SynchronousJobRead `json:"jobInfo"`
+	ConnectionStatus *ConnectionStatus `json:"connectionStatus,omitempty"`
+}
+
+func (o *SourceDiscoverSchemaRead) GetCatalog() *AirbyteCatalog {
+	if o == nil {
+		return nil
+	}
+	return o.Catalog
+}
+
+func (o *SourceDiscoverSchemaRead) GetJobInfo() SynchronousJobRead {
+	if o == nil {
+		return SynchronousJobRead{}
+	}
+	return o.JobInfo
+}
+
+func (o *SourceDiscoverSchemaRead) GetCatalogID() *string {
+	if o == nil {
+		return nil
+	}
+	return o.CatalogID
+}
+
+func (o *SourceDiscoverSchemaRead) GetCatalogDiff() *CatalogDiff {
+	if o == nil {
+		return nil
+	}
+	return o.CatalogDiff
+}
+
+func (o *SourceDiscoverSchemaRead) GetBreakingChange() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.BreakingChange
+}
+
+func (o *SourceDiscoverSchemaRead) GetConnectionStatus() *ConnectionStatus {
+	if o == nil {
+		return nil
+	}
+	return o.ConnectionStatus
 }

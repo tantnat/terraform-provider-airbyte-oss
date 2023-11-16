@@ -2,13 +2,54 @@
 
 package shared
 
-// DestinationDefinitionSpecificationRead - Successful operation
 type DestinationDefinitionSpecificationRead struct {
-	AdvancedAuth *AdvancedAuth `json:"advancedAuth,omitempty"`
+	DestinationDefinitionID string  `json:"destinationDefinitionId"`
+	DocumentationURL        *string `json:"documentationUrl,omitempty"`
 	// The specification for what values are required to configure the destinationDefinition.
 	ConnectionSpecification       *DestinationDefinitionSpecification `json:"connectionSpecification,omitempty"`
-	DestinationDefinitionID       string                              `json:"destinationDefinitionId"`
-	DocumentationURL              *string                             `json:"documentationUrl,omitempty"`
+	AdvancedAuth                  *AdvancedAuth                       `json:"advancedAuth,omitempty"`
 	JobInfo                       SynchronousJobRead                  `json:"jobInfo"`
 	SupportedDestinationSyncModes []DestinationSyncMode               `json:"supportedDestinationSyncModes,omitempty"`
+}
+
+func (o *DestinationDefinitionSpecificationRead) GetDestinationDefinitionID() string {
+	if o == nil {
+		return ""
+	}
+	return o.DestinationDefinitionID
+}
+
+func (o *DestinationDefinitionSpecificationRead) GetDocumentationURL() *string {
+	if o == nil {
+		return nil
+	}
+	return o.DocumentationURL
+}
+
+func (o *DestinationDefinitionSpecificationRead) GetConnectionSpecification() *DestinationDefinitionSpecification {
+	if o == nil {
+		return nil
+	}
+	return o.ConnectionSpecification
+}
+
+func (o *DestinationDefinitionSpecificationRead) GetAdvancedAuth() *AdvancedAuth {
+	if o == nil {
+		return nil
+	}
+	return o.AdvancedAuth
+}
+
+func (o *DestinationDefinitionSpecificationRead) GetJobInfo() SynchronousJobRead {
+	if o == nil {
+		return SynchronousJobRead{}
+	}
+	return o.JobInfo
+}
+
+func (o *DestinationDefinitionSpecificationRead) GetSupportedDestinationSyncModes() []DestinationSyncMode {
+	if o == nil {
+		return nil
+	}
+	return o.SupportedDestinationSyncModes
 }

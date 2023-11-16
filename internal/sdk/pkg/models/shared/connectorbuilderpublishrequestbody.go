@@ -3,8 +3,36 @@
 package shared
 
 type ConnectorBuilderPublishRequestBody struct {
-	BuilderProjectID           string                    `json:"builderProjectId"`
-	InitialDeclarativeManifest DeclarativeSourceManifest `json:"initialDeclarativeManifest"`
-	Name                       string                    `json:"name"`
 	WorkspaceID                string                    `json:"workspaceId"`
+	BuilderProjectID           string                    `json:"builderProjectId"`
+	Name                       string                    `json:"name"`
+	InitialDeclarativeManifest DeclarativeSourceManifest `json:"initialDeclarativeManifest"`
+}
+
+func (o *ConnectorBuilderPublishRequestBody) GetWorkspaceID() string {
+	if o == nil {
+		return ""
+	}
+	return o.WorkspaceID
+}
+
+func (o *ConnectorBuilderPublishRequestBody) GetBuilderProjectID() string {
+	if o == nil {
+		return ""
+	}
+	return o.BuilderProjectID
+}
+
+func (o *ConnectorBuilderPublishRequestBody) GetName() string {
+	if o == nil {
+		return ""
+	}
+	return o.Name
+}
+
+func (o *ConnectorBuilderPublishRequestBody) GetInitialDeclarativeManifest() DeclarativeSourceManifest {
+	if o == nil {
+		return DeclarativeSourceManifest{}
+	}
+	return o.InitialDeclarativeManifest
 }

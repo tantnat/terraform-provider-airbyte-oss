@@ -3,8 +3,29 @@
 package shared
 
 type PartialDestinationUpdate struct {
+	DestinationID *string `json:"destinationId,omitempty"`
 	// The values required to configure the destination. The schema for this must match the schema return by destination_definition_specifications/get for the destinationDefinition.
 	ConnectionConfiguration interface{} `json:"connectionConfiguration,omitempty"`
-	DestinationID           *string     `json:"destinationId,omitempty"`
 	Name                    *string     `json:"name,omitempty"`
+}
+
+func (o *PartialDestinationUpdate) GetDestinationID() *string {
+	if o == nil {
+		return nil
+	}
+	return o.DestinationID
+}
+
+func (o *PartialDestinationUpdate) GetConnectionConfiguration() interface{} {
+	if o == nil {
+		return nil
+	}
+	return o.ConnectionConfiguration
+}
+
+func (o *PartialDestinationUpdate) GetName() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Name
 }

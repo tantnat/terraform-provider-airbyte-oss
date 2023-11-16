@@ -3,7 +3,28 @@
 package shared
 
 type SaveAttemptSyncConfigRequestBody struct {
-	AttemptNumber int               `json:"attemptNumber"`
 	JobID         int64             `json:"jobId"`
+	AttemptNumber int               `json:"attemptNumber"`
 	SyncConfig    AttemptSyncConfig `json:"syncConfig"`
+}
+
+func (o *SaveAttemptSyncConfigRequestBody) GetJobID() int64 {
+	if o == nil {
+		return 0
+	}
+	return o.JobID
+}
+
+func (o *SaveAttemptSyncConfigRequestBody) GetAttemptNumber() int {
+	if o == nil {
+		return 0
+	}
+	return o.AttemptNumber
+}
+
+func (o *SaveAttemptSyncConfigRequestBody) GetSyncConfig() AttemptSyncConfig {
+	if o == nil {
+		return AttemptSyncConfig{}
+	}
+	return o.SyncConfig
 }

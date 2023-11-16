@@ -3,7 +3,28 @@
 package shared
 
 type DeclarativeManifestVersionRead struct {
-	Description string `json:"description"`
-	IsActive    bool   `json:"isActive"`
 	Version     int64  `json:"version"`
+	IsActive    bool   `json:"isActive"`
+	Description string `json:"description"`
+}
+
+func (o *DeclarativeManifestVersionRead) GetVersion() int64 {
+	if o == nil {
+		return 0
+	}
+	return o.Version
+}
+
+func (o *DeclarativeManifestVersionRead) GetIsActive() bool {
+	if o == nil {
+		return false
+	}
+	return o.IsActive
+}
+
+func (o *DeclarativeManifestVersionRead) GetDescription() string {
+	if o == nil {
+		return ""
+	}
+	return o.Description
 }

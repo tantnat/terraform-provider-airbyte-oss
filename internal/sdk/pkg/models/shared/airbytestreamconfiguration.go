@@ -4,20 +4,83 @@ package shared
 
 // AirbyteStreamConfiguration - the mutable part of the stream to configure the destination
 type AirbyteStreamConfiguration struct {
-	// Alias name to the stream to be used in the destination
-	AliasName *string `json:"aliasName,omitempty"`
+	SyncMode SyncMode `json:"syncMode"`
 	// Path to the field that will be used to determine if a record is new or modified since the last sync. This field is REQUIRED if `sync_mode` is `incremental`. Otherwise it is ignored.
 	CursorField         []string            `json:"cursorField,omitempty"`
 	DestinationSyncMode DestinationSyncMode `json:"destinationSyncMode"`
-	// Whether field selection should be enabled. If this is true, only the properties in `selectedFields` will be included.
-	FieldSelectionEnabled *bool `json:"fieldSelectionEnabled,omitempty"`
 	// Paths to the fields that will be used as primary key. This field is REQUIRED if `destination_sync_mode` is `*_dedup`. Otherwise it is ignored.
 	PrimaryKey [][]string `json:"primaryKey,omitempty"`
+	// Alias name to the stream to be used in the destination
+	AliasName *string `json:"aliasName,omitempty"`
 	// If this is true, the stream is selected with all of its properties. For new connections, this considers if the stream is suggested or not
 	Selected *bool `json:"selected,omitempty"`
+	// Does the connector suggest that this stream be enabled by default?
+	Suggested *bool `json:"suggested,omitempty"`
+	// Whether field selection should be enabled. If this is true, only the properties in `selectedFields` will be included.
+	FieldSelectionEnabled *bool `json:"fieldSelectionEnabled,omitempty"`
 	// Paths to the fields that will be included in the configured catalog. This must be set if `fieldSelectedEnabled` is set. An empty list indicates that no properties will be included.
 	SelectedFields []SelectedFieldInfo `json:"selectedFields,omitempty"`
-	// Does the connector suggest that this stream be enabled by default?
-	Suggested *bool    `json:"suggested,omitempty"`
-	SyncMode  SyncMode `json:"syncMode"`
+}
+
+func (o *AirbyteStreamConfiguration) GetSyncMode() SyncMode {
+	if o == nil {
+		return SyncMode("")
+	}
+	return o.SyncMode
+}
+
+func (o *AirbyteStreamConfiguration) GetCursorField() []string {
+	if o == nil {
+		return nil
+	}
+	return o.CursorField
+}
+
+func (o *AirbyteStreamConfiguration) GetDestinationSyncMode() DestinationSyncMode {
+	if o == nil {
+		return DestinationSyncMode("")
+	}
+	return o.DestinationSyncMode
+}
+
+func (o *AirbyteStreamConfiguration) GetPrimaryKey() [][]string {
+	if o == nil {
+		return nil
+	}
+	return o.PrimaryKey
+}
+
+func (o *AirbyteStreamConfiguration) GetAliasName() *string {
+	if o == nil {
+		return nil
+	}
+	return o.AliasName
+}
+
+func (o *AirbyteStreamConfiguration) GetSelected() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.Selected
+}
+
+func (o *AirbyteStreamConfiguration) GetSuggested() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.Suggested
+}
+
+func (o *AirbyteStreamConfiguration) GetFieldSelectionEnabled() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.FieldSelectionEnabled
+}
+
+func (o *AirbyteStreamConfiguration) GetSelectedFields() []SelectedFieldInfo {
+	if o == nil {
+		return nil
+	}
+	return o.SelectedFields
 }

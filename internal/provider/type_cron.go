@@ -4,7 +4,7 @@ package provider
 
 import "github.com/hashicorp/terraform-plugin-framework/types"
 
-type ConnectionScheduleDataBasicSchedule struct {
-	TimeUnit types.String `tfsdk:"time_unit"`
-	Units    types.Int64  `tfsdk:"units"`
+type Cron struct {
+	CronExpression types.String `tfsdk:"cron_expression"`
+	CronTimeZone   types.String `tfsdk:"cron_time_zone"`
 }

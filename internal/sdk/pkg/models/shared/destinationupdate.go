@@ -3,8 +3,29 @@
 package shared
 
 type DestinationUpdate struct {
+	DestinationID string `json:"destinationId"`
 	// The values required to configure the destination. The schema for this must match the schema return by destination_definition_specifications/get for the destinationDefinition.
 	ConnectionConfiguration interface{} `json:"connectionConfiguration"`
-	DestinationID           string      `json:"destinationId"`
 	Name                    string      `json:"name"`
+}
+
+func (o *DestinationUpdate) GetDestinationID() string {
+	if o == nil {
+		return ""
+	}
+	return o.DestinationID
+}
+
+func (o *DestinationUpdate) GetConnectionConfiguration() interface{} {
+	if o == nil {
+		return nil
+	}
+	return o.ConnectionConfiguration
+}
+
+func (o *DestinationUpdate) GetName() string {
+	if o == nil {
+		return ""
+	}
+	return o.Name
 }

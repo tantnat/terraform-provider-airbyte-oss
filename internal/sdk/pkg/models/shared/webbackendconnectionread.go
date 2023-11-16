@@ -2,44 +2,247 @@
 
 package shared
 
-// WebBackendConnectionRead - Successful operation
+import (
+	"github.com/aballiet/terraform-provider-airbyte/internal/sdk/pkg/utils"
+)
+
 type WebBackendConnectionRead struct {
-	// Describes the difference between two Airbyte catalogs.
-	CatalogDiff   *CatalogDiff    `json:"catalogDiff,omitempty"`
-	CatalogID     *string         `json:"catalogId,omitempty"`
-	ConnectionID  string          `json:"connectionId"`
-	Destination   DestinationRead `json:"destination"`
-	DestinationID string          `json:"destinationId"`
-	Geography     *Geography      `json:"geography,omitempty"`
-	IsSyncing     bool            `json:"isSyncing"`
-	// epoch time of the latest sync job. null if no sync job has taken place.
-	LatestSyncJobCreatedAt *int64     `json:"latestSyncJobCreatedAt,omitempty"`
-	LatestSyncJobStatus    *JobStatus `json:"latestSyncJobStatus,omitempty"`
-	Name                   string     `json:"name"`
+	ConnectionID string `json:"connectionId"`
+	Name         string `json:"name"`
 	// Method used for computing final namespace in destination
 	NamespaceDefinition *NamespaceDefinitionType `json:"namespaceDefinition,omitempty"`
 	// Used when namespaceDefinition is 'customformat'. If blank then behaves like namespaceDefinition = 'destination'. If "${SOURCE_NAMESPACE}" then behaves like namespaceDefinition = 'source'.
-	NamespaceFormat              *string                      `json:"namespaceFormat,omitempty"`
-	NonBreakingChangesPreference NonBreakingChangesPreference `json:"nonBreakingChangesPreference"`
-	NotifySchemaChanges          bool                         `json:"notifySchemaChanges"`
-	NotifySchemaChangesByEmail   bool                         `json:"notifySchemaChangesByEmail"`
-	OperationIds                 []string                     `json:"operationIds,omitempty"`
-	Operations                   []OperationRead              `json:"operations,omitempty"`
+	NamespaceFormat *string `default:"null" json:"namespaceFormat"`
 	// Prefix that will be prepended to the name of each stream when it is written to the destination.
-	Prefix *string `json:"prefix,omitempty"`
-	// optional resource requirements to run workers (blank for unbounded allocations)
-	ResourceRequirements *ResourceRequirements `json:"resourceRequirements,omitempty"`
-	// if null, then no schedule is set.
-	Schedule *ConnectionSchedule `json:"schedule,omitempty"`
-	// schedule for when the the connection should run, per the schedule type
-	ScheduleData *ConnectionScheduleData `json:"scheduleData,omitempty"`
-	// determine how the schedule data should be interpreted
-	ScheduleType *ConnectionScheduleType `json:"scheduleType,omitempty"`
-	SchemaChange SchemaChange            `json:"schemaChange"`
-	Source       SourceRead              `json:"source"`
-	SourceID     string                  `json:"sourceId"`
-	// Active means that data is flowing through the connection. Inactive means it is not. Deprecated means the connection is off and cannot be re-activated. the schema field describes the elements of the schema that will be synced.
-	Status ConnectionStatus `json:"status"`
+	Prefix        *string `json:"prefix,omitempty"`
+	SourceID      string  `json:"sourceId"`
+	DestinationID string  `json:"destinationId"`
 	// describes the available schema (catalog).
 	SyncCatalog AirbyteCatalog `json:"syncCatalog"`
+	// if null, then no schedule is set.
+	Schedule *ConnectionSchedule `json:"schedule,omitempty"`
+	// determine how the schedule data should be interpreted
+	ScheduleType *ConnectionScheduleType `json:"scheduleType,omitempty"`
+	// schedule for when the the connection should run, per the schedule type
+	ScheduleData *ConnectionScheduleData `json:"scheduleData,omitempty"`
+	// Active means that data is flowing through the connection. Inactive means it is not. Deprecated means the connection is off and cannot be re-activated. the schema field describes the elements of the schema that will be synced.
+	Status       ConnectionStatus `json:"status"`
+	OperationIds []string         `json:"operationIds,omitempty"`
+	Source       SourceRead       `json:"source"`
+	Destination  DestinationRead  `json:"destination"`
+	Operations   []OperationRead  `json:"operations,omitempty"`
+	// epoch time of the latest sync job. null if no sync job has taken place.
+	LatestSyncJobCreatedAt *int64     `json:"latestSyncJobCreatedAt,omitempty"`
+	LatestSyncJobStatus    *JobStatus `json:"latestSyncJobStatus,omitempty"`
+	IsSyncing              bool       `json:"isSyncing"`
+	// optional resource requirements to run workers (blank for unbounded allocations)
+	ResourceRequirements *ResourceRequirements `json:"resourceRequirements,omitempty"`
+	CatalogID            *string               `json:"catalogId,omitempty"`
+	// Describes the difference between two Airbyte catalogs.
+	CatalogDiff                  *CatalogDiff                 `json:"catalogDiff,omitempty"`
+	Geography                    *Geography                   `json:"geography,omitempty"`
+	SchemaChange                 SchemaChange                 `json:"schemaChange"`
+	NotifySchemaChanges          bool                         `json:"notifySchemaChanges"`
+	NotifySchemaChangesByEmail   bool                         `json:"notifySchemaChangesByEmail"`
+	NonBreakingChangesPreference NonBreakingChangesPreference `json:"nonBreakingChangesPreference"`
+}
+
+func (w WebBackendConnectionRead) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(w, "", false)
+}
+
+func (w *WebBackendConnectionRead) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &w, "", false, false); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (o *WebBackendConnectionRead) GetConnectionID() string {
+	if o == nil {
+		return ""
+	}
+	return o.ConnectionID
+}
+
+func (o *WebBackendConnectionRead) GetName() string {
+	if o == nil {
+		return ""
+	}
+	return o.Name
+}
+
+func (o *WebBackendConnectionRead) GetNamespaceDefinition() *NamespaceDefinitionType {
+	if o == nil {
+		return nil
+	}
+	return o.NamespaceDefinition
+}
+
+func (o *WebBackendConnectionRead) GetNamespaceFormat() *string {
+	if o == nil {
+		return nil
+	}
+	return o.NamespaceFormat
+}
+
+func (o *WebBackendConnectionRead) GetPrefix() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Prefix
+}
+
+func (o *WebBackendConnectionRead) GetSourceID() string {
+	if o == nil {
+		return ""
+	}
+	return o.SourceID
+}
+
+func (o *WebBackendConnectionRead) GetDestinationID() string {
+	if o == nil {
+		return ""
+	}
+	return o.DestinationID
+}
+
+func (o *WebBackendConnectionRead) GetSyncCatalog() AirbyteCatalog {
+	if o == nil {
+		return AirbyteCatalog{}
+	}
+	return o.SyncCatalog
+}
+
+func (o *WebBackendConnectionRead) GetSchedule() *ConnectionSchedule {
+	if o == nil {
+		return nil
+	}
+	return o.Schedule
+}
+
+func (o *WebBackendConnectionRead) GetScheduleType() *ConnectionScheduleType {
+	if o == nil {
+		return nil
+	}
+	return o.ScheduleType
+}
+
+func (o *WebBackendConnectionRead) GetScheduleData() *ConnectionScheduleData {
+	if o == nil {
+		return nil
+	}
+	return o.ScheduleData
+}
+
+func (o *WebBackendConnectionRead) GetStatus() ConnectionStatus {
+	if o == nil {
+		return ConnectionStatus("")
+	}
+	return o.Status
+}
+
+func (o *WebBackendConnectionRead) GetOperationIds() []string {
+	if o == nil {
+		return nil
+	}
+	return o.OperationIds
+}
+
+func (o *WebBackendConnectionRead) GetSource() SourceRead {
+	if o == nil {
+		return SourceRead{}
+	}
+	return o.Source
+}
+
+func (o *WebBackendConnectionRead) GetDestination() DestinationRead {
+	if o == nil {
+		return DestinationRead{}
+	}
+	return o.Destination
+}
+
+func (o *WebBackendConnectionRead) GetOperations() []OperationRead {
+	if o == nil {
+		return nil
+	}
+	return o.Operations
+}
+
+func (o *WebBackendConnectionRead) GetLatestSyncJobCreatedAt() *int64 {
+	if o == nil {
+		return nil
+	}
+	return o.LatestSyncJobCreatedAt
+}
+
+func (o *WebBackendConnectionRead) GetLatestSyncJobStatus() *JobStatus {
+	if o == nil {
+		return nil
+	}
+	return o.LatestSyncJobStatus
+}
+
+func (o *WebBackendConnectionRead) GetIsSyncing() bool {
+	if o == nil {
+		return false
+	}
+	return o.IsSyncing
+}
+
+func (o *WebBackendConnectionRead) GetResourceRequirements() *ResourceRequirements {
+	if o == nil {
+		return nil
+	}
+	return o.ResourceRequirements
+}
+
+func (o *WebBackendConnectionRead) GetCatalogID() *string {
+	if o == nil {
+		return nil
+	}
+	return o.CatalogID
+}
+
+func (o *WebBackendConnectionRead) GetCatalogDiff() *CatalogDiff {
+	if o == nil {
+		return nil
+	}
+	return o.CatalogDiff
+}
+
+func (o *WebBackendConnectionRead) GetGeography() *Geography {
+	if o == nil {
+		return nil
+	}
+	return o.Geography
+}
+
+func (o *WebBackendConnectionRead) GetSchemaChange() SchemaChange {
+	if o == nil {
+		return SchemaChange("")
+	}
+	return o.SchemaChange
+}
+
+func (o *WebBackendConnectionRead) GetNotifySchemaChanges() bool {
+	if o == nil {
+		return false
+	}
+	return o.NotifySchemaChanges
+}
+
+func (o *WebBackendConnectionRead) GetNotifySchemaChangesByEmail() bool {
+	if o == nil {
+		return false
+	}
+	return o.NotifySchemaChangesByEmail
+}
+
+func (o *WebBackendConnectionRead) GetNonBreakingChangesPreference() NonBreakingChangesPreference {
+	if o == nil {
+		return NonBreakingChangesPreference("")
+	}
+	return o.NonBreakingChangesPreference
 }

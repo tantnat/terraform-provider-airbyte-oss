@@ -2,8 +2,21 @@
 
 package shared
 
-// JobInfoRead - Successful operation
 type JobInfoRead struct {
-	Attempts []AttemptInfoRead `json:"attempts"`
 	Job      JobRead           `json:"job"`
+	Attempts []AttemptInfoRead `json:"attempts"`
+}
+
+func (o *JobInfoRead) GetJob() JobRead {
+	if o == nil {
+		return JobRead{}
+	}
+	return o.Job
+}
+
+func (o *JobInfoRead) GetAttempts() []AttemptInfoRead {
+	if o == nil {
+		return []AttemptInfoRead{}
+	}
+	return o.Attempts
 }

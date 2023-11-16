@@ -3,9 +3,37 @@
 package shared
 
 type DestinationCreate struct {
+	WorkspaceID             string `json:"workspaceId"`
+	Name                    string `json:"name"`
+	DestinationDefinitionID string `json:"destinationDefinitionId"`
 	// The values required to configure the destination. The schema for this must match the schema return by destination_definition_specifications/get for the destinationDefinition.
 	ConnectionConfiguration interface{} `json:"connectionConfiguration"`
-	DestinationDefinitionID string      `json:"destinationDefinitionId"`
-	Name                    string      `json:"name"`
-	WorkspaceID             string      `json:"workspaceId"`
+}
+
+func (o *DestinationCreate) GetWorkspaceID() string {
+	if o == nil {
+		return ""
+	}
+	return o.WorkspaceID
+}
+
+func (o *DestinationCreate) GetName() string {
+	if o == nil {
+		return ""
+	}
+	return o.Name
+}
+
+func (o *DestinationCreate) GetDestinationDefinitionID() string {
+	if o == nil {
+		return ""
+	}
+	return o.DestinationDefinitionID
+}
+
+func (o *DestinationCreate) GetConnectionConfiguration() interface{} {
+	if o == nil {
+		return nil
+	}
+	return o.ConnectionConfiguration
 }

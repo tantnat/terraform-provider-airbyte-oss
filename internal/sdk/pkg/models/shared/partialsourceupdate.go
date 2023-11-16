@@ -3,9 +3,37 @@
 package shared
 
 type PartialSourceUpdate struct {
+	SourceID string `json:"sourceId"`
 	// The values required to configure the source. The schema for this must match the schema return by source_definition_specifications/get for the source.
 	ConnectionConfiguration interface{} `json:"connectionConfiguration,omitempty"`
 	Name                    *string     `json:"name,omitempty"`
 	SecretID                *string     `json:"secretId,omitempty"`
-	SourceID                string      `json:"sourceId"`
+}
+
+func (o *PartialSourceUpdate) GetSourceID() string {
+	if o == nil {
+		return ""
+	}
+	return o.SourceID
+}
+
+func (o *PartialSourceUpdate) GetConnectionConfiguration() interface{} {
+	if o == nil {
+		return nil
+	}
+	return o.ConnectionConfiguration
+}
+
+func (o *PartialSourceUpdate) GetName() *string {
+	if o == nil {
+		return nil
+	}
+	return o.Name
+}
+
+func (o *PartialSourceUpdate) GetSecretID() *string {
+	if o == nil {
+		return nil
+	}
+	return o.SecretID
 }

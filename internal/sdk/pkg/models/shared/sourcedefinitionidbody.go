@@ -2,7 +2,13 @@
 
 package shared
 
-// SourceDefinitionIDBody - Successful operation
 type SourceDefinitionIDBody struct {
 	SourceDefinitionID string `json:"sourceDefinitionId"`
+}
+
+func (o *SourceDefinitionIDBody) GetSourceDefinitionID() string {
+	if o == nil {
+		return ""
+	}
+	return o.SourceDefinitionID
 }

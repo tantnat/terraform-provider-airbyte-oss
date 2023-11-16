@@ -7,19 +7,19 @@ import (
 	"fmt"
 )
 
-type StreamTransformTransformType string
+type TransformType string
 
 const (
-	StreamTransformTransformTypeAddStream    StreamTransformTransformType = "add_stream"
-	StreamTransformTransformTypeRemoveStream StreamTransformTransformType = "remove_stream"
-	StreamTransformTransformTypeUpdateStream StreamTransformTransformType = "update_stream"
+	TransformTypeAddStream    TransformType = "add_stream"
+	TransformTypeRemoveStream TransformType = "remove_stream"
+	TransformTypeUpdateStream TransformType = "update_stream"
 )
 
-func (e StreamTransformTransformType) ToPointer() *StreamTransformTransformType {
+func (e TransformType) ToPointer() *TransformType {
 	return &e
 }
 
-func (e *StreamTransformTransformType) UnmarshalJSON(data []byte) error {
+func (e *TransformType) UnmarshalJSON(data []byte) error {
 	var v string
 	if err := json.Unmarshal(data, &v); err != nil {
 		return err
@@ -30,16 +30,37 @@ func (e *StreamTransformTransformType) UnmarshalJSON(data []byte) error {
 	case "remove_stream":
 		fallthrough
 	case "update_stream":
-		*e = StreamTransformTransformType(v)
+		*e = TransformType(v)
 		return nil
 	default:
-		return fmt.Errorf("invalid value for StreamTransformTransformType: %v", v)
+		return fmt.Errorf("invalid value for TransformType: %v", v)
 	}
 }
 
 type StreamTransform struct {
-	StreamDescriptor StreamDescriptor             `json:"streamDescriptor"`
-	TransformType    StreamTransformTransformType `json:"transformType"`
+	TransformType    TransformType    `json:"transformType"`
+	StreamDescriptor StreamDescriptor `json:"streamDescriptor"`
 	// list of field transformations. order does not matter.
 	UpdateStream []FieldTransform `json:"updateStream,omitempty"`
+}
+
+func (o *StreamTransform) GetTransformType() TransformType {
+	if o == nil {
+		return TransformType("")
+	}
+	return o.TransformType
+}
+
+func (o *StreamTransform) GetStreamDescriptor() StreamDescriptor {
+	if o == nil {
+		return StreamDescriptor{}
+	}
+	return o.StreamDescriptor
+}
+
+func (o *StreamTransform) GetUpdateStream() []FieldTransform {
+	if o == nil {
+		return nil
+	}
+	return o.UpdateStream
 }

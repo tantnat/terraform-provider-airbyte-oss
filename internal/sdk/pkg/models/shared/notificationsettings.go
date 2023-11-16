@@ -3,10 +3,52 @@
 package shared
 
 type NotificationSettings struct {
-	SendOnConnectionUpdate               *NotificationItem `json:"sendOnConnectionUpdate,omitempty"`
-	SendOnConnectionUpdateActionRequired *NotificationItem `json:"sendOnConnectionUpdateActionRequired,omitempty"`
-	SendOnFailure                        *NotificationItem `json:"sendOnFailure,omitempty"`
 	SendOnSuccess                        *NotificationItem `json:"sendOnSuccess,omitempty"`
+	SendOnFailure                        *NotificationItem `json:"sendOnFailure,omitempty"`
 	SendOnSyncDisabled                   *NotificationItem `json:"sendOnSyncDisabled,omitempty"`
 	SendOnSyncDisabledWarning            *NotificationItem `json:"sendOnSyncDisabledWarning,omitempty"`
+	SendOnConnectionUpdate               *NotificationItem `json:"sendOnConnectionUpdate,omitempty"`
+	SendOnConnectionUpdateActionRequired *NotificationItem `json:"sendOnConnectionUpdateActionRequired,omitempty"`
+}
+
+func (o *NotificationSettings) GetSendOnSuccess() *NotificationItem {
+	if o == nil {
+		return nil
+	}
+	return o.SendOnSuccess
+}
+
+func (o *NotificationSettings) GetSendOnFailure() *NotificationItem {
+	if o == nil {
+		return nil
+	}
+	return o.SendOnFailure
+}
+
+func (o *NotificationSettings) GetSendOnSyncDisabled() *NotificationItem {
+	if o == nil {
+		return nil
+	}
+	return o.SendOnSyncDisabled
+}
+
+func (o *NotificationSettings) GetSendOnSyncDisabledWarning() *NotificationItem {
+	if o == nil {
+		return nil
+	}
+	return o.SendOnSyncDisabledWarning
+}
+
+func (o *NotificationSettings) GetSendOnConnectionUpdate() *NotificationItem {
+	if o == nil {
+		return nil
+	}
+	return o.SendOnConnectionUpdate
+}
+
+func (o *NotificationSettings) GetSendOnConnectionUpdateActionRequired() *NotificationItem {
+	if o == nil {
+		return nil
+	}
+	return o.SendOnConnectionUpdateActionRequired
 }

@@ -3,6 +3,20 @@
 package shared
 
 type ConnectorBuilderProjectWithWorkspaceID struct {
-	BuilderProject ConnectorBuilderProjectDetails `json:"builderProject"`
 	WorkspaceID    string                         `json:"workspaceId"`
+	BuilderProject ConnectorBuilderProjectDetails `json:"builderProject"`
+}
+
+func (o *ConnectorBuilderProjectWithWorkspaceID) GetWorkspaceID() string {
+	if o == nil {
+		return ""
+	}
+	return o.WorkspaceID
+}
+
+func (o *ConnectorBuilderProjectWithWorkspaceID) GetBuilderProject() ConnectorBuilderProjectDetails {
+	if o == nil {
+		return ConnectorBuilderProjectDetails{}
+	}
+	return o.BuilderProject
 }

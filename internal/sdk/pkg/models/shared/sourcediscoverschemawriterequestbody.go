@@ -6,7 +6,35 @@ package shared
 type SourceDiscoverSchemaWriteRequestBody struct {
 	// describes the available schema (catalog).
 	Catalog           AirbyteCatalog `json:"catalog"`
-	ConfigurationHash *string        `json:"configurationHash,omitempty"`
-	ConnectorVersion  *string        `json:"connectorVersion,omitempty"`
 	SourceID          *string        `json:"sourceId,omitempty"`
+	ConnectorVersion  *string        `json:"connectorVersion,omitempty"`
+	ConfigurationHash *string        `json:"configurationHash,omitempty"`
+}
+
+func (o *SourceDiscoverSchemaWriteRequestBody) GetCatalog() AirbyteCatalog {
+	if o == nil {
+		return AirbyteCatalog{}
+	}
+	return o.Catalog
+}
+
+func (o *SourceDiscoverSchemaWriteRequestBody) GetSourceID() *string {
+	if o == nil {
+		return nil
+	}
+	return o.SourceID
+}
+
+func (o *SourceDiscoverSchemaWriteRequestBody) GetConnectorVersion() *string {
+	if o == nil {
+		return nil
+	}
+	return o.ConnectorVersion
+}
+
+func (o *SourceDiscoverSchemaWriteRequestBody) GetConfigurationHash() *string {
+	if o == nil {
+		return nil
+	}
+	return o.ConfigurationHash
 }
