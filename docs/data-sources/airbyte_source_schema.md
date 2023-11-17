@@ -14,10 +14,10 @@ SourceSchema DataSource
 
 ```terraform
 data "airbyte_source_schema" "my_sourceschema" {
-  connection_id        = "f1402c7e-2666-4964-b1e5-4ee038120ec2"
+  connection_id        = "2ac978db-e310-4dc6-a194-f112ed73d68a"
   disable_cache        = true
-  notify_schema_change = true
-  source_id            = "c978dbe3-10dc-4621-94f1-12ed73d68ab9"
+  notify_schema_change = false
+  source_id            = "280eecd9-6c08-4a64-ae27-6dd0ab8d096c"
 }
 ```
 
@@ -89,16 +89,12 @@ Read-Only:
 Read-Only:
 
 - `default_cursor_field` (List of String) Path to the field that will be used to determine if a record is new or modified since the last sync. If not provided by the source, the end user will have to specify the comparable themselves.
-- `json_schema` (Attributes) Stream schema using Json Schema specs. (see [below for nested schema](#nestedatt--catalog--streams--stream--json_schema))
+- `json_schema` (Map of String) Stream schema using Json Schema specs.
 - `name` (String) Stream's name.
 - `namespace` (String) Optional Source-defined namespace. Airbyte streams from the same sources should have the same namespace. Currently only used by JDBC destinations to determine what schema to write to.
 - `source_defined_cursor` (Boolean) If the source defines the cursor field, then any other cursor field inputs will be ignored. If it does not, either the user_provided one is used, or the default one is used as a backup.
 - `source_defined_primary_key` (List of List of String) If the source defines the primary key, paths to the fields that will be used as a primary key. If not provided by the source, the end user will have to specify the primary key themselves.
 - `supported_sync_modes` (List of String)
-
-<a id="nestedatt--catalog--streams--stream--json_schema"></a>
-### Nested Schema for `catalog.streams.stream.supported_sync_modes`
-
 
 
 

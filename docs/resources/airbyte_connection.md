@@ -32,14 +32,10 @@ resource "airbyte_connection" "my_connection" {
     memory_limit   = "...my_memory_limit..."
     memory_request = "...my_memory_request..."
   }
-  schedule = {
-    time_unit = "minutes"
-    units     = 9
-  }
   schedule_data = {
     basic_schedule = {
-      time_unit = "weeks"
-      units     = 7
+      time_unit = "minutes"
+      units     = 9
     }
     cron = {
       cron_expression = "...my_cron_expression..."
@@ -47,8 +43,8 @@ resource "airbyte_connection" "my_connection" {
     }
   }
   schedule_type     = "cron"
-  source_catalog_id = "5e6b8dd9-95b8-45b3-8db9-804e4cb5e145"
-  source_id         = "1ef85fdd-6486-4396-b21f-097ee8d4067a"
+  source_catalog_id = "aa5e6b8d-d995-4b85-b38d-b9804e4cb5e1"
+  source_id         = "451ef85f-dd64-4863-9632-1f097ee8d406"
   status            = "inactive"
   sync_catalog = {
     streams = [
@@ -58,7 +54,7 @@ resource "airbyte_connection" "my_connection" {
           cursor_field = [
             "...",
           ]
-          destination_sync_mode   = "append_dedup"
+          destination_sync_mode   = "overwrite"
           field_selection_enabled = true
           primary_key = [
             [
@@ -73,17 +69,20 @@ resource "airbyte_connection" "my_connection" {
               ]
             },
           ]
-          suggested = false
+          suggested = true
           sync_mode = "incremental"
         }
         stream = {
           default_cursor_field = [
             "...",
           ]
-          json_schema           = {}
-          name                  = "Ms. June Bins"
+          json_schema = {
+            "Sausages" = "{ \"see\": \"documentation\" }"
+            "East"     = "{ \"see\": \"documentation\" }"
+          }
+          name                  = "Mildred Lueilwitz"
           namespace             = "...my_namespace..."
-          source_defined_cursor = true
+          source_defined_cursor = false
           source_defined_primary_key = [
             [
               "...",
@@ -123,7 +122,6 @@ Used when namespaceDefinition is 'customformat'. If blank then behaves like name
 - `operation_ids` (List of String)
 - `prefix` (String) Prefix that will be prepended to the name of each stream when it is written to the destination.
 - `resource_requirements` (Attributes) optional resource requirements to run workers (blank for unbounded allocations) (see [below for nested schema](#nestedatt--resource_requirements))
-- `schedule` (Attributes) if null, then no schedule is set. (see [below for nested schema](#nestedatt--schedule))
 - `schedule_data` (Attributes) schedule for when the the connection should run, per the schedule type (see [below for nested schema](#nestedatt--schedule_data))
 - `schedule_type` (String) must be one of ["manual", "basic", "cron"]
 determine how the schedule data should be interpreted
@@ -145,15 +143,6 @@ Optional:
 - `cpu_request` (String)
 - `memory_limit` (String)
 - `memory_request` (String)
-
-
-<a id="nestedatt--schedule"></a>
-### Nested Schema for `schedule`
-
-Required:
-
-- `time_unit` (String) must be one of ["minutes", "hours", "days", "weeks", "months"]
-- `units` (Number)
 
 
 <a id="nestedatt--schedule_data"></a>
@@ -235,13 +224,10 @@ Required:
 Optional:
 
 - `default_cursor_field` (List of String) Path to the field that will be used to determine if a record is new or modified since the last sync. If not provided by the source, the end user will have to specify the comparable themselves.
-- `json_schema` (Attributes) Stream schema using Json Schema specs. (see [below for nested schema](#nestedatt--sync_catalog--streams--stream--json_schema))
+- `json_schema` (Map of String) Stream schema using Json Schema specs.
 - `namespace` (String) Optional Source-defined namespace. Airbyte streams from the same sources should have the same namespace. Currently only used by JDBC destinations to determine what schema to write to.
 - `source_defined_cursor` (Boolean) If the source defines the cursor field, then any other cursor field inputs will be ignored. If it does not, either the user_provided one is used, or the default one is used as a backup.
 - `source_defined_primary_key` (List of List of String) If the source defines the primary key, paths to the fields that will be used as a primary key. If not provided by the source, the end user will have to specify the primary key themselves.
 - `supported_sync_modes` (List of String)
-
-<a id="nestedatt--sync_catalog--streams--stream--json_schema"></a>
-### Nested Schema for `sync_catalog.streams.stream.supported_sync_modes`
 
 
