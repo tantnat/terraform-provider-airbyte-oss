@@ -14,10 +14,10 @@ SourceSchema DataSource
 
 ```terraform
 data "airbyte_source_schema" "my_sourceschema" {
-  connection_id        = "2ac978db-e310-4dc6-a194-f112ed73d68a"
+  connection_id        = "a24e9eae-dfd4-401e-81ae-1e8142cfc767"
   disable_cache        = true
   notify_schema_change = false
-  source_id            = "280eecd9-6c08-4a64-ae27-6dd0ab8d096c"
+  source_id            = "2da61c2e-c391-4007-81f2-dadfe355f97c"
 }
 ```
 
