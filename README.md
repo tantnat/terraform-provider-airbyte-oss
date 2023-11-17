@@ -10,7 +10,7 @@ terraform {
   required_providers {
     airbyte = {
       source  = "aballiet/airbyte"
-      version = "1.0.5"
+      version = "1.0.6"
     }
   }
 }
