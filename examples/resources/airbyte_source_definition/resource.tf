@@ -1,11 +1,11 @@
 resource "airbyte_source_definition" "my_sourcedefinition" {
-  scope_id   = "ad8bb3fe-33fa-4c92-96cf-878498930f77"
-  scope_type = "organization"
+  scope_id   = "bb3fe33f-ac92-456c-b878-498930f77eda"
+  scope_type = "workspace"
   source_definition = {
-    name              = "Rex Becker"
+    name              = "Cathy Gislason"
     docker_repository = "...my_docker_repository..."
     docker_image_tag  = "...my_docker_image_tag..."
-    documentation_url = "http://yearly-hive.name"
+    documentation_url = "https://frivolous-limit.org"
     icon              = "...my_icon..."
     resource_requirements = {
       default = {
@@ -16,7 +16,7 @@ resource "airbyte_source_definition" "my_sourcedefinition" {
       }
       job_specific = [
         {
-          job_type = "discover_schema"
+          job_type = "connection_updater"
           resource_requirements = {
             cpu_request    = "...my_cpu_request..."
             cpu_limit      = "...my_cpu_limit..."
@@ -27,5 +27,5 @@ resource "airbyte_source_definition" "my_sourcedefinition" {
       ]
     }
   }
-  workspace_id = "8fc35354-57d2-4442-a8ff-977c6f814b5f"
+  workspace_id = "3535457d-2442-468f-b977-c6f814b5f1dc"
 }

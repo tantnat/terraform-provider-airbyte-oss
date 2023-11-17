@@ -385,7 +385,6 @@ internal/sdk/pkg/models/shared/selectedfieldinfo.go
 internal/sdk/pkg/models/shared/destinationsyncmode.go
 internal/sdk/pkg/models/shared/syncmode.go
 internal/sdk/pkg/models/shared/airbytestream.go
-internal/sdk/pkg/models/shared/streamjsonschema.go
 internal/sdk/pkg/models/shared/sourcediscoverschemarequestbody.go
 internal/sdk/pkg/models/shared/sourceautopropagatechange.go
 internal/sdk/pkg/models/shared/discovercatalogresult.go
@@ -569,13 +568,13 @@ internal/provider/type_cron.go
 internal/provider/type_connection_schedule_data.go
 internal/provider/type_selected_field_info.go
 internal/provider/type_airbyte_stream_configuration.go
-internal/provider/type_stream_json_schema.go
 internal/provider/type_airbyte_stream.go
 internal/provider/type_airbyte_stream_and_configuration.go
 internal/provider/type_airbyte_catalog.go
 internal/provider/type_job_type_resource_limit.go
 internal/provider/type_actor_definition_resource_requirements.go
 internal/provider/type_source_definition_create.go
+internal/provider/type_declarative_manifest.go
 internal/provider/type_declarative_source_manifest.go
 internal/provider/type_slack_notification_configuration.go
 internal/provider/type_notification.go
@@ -609,6 +608,9 @@ examples/resources/airbyte_source_definition_manifest/resource.tf
 internal/provider/workspace_resource.go
 internal/provider/workspace_resource_sdk.go
 examples/resources/airbyte_workspace/resource.tf
+internal/provider/source_data_source.go
+internal/provider/source_data_source_sdk.go
+examples/data-sources/airbyte_source/data-source.tf
 internal/provider/sourceschema_data_source.go
 internal/provider/sourceschema_data_source_sdk.go
 examples/data-sources/airbyte_source_schema/data-source.tf

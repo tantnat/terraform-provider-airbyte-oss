@@ -68,9 +68,9 @@ func (r *SourceSchemaDataSource) Schema(ctx context.Context, req datasource.Sche
 											Computed:    true,
 											Description: `Stream's name.`,
 										},
-										"json_schema": schema.SingleNestedAttribute{
+										"json_schema": schema.MapAttribute{
 											Computed:    true,
-											Attributes:  map[string]schema.Attribute{},
+											ElementType: types.StringType,
 											Description: `Stream schema using Json Schema specs.`,
 										},
 										"supported_sync_modes": schema.ListAttribute{

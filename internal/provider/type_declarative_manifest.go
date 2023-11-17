@@ -2,5 +2,5 @@
 
 package provider
 
-type StreamJSONSchema struct {
+type DeclarativeManifest struct {
 }

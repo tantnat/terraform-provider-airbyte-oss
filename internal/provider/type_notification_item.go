@@ -5,7 +5,7 @@ package provider
 import "github.com/hashicorp/terraform-plugin-framework/types"
 
 type NotificationItem struct {
-	CustomerioConfiguration *StreamJSONSchema               `tfsdk:"customerio_configuration"`
+	CustomerioConfiguration *DeclarativeManifest            `tfsdk:"customerio_configuration"`
 	NotificationType        []types.String                  `tfsdk:"notification_type"`
 	SlackConfiguration      *SlackNotificationConfiguration `tfsdk:"slack_configuration"`
 }

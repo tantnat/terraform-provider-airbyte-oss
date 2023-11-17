@@ -30,6 +30,14 @@ func (r *SourceResourceModel) ToCreateSDKType() *shared.SourceCreate {
 	return &out
 }
 
+func (r *SourceResourceModel) ToGetSDKType() *shared.SourceIDRequestBody {
+	sourceID := r.SourceID.ValueString()
+	out := shared.SourceIDRequestBody{
+		SourceID: sourceID,
+	}
+	return &out
+}
+
 func (r *SourceResourceModel) ToUpdateSDKType() *shared.SourceUpdate {
 	sourceID := r.SourceID.ValueString()
 	var connectionConfiguration interface{}
@@ -51,14 +59,11 @@ func (r *SourceResourceModel) ToUpdateSDKType() *shared.SourceUpdate {
 }
 
 func (r *SourceResourceModel) ToDeleteSDKType() *shared.SourceIDRequestBody {
-	sourceID := r.SourceID.ValueString()
-	out := shared.SourceIDRequestBody{
-		SourceID: sourceID,
-	}
-	return &out
+	out := r.ToGetSDKType()
+	return out
 }
 
-func (r *SourceResourceModel) RefreshFromCreateResponse(resp *shared.SourceRead) {
+func (r *SourceResourceModel) RefreshFromGetResponse(resp *shared.SourceRead) {
 	if resp.Icon != nil {
 		r.Icon = types.StringValue(*resp.Icon)
 	} else {
@@ -71,6 +76,10 @@ func (r *SourceResourceModel) RefreshFromCreateResponse(resp *shared.SourceRead)
 	r.WorkspaceID = types.StringValue(resp.WorkspaceID)
 }
 
+func (r *SourceResourceModel) RefreshFromCreateResponse(resp *shared.SourceRead) {
+	r.RefreshFromGetResponse(resp)
+}
+
 func (r *SourceResourceModel) RefreshFromUpdateResponse(resp *shared.SourceRead) {
-	r.RefreshFromCreateResponse(resp)
+	r.RefreshFromGetResponse(resp)
 }

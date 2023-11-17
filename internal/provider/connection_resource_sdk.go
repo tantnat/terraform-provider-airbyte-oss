@@ -3,6 +3,7 @@
 package provider
 
 import (
+	"encoding/json"
 	"github.com/aballiet/terraform-provider-airbyte/internal/sdk/pkg/models/shared"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -45,9 +46,11 @@ func (r *ConnectionResourceModel) ToCreateSDKType() *shared.ConnectionCreate {
 			var stream *shared.AirbyteStream
 			if streamsItem.Stream != nil {
 				name1 := streamsItem.Stream.Name.ValueString()
-				var jsonSchema *shared.StreamJSONSchema
-				if streamsItem.Stream.JSONSchema != nil {
-					jsonSchema = &shared.StreamJSONSchema{}
+				jsonSchema := make(map[string]interface{})
+				for jsonSchemaKey, jsonSchemaValue := range streamsItem.Stream.JSONSchema {
+					var jsonSchemaInst interface{}
+					_ = json.Unmarshal([]byte(jsonSchemaValue.ValueString()), &jsonSchemaInst)
+					jsonSchema[jsonSchemaKey] = jsonSchemaInst
 				}
 				var supportedSyncModes []shared.SyncMode = nil
 				for _, supportedSyncModesItem := range streamsItem.Stream.SupportedSyncModes {
@@ -322,9 +325,11 @@ func (r *ConnectionResourceModel) ToUpdateSDKType() *shared.ConnectionUpdate {
 			var stream *shared.AirbyteStream
 			if streamsItem.Stream != nil {
 				name1 := streamsItem.Stream.Name.ValueString()
-				var jsonSchema *shared.StreamJSONSchema
-				if streamsItem.Stream.JSONSchema != nil {
-					jsonSchema = &shared.StreamJSONSchema{}
+				jsonSchema := make(map[string]interface{})
+				for jsonSchemaKey, jsonSchemaValue := range streamsItem.Stream.JSONSchema {
+					var jsonSchemaInst interface{}
+					_ = json.Unmarshal([]byte(jsonSchemaValue.ValueString()), &jsonSchemaInst)
+					jsonSchema[jsonSchemaKey] = jsonSchemaInst
 				}
 				var supportedSyncModes []shared.SyncMode = nil
 				for _, supportedSyncModesItem := range streamsItem.Stream.SupportedSyncModes {
@@ -756,10 +761,12 @@ func (r *ConnectionResourceModel) RefreshFromCreateResponse(resp *shared.Connect
 			for _, v := range streamsItem.Stream.DefaultCursorField {
 				streams1.Stream.DefaultCursorField = append(streams1.Stream.DefaultCursorField, types.StringValue(v))
 			}
-			if streamsItem.Stream.JSONSchema == nil {
-				streams1.Stream.JSONSchema = nil
-			} else {
-				streams1.Stream.JSONSchema = &StreamJSONSchema{}
+			if streams1.Stream.JSONSchema == nil && len(streamsItem.Stream.JSONSchema) > 0 {
+				streams1.Stream.JSONSchema = make(map[string]types.String)
+				for key, value := range streamsItem.Stream.JSONSchema {
+					result, _ := json.Marshal(value)
+					streams1.Stream.JSONSchema[key] = types.StringValue(string(result))
+				}
 			}
 			streams1.Stream.Name = types.StringValue(streamsItem.Stream.Name)
 			if streamsItem.Stream.Namespace != nil {

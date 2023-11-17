@@ -7,8 +7,8 @@ type AirbyteStream struct {
 	// Stream's name.
 	Name string `json:"name"`
 	// Stream schema using Json Schema specs.
-	JSONSchema         *StreamJSONSchema `json:"jsonSchema,omitempty"`
-	SupportedSyncModes []SyncMode        `json:"supportedSyncModes,omitempty"`
+	JSONSchema         map[string]interface{} `json:"jsonSchema,omitempty"`
+	SupportedSyncModes []SyncMode             `json:"supportedSyncModes,omitempty"`
 	// If the source defines the cursor field, then any other cursor field inputs will be ignored. If it does not, either the user_provided one is used, or the default one is used as a backup.
 	SourceDefinedCursor *bool `json:"sourceDefinedCursor,omitempty"`
 	// Path to the field that will be used to determine if a record is new or modified since the last sync. If not provided by the source, the end user will have to specify the comparable themselves.
@@ -26,7 +26,7 @@ func (o *AirbyteStream) GetName() string {
 	return o.Name
 }
 
-func (o *AirbyteStream) GetJSONSchema() *StreamJSONSchema {
+func (o *AirbyteStream) GetJSONSchema() map[string]interface{} {
 	if o == nil {
 		return nil
 	}

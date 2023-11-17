@@ -65,8 +65,11 @@ resource "airbyte_connection" "my_connection" {
           default_cursor_field = [
             "...",
           ]
-          json_schema           = {}
-          name                  = "Ms. June Bins"
+          json_schema = {
+            "East" = "{ \"see\": \"documentation\" }"
+            "Avon" = "{ \"see\": \"documentation\" }"
+          }
+          name                  = "Rick Hammes"
           namespace             = "...my_namespace..."
           source_defined_cursor = true
           source_defined_primary_key = [

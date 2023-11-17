@@ -3,5 +3,5 @@
 package provider
 
 type FieldAdd struct {
-	Schema *StreamJSONSchema `tfsdk:"schema"`
+	Schema *DeclarativeManifest `tfsdk:"schema"`
 }

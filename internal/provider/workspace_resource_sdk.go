@@ -693,7 +693,7 @@ func (r *WorkspaceResourceModel) RefreshFromCreateResponse(resp *shared.Workspac
 		if notificationsItem.CustomerioConfiguration == nil {
 			notifications1.CustomerioConfiguration = nil
 		} else {
-			notifications1.CustomerioConfiguration = &StreamJSONSchema{}
+			notifications1.CustomerioConfiguration = &DeclarativeManifest{}
 		}
 		notifications1.NotificationType = types.StringValue(string(notificationsItem.NotificationType))
 		if notificationsItem.SendOnFailure != nil {
@@ -733,7 +733,7 @@ func (r *WorkspaceResourceModel) RefreshFromCreateResponse(resp *shared.Workspac
 			if resp.NotificationSettings.SendOnBreakingChangeSyncsDisabled.CustomerioConfiguration == nil {
 				r.NotificationSettings.SendOnBreakingChangeSyncsDisabled.CustomerioConfiguration = nil
 			} else {
-				r.NotificationSettings.SendOnBreakingChangeSyncsDisabled.CustomerioConfiguration = &StreamJSONSchema{}
+				r.NotificationSettings.SendOnBreakingChangeSyncsDisabled.CustomerioConfiguration = &DeclarativeManifest{}
 			}
 			r.NotificationSettings.SendOnBreakingChangeSyncsDisabled.NotificationType = nil
 			for _, v := range resp.NotificationSettings.SendOnBreakingChangeSyncsDisabled.NotificationType {
@@ -753,7 +753,7 @@ func (r *WorkspaceResourceModel) RefreshFromCreateResponse(resp *shared.Workspac
 			if resp.NotificationSettings.SendOnBreakingChangeWarning.CustomerioConfiguration == nil {
 				r.NotificationSettings.SendOnBreakingChangeWarning.CustomerioConfiguration = nil
 			} else {
-				r.NotificationSettings.SendOnBreakingChangeWarning.CustomerioConfiguration = &StreamJSONSchema{}
+				r.NotificationSettings.SendOnBreakingChangeWarning.CustomerioConfiguration = &DeclarativeManifest{}
 			}
 			r.NotificationSettings.SendOnBreakingChangeWarning.NotificationType = nil
 			for _, v := range resp.NotificationSettings.SendOnBreakingChangeWarning.NotificationType {
@@ -773,7 +773,7 @@ func (r *WorkspaceResourceModel) RefreshFromCreateResponse(resp *shared.Workspac
 			if resp.NotificationSettings.SendOnConnectionUpdate.CustomerioConfiguration == nil {
 				r.NotificationSettings.SendOnConnectionUpdate.CustomerioConfiguration = nil
 			} else {
-				r.NotificationSettings.SendOnConnectionUpdate.CustomerioConfiguration = &StreamJSONSchema{}
+				r.NotificationSettings.SendOnConnectionUpdate.CustomerioConfiguration = &DeclarativeManifest{}
 			}
 			r.NotificationSettings.SendOnConnectionUpdate.NotificationType = nil
 			for _, v := range resp.NotificationSettings.SendOnConnectionUpdate.NotificationType {
@@ -793,7 +793,7 @@ func (r *WorkspaceResourceModel) RefreshFromCreateResponse(resp *shared.Workspac
 			if resp.NotificationSettings.SendOnConnectionUpdateActionRequired.CustomerioConfiguration == nil {
 				r.NotificationSettings.SendOnConnectionUpdateActionRequired.CustomerioConfiguration = nil
 			} else {
-				r.NotificationSettings.SendOnConnectionUpdateActionRequired.CustomerioConfiguration = &StreamJSONSchema{}
+				r.NotificationSettings.SendOnConnectionUpdateActionRequired.CustomerioConfiguration = &DeclarativeManifest{}
 			}
 			r.NotificationSettings.SendOnConnectionUpdateActionRequired.NotificationType = nil
 			for _, v := range resp.NotificationSettings.SendOnConnectionUpdateActionRequired.NotificationType {
@@ -813,7 +813,7 @@ func (r *WorkspaceResourceModel) RefreshFromCreateResponse(resp *shared.Workspac
 			if resp.NotificationSettings.SendOnFailure.CustomerioConfiguration == nil {
 				r.NotificationSettings.SendOnFailure.CustomerioConfiguration = nil
 			} else {
-				r.NotificationSettings.SendOnFailure.CustomerioConfiguration = &StreamJSONSchema{}
+				r.NotificationSettings.SendOnFailure.CustomerioConfiguration = &DeclarativeManifest{}
 			}
 			r.NotificationSettings.SendOnFailure.NotificationType = nil
 			for _, v := range resp.NotificationSettings.SendOnFailure.NotificationType {
@@ -833,7 +833,7 @@ func (r *WorkspaceResourceModel) RefreshFromCreateResponse(resp *shared.Workspac
 			if resp.NotificationSettings.SendOnSuccess.CustomerioConfiguration == nil {
 				r.NotificationSettings.SendOnSuccess.CustomerioConfiguration = nil
 			} else {
-				r.NotificationSettings.SendOnSuccess.CustomerioConfiguration = &StreamJSONSchema{}
+				r.NotificationSettings.SendOnSuccess.CustomerioConfiguration = &DeclarativeManifest{}
 			}
 			r.NotificationSettings.SendOnSuccess.NotificationType = nil
 			for _, v := range resp.NotificationSettings.SendOnSuccess.NotificationType {
@@ -853,7 +853,7 @@ func (r *WorkspaceResourceModel) RefreshFromCreateResponse(resp *shared.Workspac
 			if resp.NotificationSettings.SendOnSyncDisabled.CustomerioConfiguration == nil {
 				r.NotificationSettings.SendOnSyncDisabled.CustomerioConfiguration = nil
 			} else {
-				r.NotificationSettings.SendOnSyncDisabled.CustomerioConfiguration = &StreamJSONSchema{}
+				r.NotificationSettings.SendOnSyncDisabled.CustomerioConfiguration = &DeclarativeManifest{}
 			}
 			r.NotificationSettings.SendOnSyncDisabled.NotificationType = nil
 			for _, v := range resp.NotificationSettings.SendOnSyncDisabled.NotificationType {
@@ -873,7 +873,7 @@ func (r *WorkspaceResourceModel) RefreshFromCreateResponse(resp *shared.Workspac
 			if resp.NotificationSettings.SendOnSyncDisabledWarning.CustomerioConfiguration == nil {
 				r.NotificationSettings.SendOnSyncDisabledWarning.CustomerioConfiguration = nil
 			} else {
-				r.NotificationSettings.SendOnSyncDisabledWarning.CustomerioConfiguration = &StreamJSONSchema{}
+				r.NotificationSettings.SendOnSyncDisabledWarning.CustomerioConfiguration = &DeclarativeManifest{}
 			}
 			r.NotificationSettings.SendOnSyncDisabledWarning.NotificationType = nil
 			for _, v := range resp.NotificationSettings.SendOnSyncDisabledWarning.NotificationType {

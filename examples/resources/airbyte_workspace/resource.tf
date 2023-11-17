@@ -1,16 +1,16 @@
 resource "airbyte_workspace" "my_workspace" {
-  anonymous_data_collection = false
+  anonymous_data_collection = true
   default_geography         = "auto"
   display_setup_wizard      = false
-  email                     = "Cecelia_White16@yahoo.com"
-  name                      = "Miss Tonya Hamill Jr."
+  email                     = "Kristofer41@hotmail.com"
+  name                      = "Mr. Cheryl Powlowski"
   news                      = false
   notifications = [
     {
       customerio_configuration = {}
       notification_type        = "customerio"
-      send_on_failure          = true
-      send_on_success          = false
+      send_on_failure          = false
+      send_on_success          = true
       slack_configuration = {
         webhook = "...my_webhook..."
       }
@@ -20,7 +20,7 @@ resource "airbyte_workspace" "my_workspace" {
     send_on_breaking_change_syncs_disabled = {
       customerio_configuration = {}
       notification_type = [
-        "slack",
+        "customerio",
       ]
       slack_configuration = {
         webhook = "...my_webhook..."
@@ -47,7 +47,7 @@ resource "airbyte_workspace" "my_workspace" {
     send_on_connection_update_action_required = {
       customerio_configuration = {}
       notification_type = [
-        "customerio",
+        "slack",
       ]
       slack_configuration = {
         webhook = "...my_webhook..."
@@ -90,13 +90,13 @@ resource "airbyte_workspace" "my_workspace" {
       }
     }
   }
-  organization_id  = "61ccc7d2-0b17-4eae-9dd9-c435027c42c7"
+  organization_id  = "1ccc7d20-b17e-4ae1-9d9c-435027c42c7c"
   security_updates = false
   webhook_configs = [
     {
       auth_token     = "...my_auth_token..."
-      id             = "d8063191-46c8-4408-a3d9-d1434d4688b6"
-      name           = "Dr. Theresa Dibbert"
+      id             = "80631914-6c84-4086-bd9d-1434d4688b60"
+      name           = "Norma Bogisich"
       validation_url = "...my_validation_url..."
     },
   ]

@@ -3,6 +3,7 @@
 package provider
 
 import (
+	"encoding/json"
 	"github.com/aballiet/terraform-provider-airbyte/internal/sdk/pkg/models/shared"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -56,10 +57,12 @@ func (r *SourceSchemaDataSourceModel) RefreshFromGetResponse(resp *shared.Source
 			} else {
 				streams1.Stream = &AirbyteStream{}
 				streams1.Stream.Name = types.StringValue(streamsItem.Stream.Name)
-				if streamsItem.Stream.JSONSchema == nil {
-					streams1.Stream.JSONSchema = nil
-				} else {
-					streams1.Stream.JSONSchema = &StreamJSONSchema{}
+				if streams1.Stream.JSONSchema == nil && len(streamsItem.Stream.JSONSchema) > 0 {
+					streams1.Stream.JSONSchema = make(map[string]types.String)
+					for key, value := range streamsItem.Stream.JSONSchema {
+						result, _ := json.Marshal(value)
+						streams1.Stream.JSONSchema[key] = types.StringValue(string(result))
+					}
 				}
 				streams1.Stream.SupportedSyncModes = nil
 				for _, v := range streamsItem.Stream.SupportedSyncModes {
@@ -186,7 +189,7 @@ func (r *SourceSchemaDataSourceModel) RefreshFromGetResponse(resp *shared.Source
 					if updateStreamItem.AddField.Schema == nil {
 						updateStream1.AddField.Schema = nil
 					} else {
-						updateStream1.AddField.Schema = &StreamJSONSchema{}
+						updateStream1.AddField.Schema = &DeclarativeManifest{}
 					}
 				}
 				if updateStreamItem.RemoveField == nil {
@@ -196,7 +199,7 @@ func (r *SourceSchemaDataSourceModel) RefreshFromGetResponse(resp *shared.Source
 					if updateStreamItem.RemoveField.Schema == nil {
 						updateStream1.RemoveField.Schema = nil
 					} else {
-						updateStream1.RemoveField.Schema = &StreamJSONSchema{}
+						updateStream1.RemoveField.Schema = &DeclarativeManifest{}
 					}
 				}
 				if updateStreamItem.UpdateFieldSchema == nil {
