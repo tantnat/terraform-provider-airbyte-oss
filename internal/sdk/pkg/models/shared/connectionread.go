@@ -20,8 +20,6 @@ type ConnectionRead struct {
 	OperationIds  []string `json:"operationIds,omitempty"`
 	// describes the available schema (catalog).
 	SyncCatalog AirbyteCatalog `json:"syncCatalog"`
-	// if null, then no schedule is set.
-	Schedule *ConnectionSchedule `json:"schedule,omitempty"`
 	// determine how the schedule data should be interpreted
 	ScheduleType *ConnectionScheduleType `json:"scheduleType,omitempty"`
 	// schedule for when the the connection should run, per the schedule type
@@ -111,13 +109,6 @@ func (o *ConnectionRead) GetSyncCatalog() AirbyteCatalog {
 		return AirbyteCatalog{}
 	}
 	return o.SyncCatalog
-}
-
-func (o *ConnectionRead) GetSchedule() *ConnectionSchedule {
-	if o == nil {
-		return nil
-	}
-	return o.Schedule
 }
 
 func (o *ConnectionRead) GetScheduleType() *ConnectionScheduleType {

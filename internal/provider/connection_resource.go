@@ -48,7 +48,6 @@ type ConnectionResourceModel struct {
 	OperationIds                 []types.String          `tfsdk:"operation_ids"`
 	Prefix                       types.String            `tfsdk:"prefix"`
 	ResourceRequirements         *ResourceRequirements   `tfsdk:"resource_requirements"`
-	Schedule                     *ConnectionSchedule     `tfsdk:"schedule"`
 	ScheduleData                 *ConnectionScheduleData `tfsdk:"schedule_data"`
 	ScheduleType                 types.String            `tfsdk:"schedule_type"`
 	SourceCatalogID              types.String            `tfsdk:"source_catalog_id"`
@@ -168,29 +167,6 @@ func (r *ConnectionResource) Schema(ctx context.Context, req resource.SchemaRequ
 					},
 				},
 				Description: `optional resource requirements to run workers (blank for unbounded allocations)`,
-			},
-			"schedule": schema.SingleNestedAttribute{
-				Computed: true,
-				Optional: true,
-				Attributes: map[string]schema.Attribute{
-					"time_unit": schema.StringAttribute{
-						Required:    true,
-						Description: `must be one of ["minutes", "hours", "days", "weeks", "months"]`,
-						Validators: []validator.String{
-							stringvalidator.OneOf(
-								"minutes",
-								"hours",
-								"days",
-								"weeks",
-								"months",
-							),
-						},
-					},
-					"units": schema.Int64Attribute{
-						Required: true,
-					},
-				},
-				Description: `if null, then no schedule is set.`,
 			},
 			"schedule_data": schema.SingleNestedAttribute{
 				Computed: true,

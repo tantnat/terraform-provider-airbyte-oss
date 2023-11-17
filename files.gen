@@ -444,7 +444,6 @@ internal/sdk/pkg/models/shared/connectionread.go
 internal/sdk/pkg/models/shared/nonbreakingchangespreference.go
 internal/sdk/pkg/models/shared/connectionscheduledata.go
 internal/sdk/pkg/models/shared/connectionscheduletype.go
-internal/sdk/pkg/models/shared/connectionschedule.go
 internal/sdk/pkg/models/shared/namespacedefinitiontype.go
 internal/sdk/pkg/models/shared/connectioncreate.go
 internal/sdk/pkg/models/shared/connectionupdate.go
@@ -463,6 +462,7 @@ internal/sdk/pkg/models/shared/actordefinitionrequestbody.go
 internal/sdk/pkg/models/shared/connectionautopropagateresult.go
 internal/sdk/pkg/models/shared/connectionautopropagateschemachange.go
 internal/sdk/pkg/models/shared/connectionsearch.go
+internal/sdk/pkg/models/shared/connectionschedule.go
 internal/sdk/pkg/models/shared/connectionstreamrequestbody.go
 internal/sdk/pkg/models/shared/connectionstream.go
 internal/sdk/pkg/models/shared/knownexceptioninfo.go
@@ -563,7 +563,7 @@ internal/sdk/pkg/models/shared/organizationreadlist.go
 internal/sdk/pkg/models/shared/listorganizationsbyuserrequestbody.go
 internal/sdk/pkg/models/shared/security.go
 internal/provider/type_resource_requirements.go
-internal/provider/type_connection_schedule.go
+internal/provider/type_basic_schedule.go
 internal/provider/type_cron.go
 internal/provider/type_connection_schedule_data.go
 internal/provider/type_selected_field_info.go
