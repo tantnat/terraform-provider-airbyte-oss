@@ -9,14 +9,17 @@ To install this provider, copy and paste this code into your Terraform configura
 terraform {
   required_providers {
     airbyte = {
-      source  = "aballiet/airbyte"
-      version = "1.0.6"
+      source  = "aballiet/airbyte-oss"
+      version = "1.0.7"
     }
   }
 }
 
 provider "airbyte" {
-  # Configuration options
+  # Must match your Airbyte server endpoint (airbyte-server-svc on k8s)
+  server_url = "http://localhost:8001/api/"
+  username   = "YOUR_USERNAME"
+  password   = "YOUR_PASSWORD"
 }
 ```
 <!-- End SDK Installation -->

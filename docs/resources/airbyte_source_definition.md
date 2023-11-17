@@ -14,13 +14,13 @@ SourceDefinition Resource
 
 ```terraform
 resource "airbyte_source_definition" "my_sourcedefinition" {
-  scope_id   = "8bb3fe33-fac9-4256-8f87-8498930f77ed"
-  scope_type = "organization"
+  scope_id   = "f1dc406d-3e60-467c-8faa-27e0571d07b1"
+  scope_type = "workspace"
   source_definition = {
-    name              = "Holly Hane"
+    name              = "Rafael Barrows"
     docker_repository = "...my_docker_repository..."
     docker_image_tag  = "...my_docker_image_tag..."
-    documentation_url = "http://moist-escalator.name"
+    documentation_url = "https://quick-witted-laboratory.biz"
     icon              = "...my_icon..."
     resource_requirements = {
       default = {
@@ -42,7 +42,7 @@ resource "airbyte_source_definition" "my_sourcedefinition" {
       ]
     }
   }
-  workspace_id = "c3535457-d244-4268-bf97-7c6f814b5f1d"
+  workspace_id = "355b45bc-e45d-4e0c-a038-bc3c12192fc9"
 }
 ```
 

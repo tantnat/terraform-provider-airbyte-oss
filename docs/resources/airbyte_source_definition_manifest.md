@@ -18,11 +18,11 @@ resource "airbyte_source_definition_manifest" "my_sourcedefinitionmanifest" {
     description = "...my_description..."
     manifest    = {}
     spec        = {}
-    version     = 8
+    version     = 1
   }
   set_as_active_manifest = true
-  source_definition_id   = "06d3e606-7c0f-4aa2-be05-71d07b12f607"
-  workspace_id           = "aea75f35-5b45-4bce-85de-0c2038bc3c12"
+  source_definition_id   = "651b10e8-de28-4ee3-9676-1ccc7d20b17e"
+  workspace_id           = "ae1dd9c4-3502-47c4-ac7c-d806319146c8"
 }
 ```
 
