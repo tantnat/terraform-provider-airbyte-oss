@@ -57,14 +57,16 @@ Authentication (OSS):
 terraform {
   required_providers {
     airbyte = {
-      source  = "aballiet/airbyte"
-      version = "1.0.6"
+      source  = "aballiet/airbyte-oss"
+      version = "1.0.7"
     }
   }
 }
 
 provider "airbyte" {
-  # Configuration options
+  server_url = "http://localhost:8001/api/" # Must match your Airbyte server endpoint (airbyte-server-svc on k8s)
+  username   = "YOUR_USERNAME"
+  password   = "YOUR_PASSWORD"
 }
 ```
 
