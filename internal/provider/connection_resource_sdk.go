@@ -3,6 +3,7 @@
 package provider
 
 import (
+	"encoding/json"
 	"github.com/aballiet/terraform-provider-airbyte/internal/sdk/pkg/models/shared"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -45,9 +46,11 @@ func (r *ConnectionResourceModel) ToCreateSDKType() *shared.ConnectionCreate {
 			var stream *shared.AirbyteStream
 			if streamsItem.Stream != nil {
 				name1 := streamsItem.Stream.Name.ValueString()
-				var jsonSchema *shared.StreamJSONSchema
-				if streamsItem.Stream.JSONSchema != nil {
-					jsonSchema = &shared.StreamJSONSchema{}
+				jsonSchema := make(map[string]interface{})
+				for jsonSchemaKey, jsonSchemaValue := range streamsItem.Stream.JSONSchema {
+					var jsonSchemaInst interface{}
+					_ = json.Unmarshal([]byte(jsonSchemaValue.ValueString()), &jsonSchemaInst)
+					jsonSchema[jsonSchemaKey] = jsonSchemaInst
 				}
 				var supportedSyncModes []shared.SyncMode = nil
 				for _, supportedSyncModesItem := range streamsItem.Stream.SupportedSyncModes {
@@ -158,15 +161,6 @@ func (r *ConnectionResourceModel) ToCreateSDKType() *shared.ConnectionCreate {
 			Streams: streams,
 		}
 	}
-	var schedule *shared.ConnectionSchedule
-	if r.Schedule != nil {
-		units := r.Schedule.Units.ValueInt64()
-		timeUnit := shared.TimeUnit(r.Schedule.TimeUnit.ValueString())
-		schedule = &shared.ConnectionSchedule{
-			Units:    units,
-			TimeUnit: timeUnit,
-		}
-	}
 	scheduleType := new(shared.ConnectionScheduleType)
 	if !r.ScheduleType.IsUnknown() && !r.ScheduleType.IsNull() {
 		*scheduleType = shared.ConnectionScheduleType(r.ScheduleType.ValueString())
@@ -177,11 +171,11 @@ func (r *ConnectionResourceModel) ToCreateSDKType() *shared.ConnectionCreate {
 	if r.ScheduleData != nil {
 		var basicSchedule *shared.BasicSchedule
 		if r.ScheduleData.BasicSchedule != nil {
-			timeUnit1 := shared.ConnectionScheduleDataTimeUnit(r.ScheduleData.BasicSchedule.TimeUnit.ValueString())
-			units1 := r.ScheduleData.BasicSchedule.Units.ValueInt64()
+			timeUnit := shared.ConnectionScheduleDataTimeUnit(r.ScheduleData.BasicSchedule.TimeUnit.ValueString())
+			units := r.ScheduleData.BasicSchedule.Units.ValueInt64()
 			basicSchedule = &shared.BasicSchedule{
-				TimeUnit: timeUnit1,
-				Units:    units1,
+				TimeUnit: timeUnit,
+				Units:    units,
 			}
 		}
 		var cron *shared.Cron
@@ -271,7 +265,6 @@ func (r *ConnectionResourceModel) ToCreateSDKType() *shared.ConnectionCreate {
 		DestinationID:                destinationID,
 		OperationIds:                 operationIds,
 		SyncCatalog:                  syncCatalog,
-		Schedule:                     schedule,
 		ScheduleType:                 scheduleType,
 		ScheduleData:                 scheduleData,
 		Status:                       status,
@@ -322,9 +315,11 @@ func (r *ConnectionResourceModel) ToUpdateSDKType() *shared.ConnectionUpdate {
 			var stream *shared.AirbyteStream
 			if streamsItem.Stream != nil {
 				name1 := streamsItem.Stream.Name.ValueString()
-				var jsonSchema *shared.StreamJSONSchema
-				if streamsItem.Stream.JSONSchema != nil {
-					jsonSchema = &shared.StreamJSONSchema{}
+				jsonSchema := make(map[string]interface{})
+				for jsonSchemaKey, jsonSchemaValue := range streamsItem.Stream.JSONSchema {
+					var jsonSchemaInst interface{}
+					_ = json.Unmarshal([]byte(jsonSchemaValue.ValueString()), &jsonSchemaInst)
+					jsonSchema[jsonSchemaKey] = jsonSchemaInst
 				}
 				var supportedSyncModes []shared.SyncMode = nil
 				for _, supportedSyncModesItem := range streamsItem.Stream.SupportedSyncModes {
@@ -435,15 +430,6 @@ func (r *ConnectionResourceModel) ToUpdateSDKType() *shared.ConnectionUpdate {
 			Streams: streams,
 		}
 	}
-	var schedule *shared.ConnectionSchedule
-	if r.Schedule != nil {
-		units := r.Schedule.Units.ValueInt64()
-		timeUnit := shared.TimeUnit(r.Schedule.TimeUnit.ValueString())
-		schedule = &shared.ConnectionSchedule{
-			Units:    units,
-			TimeUnit: timeUnit,
-		}
-	}
 	scheduleType := new(shared.ConnectionScheduleType)
 	if !r.ScheduleType.IsUnknown() && !r.ScheduleType.IsNull() {
 		*scheduleType = shared.ConnectionScheduleType(r.ScheduleType.ValueString())
@@ -454,11 +440,11 @@ func (r *ConnectionResourceModel) ToUpdateSDKType() *shared.ConnectionUpdate {
 	if r.ScheduleData != nil {
 		var basicSchedule *shared.BasicSchedule
 		if r.ScheduleData.BasicSchedule != nil {
-			timeUnit1 := shared.ConnectionScheduleDataTimeUnit(r.ScheduleData.BasicSchedule.TimeUnit.ValueString())
-			units1 := r.ScheduleData.BasicSchedule.Units.ValueInt64()
+			timeUnit := shared.ConnectionScheduleDataTimeUnit(r.ScheduleData.BasicSchedule.TimeUnit.ValueString())
+			units := r.ScheduleData.BasicSchedule.Units.ValueInt64()
 			basicSchedule = &shared.BasicSchedule{
-				TimeUnit: timeUnit1,
-				Units:    units1,
+				TimeUnit: timeUnit,
+				Units:    units,
 			}
 		}
 		var cron *shared.Cron
@@ -558,7 +544,6 @@ func (r *ConnectionResourceModel) ToUpdateSDKType() *shared.ConnectionUpdate {
 		Prefix:                       prefix,
 		OperationIds:                 operationIds,
 		SyncCatalog:                  syncCatalog,
-		Schedule:                     schedule,
 		ScheduleType:                 scheduleType,
 		ScheduleData:                 scheduleData,
 		Status:                       status,
@@ -647,13 +632,6 @@ func (r *ConnectionResourceModel) RefreshFromCreateResponse(resp *shared.Connect
 			r.ResourceRequirements.MemoryRequest = types.StringNull()
 		}
 	}
-	if resp.Schedule == nil {
-		r.Schedule = nil
-	} else {
-		r.Schedule = &ConnectionSchedule{}
-		r.Schedule.TimeUnit = types.StringValue(string(resp.Schedule.TimeUnit))
-		r.Schedule.Units = types.Int64Value(resp.Schedule.Units)
-	}
 	if resp.ScheduleData == nil {
 		r.ScheduleData = nil
 	} else {
@@ -661,7 +639,7 @@ func (r *ConnectionResourceModel) RefreshFromCreateResponse(resp *shared.Connect
 		if resp.ScheduleData.BasicSchedule == nil {
 			r.ScheduleData.BasicSchedule = nil
 		} else {
-			r.ScheduleData.BasicSchedule = &ConnectionSchedule{}
+			r.ScheduleData.BasicSchedule = &BasicSchedule{}
 			r.ScheduleData.BasicSchedule.TimeUnit = types.StringValue(string(resp.ScheduleData.BasicSchedule.TimeUnit))
 			r.ScheduleData.BasicSchedule.Units = types.Int64Value(resp.ScheduleData.BasicSchedule.Units)
 		}
@@ -756,10 +734,12 @@ func (r *ConnectionResourceModel) RefreshFromCreateResponse(resp *shared.Connect
 			for _, v := range streamsItem.Stream.DefaultCursorField {
 				streams1.Stream.DefaultCursorField = append(streams1.Stream.DefaultCursorField, types.StringValue(v))
 			}
-			if streamsItem.Stream.JSONSchema == nil {
-				streams1.Stream.JSONSchema = nil
-			} else {
-				streams1.Stream.JSONSchema = &StreamJSONSchema{}
+			if streams1.Stream.JSONSchema == nil && len(streamsItem.Stream.JSONSchema) > 0 {
+				streams1.Stream.JSONSchema = make(map[string]types.String)
+				for key, value := range streamsItem.Stream.JSONSchema {
+					result, _ := json.Marshal(value)
+					streams1.Stream.JSONSchema[key] = types.StringValue(string(result))
+				}
 			}
 			streams1.Stream.Name = types.StringValue(streamsItem.Stream.Name)
 			if streamsItem.Stream.Namespace != nil {

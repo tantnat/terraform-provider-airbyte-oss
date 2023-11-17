@@ -2,5 +2,6 @@
 
 package provider
 
-type StreamJSONSchema struct {
+type CatalogDiff struct {
+	Transforms []StreamTransform `tfsdk:"transforms"`
 }

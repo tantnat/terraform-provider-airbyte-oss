@@ -14,13 +14,13 @@ SourceDefinition Resource
 
 ```terraform
 resource "airbyte_source_definition" "my_sourcedefinition" {
-  scope_id   = "ad8bb3fe-33fa-4c92-96cf-878498930f77"
+  scope_id   = "8bb3fe33-fac9-4256-8f87-8498930f77ed"
   scope_type = "organization"
   source_definition = {
-    name              = "Rex Becker"
+    name              = "Holly Hane"
     docker_repository = "...my_docker_repository..."
     docker_image_tag  = "...my_docker_image_tag..."
-    documentation_url = "http://yearly-hive.name"
+    documentation_url = "http://moist-escalator.name"
     icon              = "...my_icon..."
     resource_requirements = {
       default = {
@@ -31,7 +31,7 @@ resource "airbyte_source_definition" "my_sourcedefinition" {
       }
       job_specific = [
         {
-          job_type = "discover_schema"
+          job_type = "replicate"
           resource_requirements = {
             cpu_request    = "...my_cpu_request..."
             cpu_limit      = "...my_cpu_limit..."
@@ -42,7 +42,7 @@ resource "airbyte_source_definition" "my_sourcedefinition" {
       ]
     }
   }
-  workspace_id = "8fc35354-57d2-4442-a8ff-977c6f814b5f"
+  workspace_id = "c3535457-d244-4268-bf97-7c6f814b5f1d"
 }
 ```
 

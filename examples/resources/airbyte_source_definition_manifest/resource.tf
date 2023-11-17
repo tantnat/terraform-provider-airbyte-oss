@@ -3,9 +3,9 @@ resource "airbyte_source_definition_manifest" "my_sourcedefinitionmanifest" {
     description = "...my_description..."
     manifest    = {}
     spec        = {}
-    version     = 1
+    version     = 8
   }
-  set_as_active_manifest = false
-  source_definition_id   = "c406d3e6-067c-40fa-a27e-0571d07b12f6"
-  workspace_id           = "07aea75f-355b-445b-8e45-de0c2038bc3c"
+  set_as_active_manifest = true
+  source_definition_id   = "06d3e606-7c0f-4aa2-be05-71d07b12f607"
+  workspace_id           = "aea75f35-5b45-4bce-85de-0c2038bc3c12"
 }

@@ -17,14 +17,10 @@ resource "airbyte_connection" "my_connection" {
     memory_limit   = "...my_memory_limit..."
     memory_request = "...my_memory_request..."
   }
-  schedule = {
-    time_unit = "minutes"
-    units     = 9
-  }
   schedule_data = {
     basic_schedule = {
-      time_unit = "weeks"
-      units     = 7
+      time_unit = "minutes"
+      units     = 9
     }
     cron = {
       cron_expression = "...my_cron_expression..."
@@ -32,8 +28,8 @@ resource "airbyte_connection" "my_connection" {
     }
   }
   schedule_type     = "cron"
-  source_catalog_id = "5e6b8dd9-95b8-45b3-8db9-804e4cb5e145"
-  source_id         = "1ef85fdd-6486-4396-b21f-097ee8d4067a"
+  source_catalog_id = "aa5e6b8d-d995-4b85-b38d-b9804e4cb5e1"
+  source_id         = "451ef85f-dd64-4863-9632-1f097ee8d406"
   status            = "inactive"
   sync_catalog = {
     streams = [
@@ -43,7 +39,7 @@ resource "airbyte_connection" "my_connection" {
           cursor_field = [
             "...",
           ]
-          destination_sync_mode   = "append_dedup"
+          destination_sync_mode   = "overwrite"
           field_selection_enabled = true
           primary_key = [
             [
@@ -58,17 +54,20 @@ resource "airbyte_connection" "my_connection" {
               ]
             },
           ]
-          suggested = false
+          suggested = true
           sync_mode = "incremental"
         }
         stream = {
           default_cursor_field = [
             "...",
           ]
-          json_schema           = {}
-          name                  = "Ms. June Bins"
+          json_schema = {
+            "Sausages" = "{ \"see\": \"documentation\" }"
+            "East"     = "{ \"see\": \"documentation\" }"
+          }
+          name                  = "Mildred Lueilwitz"
           namespace             = "...my_namespace..."
-          source_defined_cursor = true
+          source_defined_cursor = false
           source_defined_primary_key = [
             [
               "...",

@@ -4,7 +4,7 @@ package provider
 
 import "github.com/hashicorp/terraform-plugin-framework/types"
 
-type ConnectionSchedule struct {
+type BasicSchedule struct {
 	TimeUnit types.String `tfsdk:"time_unit"`
 	Units    types.Int64  `tfsdk:"units"`
 }

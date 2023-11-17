@@ -3,6 +3,6 @@
 package provider
 
 type ConnectionScheduleData struct {
-	BasicSchedule *ConnectionSchedule `tfsdk:"basic_schedule"`
-	Cron          *Cron               `tfsdk:"cron"`
+	BasicSchedule *BasicSchedule `tfsdk:"basic_schedule"`
+	Cron          *Cron          `tfsdk:"cron"`
 }

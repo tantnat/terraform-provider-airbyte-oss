@@ -1,9 +1,9 @@
 resource "airbyte_workspace" "my_workspace" {
   anonymous_data_collection = false
-  default_geography         = "auto"
+  default_geography         = "us"
   display_setup_wizard      = false
-  email                     = "Cecelia_White16@yahoo.com"
-  name                      = "Miss Tonya Hamill Jr."
+  email                     = "Ole0@hotmail.com"
+  name                      = "Jill Carroll Jr."
   news                      = false
   notifications = [
     {

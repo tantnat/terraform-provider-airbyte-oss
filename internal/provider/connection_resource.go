@@ -8,6 +8,8 @@ import (
 	"github.com/aballiet/terraform-provider-airbyte/internal/sdk"
 
 	"github.com/aballiet/terraform-provider-airbyte/internal/sdk/pkg/models/shared"
+	"github.com/aballiet/terraform-provider-airbyte/internal/validators"
+	"github.com/hashicorp/terraform-plugin-framework-validators/mapvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -46,7 +48,6 @@ type ConnectionResourceModel struct {
 	OperationIds                 []types.String          `tfsdk:"operation_ids"`
 	Prefix                       types.String            `tfsdk:"prefix"`
 	ResourceRequirements         *ResourceRequirements   `tfsdk:"resource_requirements"`
-	Schedule                     *ConnectionSchedule     `tfsdk:"schedule"`
 	ScheduleData                 *ConnectionScheduleData `tfsdk:"schedule_data"`
 	ScheduleType                 types.String            `tfsdk:"schedule_type"`
 	SourceCatalogID              types.String            `tfsdk:"source_catalog_id"`
@@ -166,29 +167,6 @@ func (r *ConnectionResource) Schema(ctx context.Context, req resource.SchemaRequ
 					},
 				},
 				Description: `optional resource requirements to run workers (blank for unbounded allocations)`,
-			},
-			"schedule": schema.SingleNestedAttribute{
-				Computed: true,
-				Optional: true,
-				Attributes: map[string]schema.Attribute{
-					"time_unit": schema.StringAttribute{
-						Required:    true,
-						Description: `must be one of ["minutes", "hours", "days", "weeks", "months"]`,
-						Validators: []validator.String{
-							stringvalidator.OneOf(
-								"minutes",
-								"hours",
-								"days",
-								"weeks",
-								"months",
-							),
-						},
-					},
-					"units": schema.Int64Attribute{
-						Required: true,
-					},
-				},
-				Description: `if null, then no schedule is set.`,
 			},
 			"schedule_data": schema.SingleNestedAttribute{
 				Computed: true,
@@ -360,11 +338,14 @@ func (r *ConnectionResource) Schema(ctx context.Context, req resource.SchemaRequ
 											ElementType: types.StringType,
 											Description: `Path to the field that will be used to determine if a record is new or modified since the last sync. If not provided by the source, the end user will have to specify the comparable themselves.`,
 										},
-										"json_schema": schema.SingleNestedAttribute{
+										"json_schema": schema.MapAttribute{
 											Computed:    true,
 											Optional:    true,
-											Attributes:  map[string]schema.Attribute{},
+											ElementType: types.StringType,
 											Description: `Stream schema using Json Schema specs.`,
+											Validators: []validator.Map{
+												mapvalidator.ValueStringsAre(validators.IsValidJSON()),
+											},
 										},
 										"name": schema.StringAttribute{
 											Required:    true,

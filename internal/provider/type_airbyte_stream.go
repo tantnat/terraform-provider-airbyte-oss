@@ -5,11 +5,11 @@ package provider
 import "github.com/hashicorp/terraform-plugin-framework/types"
 
 type AirbyteStream struct {
-	DefaultCursorField      []types.String    `tfsdk:"default_cursor_field"`
-	JSONSchema              *StreamJSONSchema `tfsdk:"json_schema"`
-	Name                    types.String      `tfsdk:"name"`
-	Namespace               types.String      `tfsdk:"namespace"`
-	SourceDefinedCursor     types.Bool        `tfsdk:"source_defined_cursor"`
-	SourceDefinedPrimaryKey [][]types.String  `tfsdk:"source_defined_primary_key"`
-	SupportedSyncModes      []types.String    `tfsdk:"supported_sync_modes"`
+	DefaultCursorField      []types.String          `tfsdk:"default_cursor_field"`
+	JSONSchema              map[string]types.String `tfsdk:"json_schema"`
+	Name                    types.String            `tfsdk:"name"`
+	Namespace               types.String            `tfsdk:"namespace"`
+	SourceDefinedCursor     types.Bool              `tfsdk:"source_defined_cursor"`
+	SourceDefinedPrimaryKey [][]types.String        `tfsdk:"source_defined_primary_key"`
+	SupportedSyncModes      []types.String          `tfsdk:"supported_sync_modes"`
 }
