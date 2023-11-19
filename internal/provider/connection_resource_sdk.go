@@ -278,6 +278,11 @@ func (r *ConnectionResourceModel) ToCreateSDKType() *shared.ConnectionCreate {
 	return &out
 }
 
+func (r *ConnectionResourceModel) ToGetSDKType() *shared.ConnectionCreate {
+	out := r.ToCreateSDKType()
+	return out
+}
+
 func (r *ConnectionResourceModel) ToUpdateSDKType() *shared.ConnectionUpdate {
 	connectionID := r.ConnectionID.ValueString()
 	namespaceDefinition := new(shared.NamespaceDefinitionType)
@@ -563,7 +568,7 @@ func (r *ConnectionResourceModel) ToDeleteSDKType() *shared.ConnectionCreate {
 	return out
 }
 
-func (r *ConnectionResourceModel) RefreshFromCreateResponse(resp *shared.ConnectionRead) {
+func (r *ConnectionResourceModel) RefreshFromGetResponse(resp *shared.ConnectionRead) {
 	r.BreakingChange = types.BoolValue(resp.BreakingChange)
 	r.ConnectionID = types.StringValue(resp.ConnectionID)
 	r.DestinationID = types.StringValue(resp.DestinationID)
@@ -780,6 +785,10 @@ func (r *ConnectionResourceModel) RefreshFromCreateResponse(resp *shared.Connect
 	}
 }
 
+func (r *ConnectionResourceModel) RefreshFromCreateResponse(resp *shared.ConnectionRead) {
+	r.RefreshFromGetResponse(resp)
+}
+
 func (r *ConnectionResourceModel) RefreshFromUpdateResponse(resp *shared.ConnectionRead) {
-	r.RefreshFromCreateResponse(resp)
+	r.RefreshFromGetResponse(resp)
 }

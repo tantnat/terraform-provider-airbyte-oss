@@ -1,3 +1,3 @@
 data "airbyte_operation" "my_operation" {
-  operation_id = "cd96c08a-642e-4276-9d0a-b8d096c23af1"
+  operation_id = "300de2cb-a926-4083-9cde-dc24be26fa48"
 }

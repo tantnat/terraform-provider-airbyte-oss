@@ -324,6 +324,11 @@ func (r *WorkspaceResourceModel) ToCreateSDKType() *shared.WorkspaceCreate {
 	return &out
 }
 
+func (r *WorkspaceResourceModel) ToGetSDKType() *shared.WorkspaceCreate {
+	out := r.ToCreateSDKType()
+	return out
+}
+
 func (r *WorkspaceResourceModel) ToUpdateSDKType() *shared.WorkspaceUpdate {
 	workspaceID := r.WorkspaceID.ValueString()
 	email := new(string)
@@ -646,7 +651,7 @@ func (r *WorkspaceResourceModel) ToDeleteSDKType() *shared.WorkspaceCreate {
 	return out
 }
 
-func (r *WorkspaceResourceModel) RefreshFromCreateResponse(resp *shared.WorkspaceRead) {
+func (r *WorkspaceResourceModel) RefreshFromGetResponse(resp *shared.WorkspaceRead) {
 	if resp.AnonymousDataCollection != nil {
 		r.AnonymousDataCollection = types.BoolValue(*resp.AnonymousDataCollection)
 	} else {
@@ -919,6 +924,10 @@ func (r *WorkspaceResourceModel) RefreshFromCreateResponse(resp *shared.Workspac
 	r.WorkspaceID = types.StringValue(resp.WorkspaceID)
 }
 
+func (r *WorkspaceResourceModel) RefreshFromCreateResponse(resp *shared.WorkspaceRead) {
+	r.RefreshFromGetResponse(resp)
+}
+
 func (r *WorkspaceResourceModel) RefreshFromUpdateResponse(resp *shared.WorkspaceRead) {
-	r.RefreshFromCreateResponse(resp)
+	r.RefreshFromGetResponse(resp)
 }
