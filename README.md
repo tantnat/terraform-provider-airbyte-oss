@@ -75,4 +75,4 @@ Your `<PATH>` may vary depending on how your Go environment variables are config
 
 Feel free to open a PR or a Github issue as a proof of concept and I'll do my best to include it in a future release!
 
-### SDK Created with the great help of [Speakeasy](https://docs.speakeasyapi.dev/docs/using-speakeasy/client-sdks)
+### SDK Created with the great help of [Speakeasy](https://www.speakeasyapi.dev/)
