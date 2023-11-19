@@ -131,6 +131,14 @@ func (r *SourceDefinitionResourceModel) ToCreateSDKType() *shared.CustomSourceDe
 	return &out
 }
 
+func (r *SourceDefinitionResourceModel) ToGetSDKType() *shared.SourceDefinitionIDRequestBody {
+	sourceDefinitionID := r.SourceDefinitionID.ValueString()
+	out := shared.SourceDefinitionIDRequestBody{
+		SourceDefinitionID: sourceDefinitionID,
+	}
+	return &out
+}
+
 func (r *SourceDefinitionResourceModel) ToUpdateSDKType() *shared.SourceDefinitionUpdate {
 	sourceDefinitionID := r.SourceDefinitionID.ValueString()
 	dockerImageTag := r.DockerImageTag.ValueString()
@@ -221,14 +229,11 @@ func (r *SourceDefinitionResourceModel) ToUpdateSDKType() *shared.SourceDefiniti
 }
 
 func (r *SourceDefinitionResourceModel) ToDeleteSDKType() *shared.SourceDefinitionIDRequestBody {
-	sourceDefinitionID := r.SourceDefinitionID.ValueString()
-	out := shared.SourceDefinitionIDRequestBody{
-		SourceDefinitionID: sourceDefinitionID,
-	}
-	return &out
+	out := r.ToGetSDKType()
+	return out
 }
 
-func (r *SourceDefinitionResourceModel) RefreshFromCreateResponse(resp *shared.SourceDefinitionRead) {
+func (r *SourceDefinitionResourceModel) RefreshFromGetResponse(resp *shared.SourceDefinitionRead) {
 	if resp.Custom != nil {
 		r.Custom = types.BoolValue(*resp.Custom)
 	} else {
@@ -343,6 +348,10 @@ func (r *SourceDefinitionResourceModel) RefreshFromCreateResponse(resp *shared.S
 	}
 }
 
+func (r *SourceDefinitionResourceModel) RefreshFromCreateResponse(resp *shared.SourceDefinitionRead) {
+	r.RefreshFromGetResponse(resp)
+}
+
 func (r *SourceDefinitionResourceModel) RefreshFromUpdateResponse(resp *shared.SourceDefinitionRead) {
-	r.RefreshFromCreateResponse(resp)
+	r.RefreshFromGetResponse(resp)
 }

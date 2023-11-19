@@ -14,13 +14,13 @@ SourceDefinition Resource
 
 ```terraform
 resource "airbyte_source_definition" "my_sourcedefinition" {
-  scope_id   = "f1dc406d-3e60-467c-8faa-27e0571d07b1"
+  scope_id   = "3d9d1434-d468-48b6-8221-d5f1402c7e26"
   scope_type = "workspace"
   source_definition = {
-    name              = "Rafael Barrows"
+    name              = "Felicia Huels"
     docker_repository = "...my_docker_repository..."
     docker_image_tag  = "...my_docker_image_tag..."
-    documentation_url = "https://quick-witted-laboratory.biz"
+    documentation_url = "http://unnatural-falling-out.biz"
     icon              = "...my_icon..."
     resource_requirements = {
       default = {
@@ -42,7 +42,7 @@ resource "airbyte_source_definition" "my_sourcedefinition" {
       ]
     }
   }
-  workspace_id = "355b45bc-e45d-4e0c-a038-bc3c12192fc9"
+  workspace_id = "e038120e-c22a-4c97-8dbe-310dc62194f1"
 }
 ```
 

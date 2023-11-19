@@ -14,7 +14,7 @@ Operation DataSource
 
 ```terraform
 data "airbyte_operation" "my_operation" {
-  operation_id = "cd96c08a-642e-4276-9d0a-b8d096c23af1"
+  operation_id = "20533529-4d0a-4ddf-b687-ccb9e13e7ba5"
 }
 ```
 

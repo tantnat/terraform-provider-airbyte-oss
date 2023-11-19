@@ -11,6 +11,7 @@ import (
 	"github.com/aballiet/terraform-provider-airbyte/internal/validators"
 	"github.com/hashicorp/terraform-plugin-framework-validators/mapvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
@@ -473,7 +474,31 @@ func (r *ConnectionResource) Read(ctx context.Context, req resource.ReadRequest,
 		return
 	}
 
-	// Not Implemented; we rely entirely on CREATE API request response
+	connectionID := data.ConnectionID.ValueString()
+	request := shared.ConnectionIDRequestBody{
+		ConnectionID: connectionID,
+	}
+	res, err := r.client.Connection.GetConnection(ctx, request)
+	if err != nil {
+		resp.Diagnostics.AddError("failure to invoke API", err.Error())
+		if res != nil && res.RawResponse != nil {
+			resp.Diagnostics.AddError("unexpected http request/response", debugResponse(res.RawResponse))
+		}
+		return
+	}
+	if res == nil {
+		resp.Diagnostics.AddError("unexpected response from API", fmt.Sprintf("%v", res))
+		return
+	}
+	if res.StatusCode != 200 {
+		resp.Diagnostics.AddError(fmt.Sprintf("unexpected response from API. Got an unexpected response code %v", res.StatusCode), debugResponse(res.RawResponse))
+		return
+	}
+	if res.ConnectionRead == nil {
+		resp.Diagnostics.AddError("unexpected response from API. No response body", debugResponse(res.RawResponse))
+		return
+	}
+	data.RefreshFromGetResponse(res.ConnectionRead)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -555,5 +580,5 @@ func (r *ConnectionResource) Delete(ctx context.Context, req resource.DeleteRequ
 }
 
 func (r *ConnectionResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	resp.Diagnostics.AddError("Not Implemented", "No available import state operation is available for resource connection.")
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("connection_id"), req.ID)...)
 }

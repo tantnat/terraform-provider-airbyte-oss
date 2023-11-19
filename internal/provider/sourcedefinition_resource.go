@@ -48,7 +48,7 @@ type SourceDefinitionResourceModel struct {
 	ResourceRequirements      *ActorDefinitionResourceRequirements `tfsdk:"resource_requirements"`
 	ScopeID                   types.String                         `tfsdk:"scope_id"`
 	ScopeType                 types.String                         `tfsdk:"scope_type"`
-	SourceDefinition          SourceDefinitionCreate               `tfsdk:"source_definition"`
+	SourceDefinition          DestinationDefinitionCreate          `tfsdk:"source_definition"`
 	SourceDefinitionID        types.String                         `tfsdk:"source_definition_id"`
 	SourceType                types.String                         `tfsdk:"source_type"`
 	SupportLevel              types.String                         `tfsdk:"support_level"`
@@ -456,7 +456,28 @@ func (r *SourceDefinitionResource) Read(ctx context.Context, req resource.ReadRe
 		return
 	}
 
-	// Not Implemented; we rely entirely on CREATE API request response
+	request := *data.ToGetSDKType()
+	res, err := r.client.SourceDefinition.GetSourceDefinition(ctx, request)
+	if err != nil {
+		resp.Diagnostics.AddError("failure to invoke API", err.Error())
+		if res != nil && res.RawResponse != nil {
+			resp.Diagnostics.AddError("unexpected http request/response", debugResponse(res.RawResponse))
+		}
+		return
+	}
+	if res == nil {
+		resp.Diagnostics.AddError("unexpected response from API", fmt.Sprintf("%v", res))
+		return
+	}
+	if res.StatusCode != 200 {
+		resp.Diagnostics.AddError(fmt.Sprintf("unexpected response from API. Got an unexpected response code %v", res.StatusCode), debugResponse(res.RawResponse))
+		return
+	}
+	if res.SourceDefinitionRead == nil {
+		resp.Diagnostics.AddError("unexpected response from API. No response body", debugResponse(res.RawResponse))
+		return
+	}
+	data.RefreshFromGetResponse(res.SourceDefinitionRead)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -535,5 +556,5 @@ func (r *SourceDefinitionResource) Delete(ctx context.Context, req resource.Dele
 }
 
 func (r *SourceDefinitionResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	resp.Diagnostics.AddError("Not Implemented", "No available import state operation is available for resource source_definition.")
+	resp.Diagnostics.AddError("Not Implemented", "No available import state operation is available for resource source_definition. Reason: composite imports strings not supported.")
 }
