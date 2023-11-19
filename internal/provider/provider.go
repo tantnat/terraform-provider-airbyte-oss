@@ -114,6 +114,8 @@ func (p *AirbyteProvider) Configure(ctx context.Context, req provider.ConfigureR
 func (p *AirbyteProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
 		NewConnectionResource,
+		NewDestinationResource,
+		NewDestinationDefinitionResource,
 		NewOperationResource,
 		NewSourceResource,
 		NewSourceDefinitionResource,
@@ -125,6 +127,8 @@ func (p *AirbyteProvider) Resources(ctx context.Context) []func() resource.Resou
 func (p *AirbyteProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
 		NewConnectionDataSource,
+		NewDestinationDataSource,
+		NewDestinationDefinitionDataSource,
 		NewOperationDataSource,
 		NewSourceDataSource,
 		NewSourceDefinitionDataSource,

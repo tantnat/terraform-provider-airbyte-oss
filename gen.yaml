@@ -13,7 +13,7 @@ features:
     globalSecurity: 2.81.1
     globalServerURLs: 2.82.1
 terraform:
-  version: 1.0.7
+  version: 1.1.0
   author: aballiet
   imports:
     option: openapi

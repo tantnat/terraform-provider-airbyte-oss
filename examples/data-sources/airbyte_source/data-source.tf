@@ -1,3 +1,3 @@
 data "airbyte_source" "my_source" {
-  source_id = "a24e9eae-dfd4-401e-81ae-1e8142cfc767"
+  source_id = "e598287a-0d45-4578-b83a-0345516193a2"
 }

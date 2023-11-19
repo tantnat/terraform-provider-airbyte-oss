@@ -1,11 +1,9 @@
-resource "airbyte_source_definition" "my_sourcedefinition" {
-  scope_id   = "3d9d1434-d468-48b6-8221-d5f1402c7e26"
-  scope_type = "workspace"
-  source_definition = {
-    name              = "Felicia Huels"
+resource "airbyte_destination_definition" "my_destinationdefinition" {
+  destination_definition = {
+    name              = "Dwight Robel"
     docker_repository = "...my_docker_repository..."
     docker_image_tag  = "...my_docker_image_tag..."
-    documentation_url = "http://unnatural-falling-out.biz"
+    documentation_url = "https://united-consensus.biz"
     icon              = "...my_icon..."
     resource_requirements = {
       default = {
@@ -27,5 +25,7 @@ resource "airbyte_source_definition" "my_sourcedefinition" {
       ]
     }
   }
-  workspace_id = "e038120e-c22a-4c97-8dbe-310dc62194f1"
+  scope_id     = "ac9256cf-8784-4989-b0f7-7eda0554f685"
+  scope_type   = "organization"
+  workspace_id = "fc353545-7d24-4426-8ff9-77c6f814b5f1"
 }

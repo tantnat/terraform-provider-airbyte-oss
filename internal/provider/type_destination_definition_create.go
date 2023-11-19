@@ -4,7 +4,7 @@ package provider
 
 import "github.com/hashicorp/terraform-plugin-framework/types"
 
-type SourceDefinitionCreate struct {
+type DestinationDefinitionCreate struct {
 	Name                 types.String                         `tfsdk:"name"`
 	DockerRepository     types.String                         `tfsdk:"docker_repository"`
 	DockerImageTag       types.String                         `tfsdk:"docker_image_tag"`
