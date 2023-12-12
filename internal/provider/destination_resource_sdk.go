@@ -47,8 +47,6 @@ func (r *DestinationResourceModel) ToDeleteSDKType() *shared.DestinationCreate {
 }
 
 func (r *DestinationResourceModel) RefreshFromGetResponse(resp *shared.DestinationRead) {
-	connectionConfigurationResult, _ := json.Marshal(resp.ConnectionConfiguration)
-	r.ConnectionConfiguration = types.StringValue(string(connectionConfigurationResult))
 	r.DestinationDefinitionID = types.StringValue(resp.DestinationDefinitionID)
 	r.DestinationID = types.StringValue(resp.DestinationID)
 	r.DestinationName = types.StringValue(resp.DestinationName)
