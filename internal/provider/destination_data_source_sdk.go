@@ -3,14 +3,11 @@
 package provider
 
 import (
-	"encoding/json"
 	"github.com/aballiet/terraform-provider-airbyte/internal/sdk/pkg/models/shared"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 func (r *DestinationDataSourceModel) RefreshFromGetResponse(resp *shared.DestinationRead) {
-	connectionConfigurationResult, _ := json.Marshal(resp.ConnectionConfiguration)
-	r.ConnectionConfiguration = types.StringValue(string(connectionConfigurationResult))
 	r.DestinationDefinitionID = types.StringValue(resp.DestinationDefinitionID)
 	r.DestinationID = types.StringValue(resp.DestinationID)
 	r.DestinationName = types.StringValue(resp.DestinationName)
