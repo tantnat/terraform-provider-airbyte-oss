@@ -3,14 +3,12 @@
 package shared
 
 type DestinationRead struct {
-	DestinationDefinitionID string `json:"destinationDefinitionId"`
-	DestinationID           string `json:"destinationId"`
-	WorkspaceID             string `json:"workspaceId"`
-	// The values required to configure the destination. The schema for this must match the schema return by destination_definition_specifications/get for the destinationDefinition.
-	ConnectionConfiguration interface{} `json:"connectionConfiguration"`
-	Name                    string      `json:"name"`
-	DestinationName         string      `json:"destinationName"`
-	Icon                    *string     `json:"icon,omitempty"`
+	DestinationDefinitionID string  `json:"destinationDefinitionId"`
+	DestinationID           string  `json:"destinationId"`
+	WorkspaceID             string  `json:"workspaceId"`
+	Name                    string  `json:"name"`
+	DestinationName         string  `json:"destinationName"`
+	Icon                    *string `json:"icon,omitempty"`
 }
 
 func (o *DestinationRead) GetDestinationDefinitionID() string {
@@ -32,13 +30,6 @@ func (o *DestinationRead) GetWorkspaceID() string {
 		return ""
 	}
 	return o.WorkspaceID
-}
-
-func (o *DestinationRead) GetConnectionConfiguration() interface{} {
-	if o == nil {
-		return nil
-	}
-	return o.ConnectionConfiguration
 }
 
 func (o *DestinationRead) GetName() string {

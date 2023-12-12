@@ -27,8 +27,6 @@ data "airbyte_destination" "my_destination" {
 
 ### Read-Only
 
-- `connection_configuration` (String) Parsed as JSON.
-The values required to configure the destination. The schema for this must match the schema return by destination_definition_specifications/get for the destinationDefinition.
 - `destination_definition_id` (String)
 - `destination_name` (String)
 - `icon` (String)

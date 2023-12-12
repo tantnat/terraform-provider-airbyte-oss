@@ -29,7 +29,6 @@ type DestinationDataSource struct {
 
 // DestinationDataSourceModel describes the data model.
 type DestinationDataSourceModel struct {
-	ConnectionConfiguration types.String `tfsdk:"connection_configuration"`
 	DestinationDefinitionID types.String `tfsdk:"destination_definition_id"`
 	DestinationID           types.String `tfsdk:"destination_id"`
 	DestinationName         types.String `tfsdk:"destination_name"`
@@ -49,11 +48,6 @@ func (r *DestinationDataSource) Schema(ctx context.Context, req datasource.Schem
 		MarkdownDescription: "Destination DataSource",
 
 		Attributes: map[string]schema.Attribute{
-			"connection_configuration": schema.StringAttribute{
-				Computed: true,
-				MarkdownDescription: `Parsed as JSON.` + "\n" +
-					`The values required to configure the destination. The schema for this must match the schema return by destination_definition_specifications/get for the destinationDefinition.`,
-			},
 			"destination_definition_id": schema.StringAttribute{
 				Computed: true,
 			},
