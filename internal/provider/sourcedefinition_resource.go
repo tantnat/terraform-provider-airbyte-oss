@@ -5,13 +5,13 @@ package provider
 import (
 	"context"
 	"fmt"
-	speakeasy_stringplanmodifier "github.com/aballiet/terraform-provider-airbyte/internal/planmodifiers/stringplanmodifier"
 	"github.com/aballiet/terraform-provider-airbyte/internal/sdk"
-	"github.com/aballiet/terraform-provider-airbyte/internal/sdk/pkg/models/shared"
 	"github.com/aballiet/terraform-provider-airbyte/internal/validators"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
@@ -34,17 +34,12 @@ type SourceDefinitionResource struct {
 
 // SourceDefinitionResourceModel describes the resource data model.
 type SourceDefinitionResourceModel struct {
-	CPULimit                  types.String                         `tfsdk:"cpu_limit"`
-	CPURequest                types.String                         `tfsdk:"cpu_request"`
 	Custom                    types.Bool                           `tfsdk:"custom"`
 	DockerImageTag            types.String                         `tfsdk:"docker_image_tag"`
 	DockerRepository          types.String                         `tfsdk:"docker_repository"`
 	DocumentationURL          types.String                         `tfsdk:"documentation_url"`
 	Icon                      types.String                         `tfsdk:"icon"`
-	JobType                   types.String                         `tfsdk:"job_type"`
 	MaxSecondsBetweenMessages types.Int64                          `tfsdk:"max_seconds_between_messages"`
-	MemoryLimit               types.String                         `tfsdk:"memory_limit"`
-	MemoryRequest             types.String                         `tfsdk:"memory_request"`
 	Name                      types.String                         `tfsdk:"name"`
 	ProtocolVersion           types.String                         `tfsdk:"protocol_version"`
 	ReleaseDate               types.String                         `tfsdk:"release_date"`
@@ -52,6 +47,7 @@ type SourceDefinitionResourceModel struct {
 	ResourceRequirements      *ActorDefinitionResourceRequirements `tfsdk:"resource_requirements"`
 	ScopeID                   types.String                         `tfsdk:"scope_id"`
 	ScopeType                 types.String                         `tfsdk:"scope_type"`
+	SourceDefinition          SourceDefinitionCreate               `tfsdk:"source_definition"`
 	SourceDefinitionID        types.String                         `tfsdk:"source_definition_id"`
 	SourceType                types.String                         `tfsdk:"source_type"`
 	SupportLevel              types.String                         `tfsdk:"support_level"`
@@ -67,95 +63,28 @@ func (r *SourceDefinitionResource) Schema(ctx context.Context, req resource.Sche
 		MarkdownDescription: "SourceDefinition Resource",
 
 		Attributes: map[string]schema.Attribute{
-			"cpu_limit": schema.StringAttribute{
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplaceIfConfigured(),
-				},
-				Optional:    true,
-				Description: `Requires replacement if changed. `,
-			},
-			"cpu_request": schema.StringAttribute{
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplaceIfConfigured(),
-				},
-				Optional:    true,
-				Description: `Requires replacement if changed. `,
-			},
 			"custom": schema.BoolAttribute{
 				Computed:    true,
 				Description: `Whether the connector is custom or not`,
 			},
 			"docker_image_tag": schema.StringAttribute{
-				Required: true,
+				Computed: true,
 			},
 			"docker_repository": schema.StringAttribute{
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplaceIfConfigured(),
-					speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
-				},
-				Required:    true,
-				Description: `Requires replacement if changed. `,
+				Computed: true,
 			},
 			"documentation_url": schema.StringAttribute{
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplaceIfConfigured(),
-					speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
-				},
-				Required:    true,
-				Description: `Requires replacement if changed. `,
+				Computed: true,
 			},
 			"icon": schema.StringAttribute{
 				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplaceIfConfigured(),
-					speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
-				},
-				Optional:    true,
-				Description: `Requires replacement if changed. `,
-			},
-			"job_type": schema.StringAttribute{
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplaceIfConfigured(),
-				},
-				Required:    true,
-				Description: `enum that describes the different types of jobs that the platform runs. Requires replacement if changed. ; must be one of ["get_spec", "check_connection", "discover_schema", "sync", "reset_connection", "connection_updater", "replicate"]`,
-				Validators: []validator.String{
-					stringvalidator.OneOf(
-						"get_spec",
-						"check_connection",
-						"discover_schema",
-						"sync",
-						"reset_connection",
-						"connection_updater",
-						"replicate",
-					),
-				},
 			},
 			"max_seconds_between_messages": schema.Int64Attribute{
 				Computed:    true,
 				Description: `Number of seconds allowed between 2 airbyte protocol messages. The source will timeout if this delay is reach`,
 			},
-			"memory_limit": schema.StringAttribute{
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplaceIfConfigured(),
-				},
-				Optional:    true,
-				Description: `Requires replacement if changed. `,
-			},
-			"memory_request": schema.StringAttribute{
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplaceIfConfigured(),
-				},
-				Optional:    true,
-				Description: `Requires replacement if changed. `,
-			},
 			"name": schema.StringAttribute{
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplaceIfConfigured(),
-					speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
-				},
-				Required:    true,
-				Description: `Requires replacement if changed. `,
+				Computed: true,
 			},
 			"protocol_version": schema.StringAttribute{
 				Computed:    true,
@@ -264,6 +193,162 @@ func (r *SourceDefinitionResource) Schema(ctx context.Context, req resource.Sche
 					),
 				},
 			},
+			"source_definition": schema.SingleNestedAttribute{
+				PlanModifiers: []planmodifier.Object{
+					objectplanmodifier.RequiresReplaceIfConfigured(),
+				},
+				Required: true,
+				Attributes: map[string]schema.Attribute{
+					"docker_image_tag": schema.StringAttribute{
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.RequiresReplaceIfConfigured(),
+						},
+						Required:    true,
+						Description: `Requires replacement if changed. `,
+					},
+					"docker_repository": schema.StringAttribute{
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.RequiresReplaceIfConfigured(),
+						},
+						Required:    true,
+						Description: `Requires replacement if changed. `,
+					},
+					"documentation_url": schema.StringAttribute{
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.RequiresReplaceIfConfigured(),
+						},
+						Required:    true,
+						Description: `Requires replacement if changed. `,
+					},
+					"icon": schema.StringAttribute{
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.RequiresReplaceIfConfigured(),
+						},
+						Optional:    true,
+						Description: `Requires replacement if changed. `,
+					},
+					"name": schema.StringAttribute{
+						PlanModifiers: []planmodifier.String{
+							stringplanmodifier.RequiresReplaceIfConfigured(),
+						},
+						Required:    true,
+						Description: `Requires replacement if changed. `,
+					},
+					"resource_requirements": schema.SingleNestedAttribute{
+						PlanModifiers: []planmodifier.Object{
+							objectplanmodifier.RequiresReplaceIfConfigured(),
+						},
+						Optional: true,
+						Attributes: map[string]schema.Attribute{
+							"default": schema.SingleNestedAttribute{
+								PlanModifiers: []planmodifier.Object{
+									objectplanmodifier.RequiresReplaceIfConfigured(),
+								},
+								Optional: true,
+								Attributes: map[string]schema.Attribute{
+									"cpu_limit": schema.StringAttribute{
+										PlanModifiers: []planmodifier.String{
+											stringplanmodifier.RequiresReplaceIfConfigured(),
+										},
+										Optional:    true,
+										Description: `Requires replacement if changed. `,
+									},
+									"cpu_request": schema.StringAttribute{
+										PlanModifiers: []planmodifier.String{
+											stringplanmodifier.RequiresReplaceIfConfigured(),
+										},
+										Optional:    true,
+										Description: `Requires replacement if changed. `,
+									},
+									"memory_limit": schema.StringAttribute{
+										PlanModifiers: []planmodifier.String{
+											stringplanmodifier.RequiresReplaceIfConfigured(),
+										},
+										Optional:    true,
+										Description: `Requires replacement if changed. `,
+									},
+									"memory_request": schema.StringAttribute{
+										PlanModifiers: []planmodifier.String{
+											stringplanmodifier.RequiresReplaceIfConfigured(),
+										},
+										Optional:    true,
+										Description: `Requires replacement if changed. `,
+									},
+								},
+								Description: `optional resource requirements to run workers (blank for unbounded allocations). Requires replacement if changed. `,
+							},
+							"job_specific": schema.ListNestedAttribute{
+								PlanModifiers: []planmodifier.List{
+									listplanmodifier.RequiresReplaceIfConfigured(),
+								},
+								Optional: true,
+								NestedObject: schema.NestedAttributeObject{
+									Attributes: map[string]schema.Attribute{
+										"job_type": schema.StringAttribute{
+											PlanModifiers: []planmodifier.String{
+												stringplanmodifier.RequiresReplaceIfConfigured(),
+											},
+											Required:    true,
+											Description: `enum that describes the different types of jobs that the platform runs. Requires replacement if changed. ; must be one of ["get_spec", "check_connection", "discover_schema", "sync", "reset_connection", "connection_updater", "replicate"]`,
+											Validators: []validator.String{
+												stringvalidator.OneOf(
+													"get_spec",
+													"check_connection",
+													"discover_schema",
+													"sync",
+													"reset_connection",
+													"connection_updater",
+													"replicate",
+												),
+											},
+										},
+										"resource_requirements": schema.SingleNestedAttribute{
+											PlanModifiers: []planmodifier.Object{
+												objectplanmodifier.RequiresReplaceIfConfigured(),
+											},
+											Required: true,
+											Attributes: map[string]schema.Attribute{
+												"cpu_limit": schema.StringAttribute{
+													PlanModifiers: []planmodifier.String{
+														stringplanmodifier.RequiresReplaceIfConfigured(),
+													},
+													Optional:    true,
+													Description: `Requires replacement if changed. `,
+												},
+												"cpu_request": schema.StringAttribute{
+													PlanModifiers: []planmodifier.String{
+														stringplanmodifier.RequiresReplaceIfConfigured(),
+													},
+													Optional:    true,
+													Description: `Requires replacement if changed. `,
+												},
+												"memory_limit": schema.StringAttribute{
+													PlanModifiers: []planmodifier.String{
+														stringplanmodifier.RequiresReplaceIfConfigured(),
+													},
+													Optional:    true,
+													Description: `Requires replacement if changed. `,
+												},
+												"memory_request": schema.StringAttribute{
+													PlanModifiers: []planmodifier.String{
+														stringplanmodifier.RequiresReplaceIfConfigured(),
+													},
+													Optional:    true,
+													Description: `Requires replacement if changed. `,
+												},
+											},
+											Description: `optional resource requirements to run workers (blank for unbounded allocations). Requires replacement if changed. `,
+										},
+									},
+								},
+								Description: `Requires replacement if changed. `,
+							},
+						},
+						Description: `actor definition specific resource requirements. if default is set, these are the requirements that should be set for ALL jobs run for this actor definition. it is overriden by the job type specific configurations. if not set, the platform will use defaults. these values will be overriden by configuration at the connection level. Requires replacement if changed. `,
+					},
+				},
+				Description: `Requires replacement if changed. `,
+			},
 			"source_definition_id": schema.StringAttribute{
 				Computed: true,
 			},
@@ -339,105 +424,7 @@ func (r *SourceDefinitionResource) Create(ctx context.Context, req resource.Crea
 		return
 	}
 
-	var request *shared.CustomSourceDefinitionCreate
-	workspaceID := new(string)
-	if !data.WorkspaceID.IsUnknown() && !data.WorkspaceID.IsNull() {
-		*workspaceID = data.WorkspaceID.ValueString()
-	} else {
-		workspaceID = nil
-	}
-	scopeID := new(string)
-	if !data.ScopeID.IsUnknown() && !data.ScopeID.IsNull() {
-		*scopeID = data.ScopeID.ValueString()
-	} else {
-		scopeID = nil
-	}
-	scopeType := new(shared.ScopeType)
-	if !data.ScopeType.IsUnknown() && !data.ScopeType.IsNull() {
-		*scopeType = shared.ScopeType(data.ScopeType.ValueString())
-	} else {
-		scopeType = nil
-	}
-	name := data.Name.ValueString()
-	dockerRepository := data.DockerRepository.ValueString()
-	dockerImageTag := data.DockerImageTag.ValueString()
-	documentationURL := data.DocumentationURL.ValueString()
-	icon := new(string)
-	if !data.Icon.IsUnknown() && !data.Icon.IsNull() {
-		*icon = data.Icon.ValueString()
-	} else {
-		icon = nil
-	}
-	var resourceRequirements *shared.ActorDefinitionResourceRequirements
-	if data != nil {
-		var defaultVar *shared.ResourceRequirements
-		if data != nil {
-			cpuRequest := new(string)
-			if !data.CPURequest.IsUnknown() && !data.CPURequest.IsNull() {
-				*cpuRequest = data.CPURequest.ValueString()
-			} else {
-				cpuRequest = nil
-			}
-			cpuLimit := new(string)
-			if !data.CPULimit.IsUnknown() && !data.CPULimit.IsNull() {
-				*cpuLimit = data.CPULimit.ValueString()
-			} else {
-				cpuLimit = nil
-			}
-			memoryRequest := new(string)
-			if !data.MemoryRequest.IsUnknown() && !data.MemoryRequest.IsNull() {
-				*memoryRequest = data.MemoryRequest.ValueString()
-			} else {
-				memoryRequest = nil
-			}
-			memoryLimit := new(string)
-			if !data.MemoryLimit.IsUnknown() && !data.MemoryLimit.IsNull() {
-				*memoryLimit = data.MemoryLimit.ValueString()
-			} else {
-				memoryLimit = nil
-			}
-			defaultVar = &shared.ResourceRequirements{
-				CPURequest:    cpuRequest,
-				CPULimit:      cpuLimit,
-				MemoryRequest: memoryRequest,
-				MemoryLimit:   memoryLimit,
-			}
-		}
-		var jobType *shared.JobType
-		var cpuRequest1 *string
-		var cpuLimit1 *string
-		var memoryRequest1 *string
-		var memoryLimit1 *string
-		resourceRequirements1 := shared.ResourceRequirements{
-			CPURequest:    cpuRequest1,
-			CPULimit:      cpuLimit1,
-			MemoryRequest: memoryRequest1,
-			MemoryLimit:   memoryLimit1,
-		}
-		jobSpecificSingleton := shared.JobTypeResourceLimit{
-			JobType:              *jobType,
-			ResourceRequirements: resourceRequirements1,
-		}
-		jobSpecific := []shared.JobTypeResourceLimit{jobSpecificSingleton}
-		resourceRequirements = &shared.ActorDefinitionResourceRequirements{
-			Default:     defaultVar,
-			JobSpecific: jobSpecific,
-		}
-	}
-	sourceDefinition := shared.SourceDefinitionCreate{
-		Name:                 name,
-		DockerRepository:     dockerRepository,
-		DockerImageTag:       dockerImageTag,
-		DocumentationURL:     documentationURL,
-		Icon:                 icon,
-		ResourceRequirements: resourceRequirements,
-	}
-	request = &shared.CustomSourceDefinitionCreate{
-		WorkspaceID:      workspaceID,
-		ScopeID:          scopeID,
-		ScopeType:        scopeType,
-		SourceDefinition: sourceDefinition,
-	}
+	request := data.ToSharedCustomSourceDefinitionCreate()
 	res, err := r.client.SourceDefinition.CreateCustomSourceDefinition(ctx, request)
 	if err != nil {
 		resp.Diagnostics.AddError("failure to invoke API", err.Error())

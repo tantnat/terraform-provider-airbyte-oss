@@ -7,6 +7,130 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
+func (r *SourceDefinitionResourceModel) ToSharedCustomSourceDefinitionCreate() *shared.CustomSourceDefinitionCreate {
+	workspaceID := new(string)
+	if !r.WorkspaceID.IsUnknown() && !r.WorkspaceID.IsNull() {
+		*workspaceID = r.WorkspaceID.ValueString()
+	} else {
+		workspaceID = nil
+	}
+	scopeID := new(string)
+	if !r.ScopeID.IsUnknown() && !r.ScopeID.IsNull() {
+		*scopeID = r.ScopeID.ValueString()
+	} else {
+		scopeID = nil
+	}
+	scopeType := new(shared.ScopeType)
+	if !r.ScopeType.IsUnknown() && !r.ScopeType.IsNull() {
+		*scopeType = shared.ScopeType(r.ScopeType.ValueString())
+	} else {
+		scopeType = nil
+	}
+	name := r.SourceDefinition.Name.ValueString()
+	dockerRepository := r.SourceDefinition.DockerRepository.ValueString()
+	dockerImageTag := r.SourceDefinition.DockerImageTag.ValueString()
+	documentationURL := r.SourceDefinition.DocumentationURL.ValueString()
+	icon := new(string)
+	if !r.SourceDefinition.Icon.IsUnknown() && !r.SourceDefinition.Icon.IsNull() {
+		*icon = r.SourceDefinition.Icon.ValueString()
+	} else {
+		icon = nil
+	}
+	var resourceRequirements *shared.ActorDefinitionResourceRequirements
+	if r.SourceDefinition.ResourceRequirements != nil {
+		var defaultVar *shared.ResourceRequirements
+		if r.SourceDefinition.ResourceRequirements.Default != nil {
+			cpuRequest := new(string)
+			if !r.SourceDefinition.ResourceRequirements.Default.CPURequest.IsUnknown() && !r.SourceDefinition.ResourceRequirements.Default.CPURequest.IsNull() {
+				*cpuRequest = r.SourceDefinition.ResourceRequirements.Default.CPURequest.ValueString()
+			} else {
+				cpuRequest = nil
+			}
+			cpuLimit := new(string)
+			if !r.SourceDefinition.ResourceRequirements.Default.CPULimit.IsUnknown() && !r.SourceDefinition.ResourceRequirements.Default.CPULimit.IsNull() {
+				*cpuLimit = r.SourceDefinition.ResourceRequirements.Default.CPULimit.ValueString()
+			} else {
+				cpuLimit = nil
+			}
+			memoryRequest := new(string)
+			if !r.SourceDefinition.ResourceRequirements.Default.MemoryRequest.IsUnknown() && !r.SourceDefinition.ResourceRequirements.Default.MemoryRequest.IsNull() {
+				*memoryRequest = r.SourceDefinition.ResourceRequirements.Default.MemoryRequest.ValueString()
+			} else {
+				memoryRequest = nil
+			}
+			memoryLimit := new(string)
+			if !r.SourceDefinition.ResourceRequirements.Default.MemoryLimit.IsUnknown() && !r.SourceDefinition.ResourceRequirements.Default.MemoryLimit.IsNull() {
+				*memoryLimit = r.SourceDefinition.ResourceRequirements.Default.MemoryLimit.ValueString()
+			} else {
+				memoryLimit = nil
+			}
+			defaultVar = &shared.ResourceRequirements{
+				CPURequest:    cpuRequest,
+				CPULimit:      cpuLimit,
+				MemoryRequest: memoryRequest,
+				MemoryLimit:   memoryLimit,
+			}
+		}
+		var jobSpecific []shared.JobTypeResourceLimit = nil
+		for _, jobSpecificItem := range r.SourceDefinition.ResourceRequirements.JobSpecific {
+			jobType := shared.JobType(jobSpecificItem.JobType.ValueString())
+			cpuRequest1 := new(string)
+			if !jobSpecificItem.ResourceRequirements.CPURequest.IsUnknown() && !jobSpecificItem.ResourceRequirements.CPURequest.IsNull() {
+				*cpuRequest1 = jobSpecificItem.ResourceRequirements.CPURequest.ValueString()
+			} else {
+				cpuRequest1 = nil
+			}
+			cpuLimit1 := new(string)
+			if !jobSpecificItem.ResourceRequirements.CPULimit.IsUnknown() && !jobSpecificItem.ResourceRequirements.CPULimit.IsNull() {
+				*cpuLimit1 = jobSpecificItem.ResourceRequirements.CPULimit.ValueString()
+			} else {
+				cpuLimit1 = nil
+			}
+			memoryRequest1 := new(string)
+			if !jobSpecificItem.ResourceRequirements.MemoryRequest.IsUnknown() && !jobSpecificItem.ResourceRequirements.MemoryRequest.IsNull() {
+				*memoryRequest1 = jobSpecificItem.ResourceRequirements.MemoryRequest.ValueString()
+			} else {
+				memoryRequest1 = nil
+			}
+			memoryLimit1 := new(string)
+			if !jobSpecificItem.ResourceRequirements.MemoryLimit.IsUnknown() && !jobSpecificItem.ResourceRequirements.MemoryLimit.IsNull() {
+				*memoryLimit1 = jobSpecificItem.ResourceRequirements.MemoryLimit.ValueString()
+			} else {
+				memoryLimit1 = nil
+			}
+			resourceRequirements1 := shared.ResourceRequirements{
+				CPURequest:    cpuRequest1,
+				CPULimit:      cpuLimit1,
+				MemoryRequest: memoryRequest1,
+				MemoryLimit:   memoryLimit1,
+			}
+			jobSpecific = append(jobSpecific, shared.JobTypeResourceLimit{
+				JobType:              jobType,
+				ResourceRequirements: resourceRequirements1,
+			})
+		}
+		resourceRequirements = &shared.ActorDefinitionResourceRequirements{
+			Default:     defaultVar,
+			JobSpecific: jobSpecific,
+		}
+	}
+	sourceDefinition := shared.SourceDefinitionCreate{
+		Name:                 name,
+		DockerRepository:     dockerRepository,
+		DockerImageTag:       dockerImageTag,
+		DocumentationURL:     documentationURL,
+		Icon:                 icon,
+		ResourceRequirements: resourceRequirements,
+	}
+	out := shared.CustomSourceDefinitionCreate{
+		WorkspaceID:      workspaceID,
+		ScopeID:          scopeID,
+		ScopeType:        scopeType,
+		SourceDefinition: sourceDefinition,
+	}
+	return &out
+}
+
 func (r *SourceDefinitionResourceModel) RefreshFromSharedSourceDefinitionRead(resp *shared.SourceDefinitionRead) {
 	r.Custom = types.BoolPointerValue(resp.Custom)
 	r.DockerImageTag = types.StringValue(resp.DockerImageTag)

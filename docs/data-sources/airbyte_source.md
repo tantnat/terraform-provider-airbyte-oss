@@ -14,7 +14,7 @@ Source DataSource
 
 ```terraform
 data "airbyte_source" "my_source" {
-  source_id = "f844cbc0-7f65-4e5d-9847-8196e36f66cd"
+  source_id = "44cbc07f-65e5-4d18-8781-96e36f66cd38"
 }
 ```
 

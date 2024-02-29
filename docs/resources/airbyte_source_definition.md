@@ -14,19 +14,35 @@ SourceDefinition Resource
 
 ```terraform
 resource "airbyte_source_definition" "my_sourcedefinition" {
-  cpu_limit         = "...my_cpu_limit..."
-  cpu_request       = "...my_cpu_request..."
-  docker_image_tag  = "...my_docker_image_tag..."
-  docker_repository = "...my_docker_repository..."
-  documentation_url = "http://jam-packed-guarantee.com"
-  icon              = "...my_icon..."
-  job_type          = "connection_updater"
-  memory_limit      = "...my_memory_limit..."
-  memory_request    = "...my_memory_request..."
-  name              = "Garrett Kirlin"
-  scope_id          = "0b17eae1-dd9c-4435-827c-42c7cd806319"
-  scope_type        = "workspace"
-  workspace_id      = "46c84086-3d9d-4143-8d46-88b60221d5f1"
+  scope_id   = "6761ccc7-d20b-417e-ae1d-d9c435027c42"
+  scope_type = "organization"
+  source_definition = {
+    docker_image_tag  = "...my_docker_image_tag..."
+    docker_repository = "...my_docker_repository..."
+    documentation_url = "http://specific-stretch.name"
+    icon              = "...my_icon..."
+    name              = "Ms. Gertrude Ernser II"
+    resource_requirements = {
+      default = {
+        cpu_limit      = "...my_cpu_limit..."
+        cpu_request    = "...my_cpu_request..."
+        memory_limit   = "...my_memory_limit..."
+        memory_request = "...my_memory_request..."
+      }
+      job_specific = [
+        {
+          job_type = "discover_schema"
+          resource_requirements = {
+            cpu_limit      = "...my_cpu_limit..."
+            cpu_request    = "...my_cpu_request..."
+            memory_limit   = "...my_memory_limit..."
+            memory_request = "...my_memory_request..."
+          }
+        },
+      ]
+    }
+  }
+  workspace_id = "c840863d-9d14-434d-8688-b60221d5f140"
 }
 ```
 
@@ -35,19 +51,10 @@ resource "airbyte_source_definition" "my_sourcedefinition" {
 
 ### Required
 
-- `docker_image_tag` (String)
-- `docker_repository` (String) Requires replacement if changed.
-- `documentation_url` (String) Requires replacement if changed.
-- `job_type` (String) enum that describes the different types of jobs that the platform runs. Requires replacement if changed. ; must be one of ["get_spec", "check_connection", "discover_schema", "sync", "reset_connection", "connection_updater", "replicate"]
-- `name` (String) Requires replacement if changed.
+- `source_definition` (Attributes) Requires replacement if changed. (see [below for nested schema](#nestedatt--source_definition))
 
 ### Optional
 
-- `cpu_limit` (String) Requires replacement if changed.
-- `cpu_request` (String) Requires replacement if changed.
-- `icon` (String) Requires replacement if changed.
-- `memory_limit` (String) Requires replacement if changed.
-- `memory_request` (String) Requires replacement if changed.
 - `scope_id` (String) Requires replacement if changed.
 - `scope_type` (String) Requires replacement if changed. ; must be one of ["workspace", "organization"]
 - `workspace_id` (String) Requires replacement if changed.
@@ -55,7 +62,12 @@ resource "airbyte_source_definition" "my_sourcedefinition" {
 ### Read-Only
 
 - `custom` (Boolean) Whether the connector is custom or not
+- `docker_image_tag` (String)
+- `docker_repository` (String)
+- `documentation_url` (String)
+- `icon` (String)
 - `max_seconds_between_messages` (Number) Number of seconds allowed between 2 airbyte protocol messages. The source will timeout if this delay is reach
+- `name` (String)
 - `protocol_version` (String) The Airbyte Protocol version supported by the connector
 - `release_date` (String) The date when this connector was first released, in yyyy-mm-dd format.
 - `release_stage` (String) must be one of ["alpha", "beta", "generally_available", "custom"]
@@ -63,6 +75,62 @@ resource "airbyte_source_definition" "my_sourcedefinition" {
 - `source_definition_id` (String)
 - `source_type` (String) must be one of ["api", "file", "database", "custom"]
 - `support_level` (String) must be one of ["community", "certified", "none"]
+
+<a id="nestedatt--source_definition"></a>
+### Nested Schema for `source_definition`
+
+Required:
+
+- `docker_image_tag` (String) Requires replacement if changed.
+- `docker_repository` (String) Requires replacement if changed.
+- `documentation_url` (String) Requires replacement if changed.
+- `name` (String) Requires replacement if changed.
+
+Optional:
+
+- `icon` (String) Requires replacement if changed.
+- `resource_requirements` (Attributes) actor definition specific resource requirements. if default is set, these are the requirements that should be set for ALL jobs run for this actor definition. it is overriden by the job type specific configurations. if not set, the platform will use defaults. these values will be overriden by configuration at the connection level. Requires replacement if changed. (see [below for nested schema](#nestedatt--source_definition--resource_requirements))
+
+<a id="nestedatt--source_definition--resource_requirements"></a>
+### Nested Schema for `source_definition.resource_requirements`
+
+Optional:
+
+- `default` (Attributes) optional resource requirements to run workers (blank for unbounded allocations). Requires replacement if changed. (see [below for nested schema](#nestedatt--source_definition--resource_requirements--default))
+- `job_specific` (Attributes List) Requires replacement if changed. (see [below for nested schema](#nestedatt--source_definition--resource_requirements--job_specific))
+
+<a id="nestedatt--source_definition--resource_requirements--default"></a>
+### Nested Schema for `source_definition.resource_requirements.default`
+
+Optional:
+
+- `cpu_limit` (String) Requires replacement if changed.
+- `cpu_request` (String) Requires replacement if changed.
+- `memory_limit` (String) Requires replacement if changed.
+- `memory_request` (String) Requires replacement if changed.
+
+
+<a id="nestedatt--source_definition--resource_requirements--job_specific"></a>
+### Nested Schema for `source_definition.resource_requirements.job_specific`
+
+Required:
+
+- `job_type` (String) enum that describes the different types of jobs that the platform runs. Requires replacement if changed. ; must be one of ["get_spec", "check_connection", "discover_schema", "sync", "reset_connection", "connection_updater", "replicate"]
+- `resource_requirements` (Attributes) optional resource requirements to run workers (blank for unbounded allocations). Requires replacement if changed. (see [below for nested schema](#nestedatt--source_definition--resource_requirements--job_specific--resource_requirements))
+
+<a id="nestedatt--source_definition--resource_requirements--job_specific--resource_requirements"></a>
+### Nested Schema for `source_definition.resource_requirements.job_specific.resource_requirements`
+
+Optional:
+
+- `cpu_limit` (String) Requires replacement if changed.
+- `cpu_request` (String) Requires replacement if changed.
+- `memory_limit` (String) Requires replacement if changed.
+- `memory_request` (String) Requires replacement if changed.
+
+
+
+
 
 <a id="nestedatt--resource_requirements"></a>
 ### Nested Schema for `resource_requirements`

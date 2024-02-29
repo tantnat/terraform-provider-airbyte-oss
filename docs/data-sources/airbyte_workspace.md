@@ -14,7 +14,7 @@ Workspace DataSource
 
 ```terraform
 data "airbyte_workspace" "my_workspace" {
-  workspace_id = "a20e3344-987d-4e77-90fb-df6188b86c7c"
+  workspace_id = "0e334498-7de7-4710-bbdf-6188b86c7c05"
 }
 ```
 

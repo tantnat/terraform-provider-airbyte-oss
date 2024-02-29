@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: a592d325-751d-447c-af2a-581b9e706313
 management:
-  docChecksum: 58e3f2e3f4c99cfda741aa5bddc01254
+  docChecksum: 7c83c37d0d3c4bd49001fc001a8219c3
   docVersion: 1.0.0
   speakeasyVersion: internal
   generationVersion: 2.272.7
-  releaseVersion: 1.2.1
-  configChecksum: 7549c420b8fee232a04e2823ed66bbaa
+  releaseVersion: 1.2.2
+  configChecksum: c0ce954a26e87fc81014a98f99cf4083
 features:
   terraform:
     constsAndDefaults: 0.1.3
@@ -605,6 +605,7 @@ generatedFiles:
   - internal/provider/type_dbt_cloud.go
   - internal/provider/type_operator_webhook.go
   - internal/provider/type_operator_configuration.go
+  - internal/provider/type_source_definition_create.go
   - internal/provider/type_declarative_manifest.go
   - internal/provider/type_declarative_source_manifest.go
   - internal/provider/type_slack_notification_configuration.go

@@ -17,10 +17,10 @@ resource "airbyte_workspace" "my_workspace" {
   anonymous_data_collection = true
   default_geography         = "eu"
   display_setup_wizard      = true
-  email                     = "Santa_Maggio@hotmail.com"
-  name                      = "Penny Padberg"
+  email                     = "Helene54@yahoo.com"
+  name                      = "Hector Gibson"
   news                      = true
-  organization_id           = "e276dd0a-b8d0-496c-a3af-1300de2cba92"
+  organization_id           = "76dd0ab8-d096-4c23-af13-00de2cba9260"
   security_updates          = false
 }
 ```
