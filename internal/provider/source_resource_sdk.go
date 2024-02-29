@@ -8,7 +8,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-func (r *SourceResourceModel) ToCreateSDKType() *shared.SourceCreate {
+func (r *SourceResourceModel) ToSharedSourceCreate() *shared.SourceCreate {
 	sourceDefinitionID := r.SourceDefinitionID.ValueString()
 	var connectionConfiguration interface{}
 	_ = json.Unmarshal([]byte(r.ConnectionConfiguration.ValueString()), &connectionConfiguration)
@@ -30,7 +30,16 @@ func (r *SourceResourceModel) ToCreateSDKType() *shared.SourceCreate {
 	return &out
 }
 
-func (r *SourceResourceModel) ToGetSDKType() *shared.SourceIDRequestBody {
+func (r *SourceResourceModel) RefreshFromSharedSourceRead(resp *shared.SourceRead) {
+	r.Icon = types.StringPointerValue(resp.Icon)
+	r.Name = types.StringValue(resp.Name)
+	r.SourceDefinitionID = types.StringValue(resp.SourceDefinitionID)
+	r.SourceID = types.StringValue(resp.SourceID)
+	r.SourceName = types.StringValue(resp.SourceName)
+	r.WorkspaceID = types.StringValue(resp.WorkspaceID)
+}
+
+func (r *SourceResourceModel) ToSharedSourceIDRequestBody() *shared.SourceIDRequestBody {
 	sourceID := r.SourceID.ValueString()
 	out := shared.SourceIDRequestBody{
 		SourceID: sourceID,
@@ -38,7 +47,7 @@ func (r *SourceResourceModel) ToGetSDKType() *shared.SourceIDRequestBody {
 	return &out
 }
 
-func (r *SourceResourceModel) ToUpdateSDKType() *shared.SourceUpdate {
+func (r *SourceResourceModel) ToSharedSourceUpdate() *shared.SourceUpdate {
 	sourceID := r.SourceID.ValueString()
 	var connectionConfiguration interface{}
 	_ = json.Unmarshal([]byte(r.ConnectionConfiguration.ValueString()), &connectionConfiguration)
@@ -56,30 +65,4 @@ func (r *SourceResourceModel) ToUpdateSDKType() *shared.SourceUpdate {
 		SecretID:                secretID,
 	}
 	return &out
-}
-
-func (r *SourceResourceModel) ToDeleteSDKType() *shared.SourceIDRequestBody {
-	out := r.ToGetSDKType()
-	return out
-}
-
-func (r *SourceResourceModel) RefreshFromGetResponse(resp *shared.SourceRead) {
-	if resp.Icon != nil {
-		r.Icon = types.StringValue(*resp.Icon)
-	} else {
-		r.Icon = types.StringNull()
-	}
-	r.Name = types.StringValue(resp.Name)
-	r.SourceDefinitionID = types.StringValue(resp.SourceDefinitionID)
-	r.SourceID = types.StringValue(resp.SourceID)
-	r.SourceName = types.StringValue(resp.SourceName)
-	r.WorkspaceID = types.StringValue(resp.WorkspaceID)
-}
-
-func (r *SourceResourceModel) RefreshFromCreateResponse(resp *shared.SourceRead) {
-	r.RefreshFromGetResponse(resp)
-}
-
-func (r *SourceResourceModel) RefreshFromUpdateResponse(resp *shared.SourceRead) {
-	r.RefreshFromGetResponse(resp)
 }

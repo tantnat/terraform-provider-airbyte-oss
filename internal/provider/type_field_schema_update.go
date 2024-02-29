@@ -3,6 +3,6 @@
 package provider
 
 type FieldSchemaUpdate struct {
-	OldSchema DeclarativeManifest `tfsdk:"old_schema"`
 	NewSchema DeclarativeManifest `tfsdk:"new_schema"`
+	OldSchema DeclarativeManifest `tfsdk:"old_schema"`
 }

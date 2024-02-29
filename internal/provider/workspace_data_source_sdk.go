@@ -7,230 +7,63 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-func (r *WorkspaceDataSourceModel) RefreshFromGetResponse(resp *shared.WorkspaceRead) {
-	if resp.AnonymousDataCollection != nil {
-		r.AnonymousDataCollection = types.BoolValue(*resp.AnonymousDataCollection)
-	} else {
-		r.AnonymousDataCollection = types.BoolNull()
-	}
+func (r *WorkspaceDataSourceModel) RefreshFromSharedWorkspaceRead(resp *shared.WorkspaceRead) {
+	r.AnonymousDataCollection = types.BoolPointerValue(resp.AnonymousDataCollection)
 	r.CustomerID = types.StringValue(resp.CustomerID)
 	if resp.DefaultGeography != nil {
 		r.DefaultGeography = types.StringValue(string(*resp.DefaultGeography))
 	} else {
 		r.DefaultGeography = types.StringNull()
 	}
-	if resp.DisplaySetupWizard != nil {
-		r.DisplaySetupWizard = types.BoolValue(*resp.DisplaySetupWizard)
-	} else {
-		r.DisplaySetupWizard = types.BoolNull()
-	}
-	if resp.Email != nil {
-		r.Email = types.StringValue(*resp.Email)
-	} else {
-		r.Email = types.StringNull()
-	}
-	if resp.FeedbackDone != nil {
-		r.FeedbackDone = types.BoolValue(*resp.FeedbackDone)
-	} else {
-		r.FeedbackDone = types.BoolNull()
-	}
-	if resp.FirstCompletedSync != nil {
-		r.FirstCompletedSync = types.BoolValue(*resp.FirstCompletedSync)
-	} else {
-		r.FirstCompletedSync = types.BoolNull()
-	}
+	r.DisplaySetupWizard = types.BoolPointerValue(resp.DisplaySetupWizard)
+	r.Email = types.StringPointerValue(resp.Email)
+	r.FeedbackDone = types.BoolPointerValue(resp.FeedbackDone)
+	r.FirstCompletedSync = types.BoolPointerValue(resp.FirstCompletedSync)
 	r.InitialSetupComplete = types.BoolValue(resp.InitialSetupComplete)
 	r.Name = types.StringValue(resp.Name)
-	if resp.News != nil {
-		r.News = types.BoolValue(*resp.News)
-	} else {
-		r.News = types.BoolNull()
-	}
+	r.News = types.BoolPointerValue(resp.News)
 	if len(r.Notifications) > len(resp.Notifications) {
 		r.Notifications = r.Notifications[:len(resp.Notifications)]
 	}
 	for notificationsCount, notificationsItem := range resp.Notifications {
 		var notifications1 Notification
+		if notificationsItem.CustomerioConfiguration == nil {
+			notifications1.CustomerioConfiguration = nil
+		} else {
+			notifications1.CustomerioConfiguration = &DeclarativeManifest{}
+		}
 		notifications1.NotificationType = types.StringValue(string(notificationsItem.NotificationType))
-		if notificationsItem.SendOnSuccess != nil {
-			notifications1.SendOnSuccess = types.BoolValue(*notificationsItem.SendOnSuccess)
-		} else {
-			notifications1.SendOnSuccess = types.BoolNull()
-		}
-		if notificationsItem.SendOnFailure != nil {
-			notifications1.SendOnFailure = types.BoolValue(*notificationsItem.SendOnFailure)
-		} else {
-			notifications1.SendOnFailure = types.BoolNull()
-		}
+		notifications1.SendOnFailure = types.BoolPointerValue(notificationsItem.SendOnFailure)
+		notifications1.SendOnSuccess = types.BoolPointerValue(notificationsItem.SendOnSuccess)
 		if notificationsItem.SlackConfiguration == nil {
 			notifications1.SlackConfiguration = nil
 		} else {
 			notifications1.SlackConfiguration = &SlackNotificationConfiguration{}
 			notifications1.SlackConfiguration.Webhook = types.StringValue(notificationsItem.SlackConfiguration.Webhook)
 		}
-		if notificationsItem.CustomerioConfiguration == nil {
-			notifications1.CustomerioConfiguration = nil
-		} else {
-			notifications1.CustomerioConfiguration = &DeclarativeManifest{}
-		}
 		if notificationsCount+1 > len(r.Notifications) {
 			r.Notifications = append(r.Notifications, notifications1)
 		} else {
-			r.Notifications[notificationsCount].NotificationType = notifications1.NotificationType
-			r.Notifications[notificationsCount].SendOnSuccess = notifications1.SendOnSuccess
-			r.Notifications[notificationsCount].SendOnFailure = notifications1.SendOnFailure
-			r.Notifications[notificationsCount].SlackConfiguration = notifications1.SlackConfiguration
 			r.Notifications[notificationsCount].CustomerioConfiguration = notifications1.CustomerioConfiguration
+			r.Notifications[notificationsCount].NotificationType = notifications1.NotificationType
+			r.Notifications[notificationsCount].SendOnFailure = notifications1.SendOnFailure
+			r.Notifications[notificationsCount].SendOnSuccess = notifications1.SendOnSuccess
+			r.Notifications[notificationsCount].SlackConfiguration = notifications1.SlackConfiguration
 		}
 	}
 	if resp.NotificationSettings == nil {
 		r.NotificationSettings = nil
 	} else {
 		r.NotificationSettings = &NotificationSettings{}
-		if resp.NotificationSettings.SendOnSuccess == nil {
-			r.NotificationSettings.SendOnSuccess = nil
-		} else {
-			r.NotificationSettings.SendOnSuccess = &NotificationItem{}
-			r.NotificationSettings.SendOnSuccess.NotificationType = nil
-			for _, v := range resp.NotificationSettings.SendOnSuccess.NotificationType {
-				r.NotificationSettings.SendOnSuccess.NotificationType = append(r.NotificationSettings.SendOnSuccess.NotificationType, types.StringValue(string(v)))
-			}
-			if resp.NotificationSettings.SendOnSuccess.SlackConfiguration == nil {
-				r.NotificationSettings.SendOnSuccess.SlackConfiguration = nil
-			} else {
-				r.NotificationSettings.SendOnSuccess.SlackConfiguration = &SlackNotificationConfiguration{}
-				r.NotificationSettings.SendOnSuccess.SlackConfiguration.Webhook = types.StringValue(resp.NotificationSettings.SendOnSuccess.SlackConfiguration.Webhook)
-			}
-			if resp.NotificationSettings.SendOnSuccess.CustomerioConfiguration == nil {
-				r.NotificationSettings.SendOnSuccess.CustomerioConfiguration = nil
-			} else {
-				r.NotificationSettings.SendOnSuccess.CustomerioConfiguration = &DeclarativeManifest{}
-			}
-		}
-		if resp.NotificationSettings.SendOnFailure == nil {
-			r.NotificationSettings.SendOnFailure = nil
-		} else {
-			r.NotificationSettings.SendOnFailure = &NotificationItem{}
-			r.NotificationSettings.SendOnFailure.NotificationType = nil
-			for _, v := range resp.NotificationSettings.SendOnFailure.NotificationType {
-				r.NotificationSettings.SendOnFailure.NotificationType = append(r.NotificationSettings.SendOnFailure.NotificationType, types.StringValue(string(v)))
-			}
-			if resp.NotificationSettings.SendOnFailure.SlackConfiguration == nil {
-				r.NotificationSettings.SendOnFailure.SlackConfiguration = nil
-			} else {
-				r.NotificationSettings.SendOnFailure.SlackConfiguration = &SlackNotificationConfiguration{}
-				r.NotificationSettings.SendOnFailure.SlackConfiguration.Webhook = types.StringValue(resp.NotificationSettings.SendOnFailure.SlackConfiguration.Webhook)
-			}
-			if resp.NotificationSettings.SendOnFailure.CustomerioConfiguration == nil {
-				r.NotificationSettings.SendOnFailure.CustomerioConfiguration = nil
-			} else {
-				r.NotificationSettings.SendOnFailure.CustomerioConfiguration = &DeclarativeManifest{}
-			}
-		}
-		if resp.NotificationSettings.SendOnSyncDisabled == nil {
-			r.NotificationSettings.SendOnSyncDisabled = nil
-		} else {
-			r.NotificationSettings.SendOnSyncDisabled = &NotificationItem{}
-			r.NotificationSettings.SendOnSyncDisabled.NotificationType = nil
-			for _, v := range resp.NotificationSettings.SendOnSyncDisabled.NotificationType {
-				r.NotificationSettings.SendOnSyncDisabled.NotificationType = append(r.NotificationSettings.SendOnSyncDisabled.NotificationType, types.StringValue(string(v)))
-			}
-			if resp.NotificationSettings.SendOnSyncDisabled.SlackConfiguration == nil {
-				r.NotificationSettings.SendOnSyncDisabled.SlackConfiguration = nil
-			} else {
-				r.NotificationSettings.SendOnSyncDisabled.SlackConfiguration = &SlackNotificationConfiguration{}
-				r.NotificationSettings.SendOnSyncDisabled.SlackConfiguration.Webhook = types.StringValue(resp.NotificationSettings.SendOnSyncDisabled.SlackConfiguration.Webhook)
-			}
-			if resp.NotificationSettings.SendOnSyncDisabled.CustomerioConfiguration == nil {
-				r.NotificationSettings.SendOnSyncDisabled.CustomerioConfiguration = nil
-			} else {
-				r.NotificationSettings.SendOnSyncDisabled.CustomerioConfiguration = &DeclarativeManifest{}
-			}
-		}
-		if resp.NotificationSettings.SendOnSyncDisabledWarning == nil {
-			r.NotificationSettings.SendOnSyncDisabledWarning = nil
-		} else {
-			r.NotificationSettings.SendOnSyncDisabledWarning = &NotificationItem{}
-			r.NotificationSettings.SendOnSyncDisabledWarning.NotificationType = nil
-			for _, v := range resp.NotificationSettings.SendOnSyncDisabledWarning.NotificationType {
-				r.NotificationSettings.SendOnSyncDisabledWarning.NotificationType = append(r.NotificationSettings.SendOnSyncDisabledWarning.NotificationType, types.StringValue(string(v)))
-			}
-			if resp.NotificationSettings.SendOnSyncDisabledWarning.SlackConfiguration == nil {
-				r.NotificationSettings.SendOnSyncDisabledWarning.SlackConfiguration = nil
-			} else {
-				r.NotificationSettings.SendOnSyncDisabledWarning.SlackConfiguration = &SlackNotificationConfiguration{}
-				r.NotificationSettings.SendOnSyncDisabledWarning.SlackConfiguration.Webhook = types.StringValue(resp.NotificationSettings.SendOnSyncDisabledWarning.SlackConfiguration.Webhook)
-			}
-			if resp.NotificationSettings.SendOnSyncDisabledWarning.CustomerioConfiguration == nil {
-				r.NotificationSettings.SendOnSyncDisabledWarning.CustomerioConfiguration = nil
-			} else {
-				r.NotificationSettings.SendOnSyncDisabledWarning.CustomerioConfiguration = &DeclarativeManifest{}
-			}
-		}
-		if resp.NotificationSettings.SendOnConnectionUpdate == nil {
-			r.NotificationSettings.SendOnConnectionUpdate = nil
-		} else {
-			r.NotificationSettings.SendOnConnectionUpdate = &NotificationItem{}
-			r.NotificationSettings.SendOnConnectionUpdate.NotificationType = nil
-			for _, v := range resp.NotificationSettings.SendOnConnectionUpdate.NotificationType {
-				r.NotificationSettings.SendOnConnectionUpdate.NotificationType = append(r.NotificationSettings.SendOnConnectionUpdate.NotificationType, types.StringValue(string(v)))
-			}
-			if resp.NotificationSettings.SendOnConnectionUpdate.SlackConfiguration == nil {
-				r.NotificationSettings.SendOnConnectionUpdate.SlackConfiguration = nil
-			} else {
-				r.NotificationSettings.SendOnConnectionUpdate.SlackConfiguration = &SlackNotificationConfiguration{}
-				r.NotificationSettings.SendOnConnectionUpdate.SlackConfiguration.Webhook = types.StringValue(resp.NotificationSettings.SendOnConnectionUpdate.SlackConfiguration.Webhook)
-			}
-			if resp.NotificationSettings.SendOnConnectionUpdate.CustomerioConfiguration == nil {
-				r.NotificationSettings.SendOnConnectionUpdate.CustomerioConfiguration = nil
-			} else {
-				r.NotificationSettings.SendOnConnectionUpdate.CustomerioConfiguration = &DeclarativeManifest{}
-			}
-		}
-		if resp.NotificationSettings.SendOnConnectionUpdateActionRequired == nil {
-			r.NotificationSettings.SendOnConnectionUpdateActionRequired = nil
-		} else {
-			r.NotificationSettings.SendOnConnectionUpdateActionRequired = &NotificationItem{}
-			r.NotificationSettings.SendOnConnectionUpdateActionRequired.NotificationType = nil
-			for _, v := range resp.NotificationSettings.SendOnConnectionUpdateActionRequired.NotificationType {
-				r.NotificationSettings.SendOnConnectionUpdateActionRequired.NotificationType = append(r.NotificationSettings.SendOnConnectionUpdateActionRequired.NotificationType, types.StringValue(string(v)))
-			}
-			if resp.NotificationSettings.SendOnConnectionUpdateActionRequired.SlackConfiguration == nil {
-				r.NotificationSettings.SendOnConnectionUpdateActionRequired.SlackConfiguration = nil
-			} else {
-				r.NotificationSettings.SendOnConnectionUpdateActionRequired.SlackConfiguration = &SlackNotificationConfiguration{}
-				r.NotificationSettings.SendOnConnectionUpdateActionRequired.SlackConfiguration.Webhook = types.StringValue(resp.NotificationSettings.SendOnConnectionUpdateActionRequired.SlackConfiguration.Webhook)
-			}
-			if resp.NotificationSettings.SendOnConnectionUpdateActionRequired.CustomerioConfiguration == nil {
-				r.NotificationSettings.SendOnConnectionUpdateActionRequired.CustomerioConfiguration = nil
-			} else {
-				r.NotificationSettings.SendOnConnectionUpdateActionRequired.CustomerioConfiguration = &DeclarativeManifest{}
-			}
-		}
-		if resp.NotificationSettings.SendOnBreakingChangeWarning == nil {
-			r.NotificationSettings.SendOnBreakingChangeWarning = nil
-		} else {
-			r.NotificationSettings.SendOnBreakingChangeWarning = &NotificationItem{}
-			r.NotificationSettings.SendOnBreakingChangeWarning.NotificationType = nil
-			for _, v := range resp.NotificationSettings.SendOnBreakingChangeWarning.NotificationType {
-				r.NotificationSettings.SendOnBreakingChangeWarning.NotificationType = append(r.NotificationSettings.SendOnBreakingChangeWarning.NotificationType, types.StringValue(string(v)))
-			}
-			if resp.NotificationSettings.SendOnBreakingChangeWarning.SlackConfiguration == nil {
-				r.NotificationSettings.SendOnBreakingChangeWarning.SlackConfiguration = nil
-			} else {
-				r.NotificationSettings.SendOnBreakingChangeWarning.SlackConfiguration = &SlackNotificationConfiguration{}
-				r.NotificationSettings.SendOnBreakingChangeWarning.SlackConfiguration.Webhook = types.StringValue(resp.NotificationSettings.SendOnBreakingChangeWarning.SlackConfiguration.Webhook)
-			}
-			if resp.NotificationSettings.SendOnBreakingChangeWarning.CustomerioConfiguration == nil {
-				r.NotificationSettings.SendOnBreakingChangeWarning.CustomerioConfiguration = nil
-			} else {
-				r.NotificationSettings.SendOnBreakingChangeWarning.CustomerioConfiguration = &DeclarativeManifest{}
-			}
-		}
 		if resp.NotificationSettings.SendOnBreakingChangeSyncsDisabled == nil {
 			r.NotificationSettings.SendOnBreakingChangeSyncsDisabled = nil
 		} else {
 			r.NotificationSettings.SendOnBreakingChangeSyncsDisabled = &NotificationItem{}
+			if resp.NotificationSettings.SendOnBreakingChangeSyncsDisabled.CustomerioConfiguration == nil {
+				r.NotificationSettings.SendOnBreakingChangeSyncsDisabled.CustomerioConfiguration = nil
+			} else {
+				r.NotificationSettings.SendOnBreakingChangeSyncsDisabled.CustomerioConfiguration = &DeclarativeManifest{}
+			}
 			r.NotificationSettings.SendOnBreakingChangeSyncsDisabled.NotificationType = nil
 			for _, v := range resp.NotificationSettings.SendOnBreakingChangeSyncsDisabled.NotificationType {
 				r.NotificationSettings.SendOnBreakingChangeSyncsDisabled.NotificationType = append(r.NotificationSettings.SendOnBreakingChangeSyncsDisabled.NotificationType, types.StringValue(string(v)))
@@ -241,23 +74,150 @@ func (r *WorkspaceDataSourceModel) RefreshFromGetResponse(resp *shared.Workspace
 				r.NotificationSettings.SendOnBreakingChangeSyncsDisabled.SlackConfiguration = &SlackNotificationConfiguration{}
 				r.NotificationSettings.SendOnBreakingChangeSyncsDisabled.SlackConfiguration.Webhook = types.StringValue(resp.NotificationSettings.SendOnBreakingChangeSyncsDisabled.SlackConfiguration.Webhook)
 			}
-			if resp.NotificationSettings.SendOnBreakingChangeSyncsDisabled.CustomerioConfiguration == nil {
-				r.NotificationSettings.SendOnBreakingChangeSyncsDisabled.CustomerioConfiguration = nil
+		}
+		if resp.NotificationSettings.SendOnBreakingChangeWarning == nil {
+			r.NotificationSettings.SendOnBreakingChangeWarning = nil
+		} else {
+			r.NotificationSettings.SendOnBreakingChangeWarning = &NotificationItem{}
+			if resp.NotificationSettings.SendOnBreakingChangeWarning.CustomerioConfiguration == nil {
+				r.NotificationSettings.SendOnBreakingChangeWarning.CustomerioConfiguration = nil
 			} else {
-				r.NotificationSettings.SendOnBreakingChangeSyncsDisabled.CustomerioConfiguration = &DeclarativeManifest{}
+				r.NotificationSettings.SendOnBreakingChangeWarning.CustomerioConfiguration = &DeclarativeManifest{}
+			}
+			r.NotificationSettings.SendOnBreakingChangeWarning.NotificationType = nil
+			for _, v := range resp.NotificationSettings.SendOnBreakingChangeWarning.NotificationType {
+				r.NotificationSettings.SendOnBreakingChangeWarning.NotificationType = append(r.NotificationSettings.SendOnBreakingChangeWarning.NotificationType, types.StringValue(string(v)))
+			}
+			if resp.NotificationSettings.SendOnBreakingChangeWarning.SlackConfiguration == nil {
+				r.NotificationSettings.SendOnBreakingChangeWarning.SlackConfiguration = nil
+			} else {
+				r.NotificationSettings.SendOnBreakingChangeWarning.SlackConfiguration = &SlackNotificationConfiguration{}
+				r.NotificationSettings.SendOnBreakingChangeWarning.SlackConfiguration.Webhook = types.StringValue(resp.NotificationSettings.SendOnBreakingChangeWarning.SlackConfiguration.Webhook)
+			}
+		}
+		if resp.NotificationSettings.SendOnConnectionUpdate == nil {
+			r.NotificationSettings.SendOnConnectionUpdate = nil
+		} else {
+			r.NotificationSettings.SendOnConnectionUpdate = &NotificationItem{}
+			if resp.NotificationSettings.SendOnConnectionUpdate.CustomerioConfiguration == nil {
+				r.NotificationSettings.SendOnConnectionUpdate.CustomerioConfiguration = nil
+			} else {
+				r.NotificationSettings.SendOnConnectionUpdate.CustomerioConfiguration = &DeclarativeManifest{}
+			}
+			r.NotificationSettings.SendOnConnectionUpdate.NotificationType = nil
+			for _, v := range resp.NotificationSettings.SendOnConnectionUpdate.NotificationType {
+				r.NotificationSettings.SendOnConnectionUpdate.NotificationType = append(r.NotificationSettings.SendOnConnectionUpdate.NotificationType, types.StringValue(string(v)))
+			}
+			if resp.NotificationSettings.SendOnConnectionUpdate.SlackConfiguration == nil {
+				r.NotificationSettings.SendOnConnectionUpdate.SlackConfiguration = nil
+			} else {
+				r.NotificationSettings.SendOnConnectionUpdate.SlackConfiguration = &SlackNotificationConfiguration{}
+				r.NotificationSettings.SendOnConnectionUpdate.SlackConfiguration.Webhook = types.StringValue(resp.NotificationSettings.SendOnConnectionUpdate.SlackConfiguration.Webhook)
+			}
+		}
+		if resp.NotificationSettings.SendOnConnectionUpdateActionRequired == nil {
+			r.NotificationSettings.SendOnConnectionUpdateActionRequired = nil
+		} else {
+			r.NotificationSettings.SendOnConnectionUpdateActionRequired = &NotificationItem{}
+			if resp.NotificationSettings.SendOnConnectionUpdateActionRequired.CustomerioConfiguration == nil {
+				r.NotificationSettings.SendOnConnectionUpdateActionRequired.CustomerioConfiguration = nil
+			} else {
+				r.NotificationSettings.SendOnConnectionUpdateActionRequired.CustomerioConfiguration = &DeclarativeManifest{}
+			}
+			r.NotificationSettings.SendOnConnectionUpdateActionRequired.NotificationType = nil
+			for _, v := range resp.NotificationSettings.SendOnConnectionUpdateActionRequired.NotificationType {
+				r.NotificationSettings.SendOnConnectionUpdateActionRequired.NotificationType = append(r.NotificationSettings.SendOnConnectionUpdateActionRequired.NotificationType, types.StringValue(string(v)))
+			}
+			if resp.NotificationSettings.SendOnConnectionUpdateActionRequired.SlackConfiguration == nil {
+				r.NotificationSettings.SendOnConnectionUpdateActionRequired.SlackConfiguration = nil
+			} else {
+				r.NotificationSettings.SendOnConnectionUpdateActionRequired.SlackConfiguration = &SlackNotificationConfiguration{}
+				r.NotificationSettings.SendOnConnectionUpdateActionRequired.SlackConfiguration.Webhook = types.StringValue(resp.NotificationSettings.SendOnConnectionUpdateActionRequired.SlackConfiguration.Webhook)
+			}
+		}
+		if resp.NotificationSettings.SendOnFailure == nil {
+			r.NotificationSettings.SendOnFailure = nil
+		} else {
+			r.NotificationSettings.SendOnFailure = &NotificationItem{}
+			if resp.NotificationSettings.SendOnFailure.CustomerioConfiguration == nil {
+				r.NotificationSettings.SendOnFailure.CustomerioConfiguration = nil
+			} else {
+				r.NotificationSettings.SendOnFailure.CustomerioConfiguration = &DeclarativeManifest{}
+			}
+			r.NotificationSettings.SendOnFailure.NotificationType = nil
+			for _, v := range resp.NotificationSettings.SendOnFailure.NotificationType {
+				r.NotificationSettings.SendOnFailure.NotificationType = append(r.NotificationSettings.SendOnFailure.NotificationType, types.StringValue(string(v)))
+			}
+			if resp.NotificationSettings.SendOnFailure.SlackConfiguration == nil {
+				r.NotificationSettings.SendOnFailure.SlackConfiguration = nil
+			} else {
+				r.NotificationSettings.SendOnFailure.SlackConfiguration = &SlackNotificationConfiguration{}
+				r.NotificationSettings.SendOnFailure.SlackConfiguration.Webhook = types.StringValue(resp.NotificationSettings.SendOnFailure.SlackConfiguration.Webhook)
+			}
+		}
+		if resp.NotificationSettings.SendOnSuccess == nil {
+			r.NotificationSettings.SendOnSuccess = nil
+		} else {
+			r.NotificationSettings.SendOnSuccess = &NotificationItem{}
+			if resp.NotificationSettings.SendOnSuccess.CustomerioConfiguration == nil {
+				r.NotificationSettings.SendOnSuccess.CustomerioConfiguration = nil
+			} else {
+				r.NotificationSettings.SendOnSuccess.CustomerioConfiguration = &DeclarativeManifest{}
+			}
+			r.NotificationSettings.SendOnSuccess.NotificationType = nil
+			for _, v := range resp.NotificationSettings.SendOnSuccess.NotificationType {
+				r.NotificationSettings.SendOnSuccess.NotificationType = append(r.NotificationSettings.SendOnSuccess.NotificationType, types.StringValue(string(v)))
+			}
+			if resp.NotificationSettings.SendOnSuccess.SlackConfiguration == nil {
+				r.NotificationSettings.SendOnSuccess.SlackConfiguration = nil
+			} else {
+				r.NotificationSettings.SendOnSuccess.SlackConfiguration = &SlackNotificationConfiguration{}
+				r.NotificationSettings.SendOnSuccess.SlackConfiguration.Webhook = types.StringValue(resp.NotificationSettings.SendOnSuccess.SlackConfiguration.Webhook)
+			}
+		}
+		if resp.NotificationSettings.SendOnSyncDisabled == nil {
+			r.NotificationSettings.SendOnSyncDisabled = nil
+		} else {
+			r.NotificationSettings.SendOnSyncDisabled = &NotificationItem{}
+			if resp.NotificationSettings.SendOnSyncDisabled.CustomerioConfiguration == nil {
+				r.NotificationSettings.SendOnSyncDisabled.CustomerioConfiguration = nil
+			} else {
+				r.NotificationSettings.SendOnSyncDisabled.CustomerioConfiguration = &DeclarativeManifest{}
+			}
+			r.NotificationSettings.SendOnSyncDisabled.NotificationType = nil
+			for _, v := range resp.NotificationSettings.SendOnSyncDisabled.NotificationType {
+				r.NotificationSettings.SendOnSyncDisabled.NotificationType = append(r.NotificationSettings.SendOnSyncDisabled.NotificationType, types.StringValue(string(v)))
+			}
+			if resp.NotificationSettings.SendOnSyncDisabled.SlackConfiguration == nil {
+				r.NotificationSettings.SendOnSyncDisabled.SlackConfiguration = nil
+			} else {
+				r.NotificationSettings.SendOnSyncDisabled.SlackConfiguration = &SlackNotificationConfiguration{}
+				r.NotificationSettings.SendOnSyncDisabled.SlackConfiguration.Webhook = types.StringValue(resp.NotificationSettings.SendOnSyncDisabled.SlackConfiguration.Webhook)
+			}
+		}
+		if resp.NotificationSettings.SendOnSyncDisabledWarning == nil {
+			r.NotificationSettings.SendOnSyncDisabledWarning = nil
+		} else {
+			r.NotificationSettings.SendOnSyncDisabledWarning = &NotificationItem{}
+			if resp.NotificationSettings.SendOnSyncDisabledWarning.CustomerioConfiguration == nil {
+				r.NotificationSettings.SendOnSyncDisabledWarning.CustomerioConfiguration = nil
+			} else {
+				r.NotificationSettings.SendOnSyncDisabledWarning.CustomerioConfiguration = &DeclarativeManifest{}
+			}
+			r.NotificationSettings.SendOnSyncDisabledWarning.NotificationType = nil
+			for _, v := range resp.NotificationSettings.SendOnSyncDisabledWarning.NotificationType {
+				r.NotificationSettings.SendOnSyncDisabledWarning.NotificationType = append(r.NotificationSettings.SendOnSyncDisabledWarning.NotificationType, types.StringValue(string(v)))
+			}
+			if resp.NotificationSettings.SendOnSyncDisabledWarning.SlackConfiguration == nil {
+				r.NotificationSettings.SendOnSyncDisabledWarning.SlackConfiguration = nil
+			} else {
+				r.NotificationSettings.SendOnSyncDisabledWarning.SlackConfiguration = &SlackNotificationConfiguration{}
+				r.NotificationSettings.SendOnSyncDisabledWarning.SlackConfiguration.Webhook = types.StringValue(resp.NotificationSettings.SendOnSyncDisabledWarning.SlackConfiguration.Webhook)
 			}
 		}
 	}
-	if resp.OrganizationID != nil {
-		r.OrganizationID = types.StringValue(*resp.OrganizationID)
-	} else {
-		r.OrganizationID = types.StringNull()
-	}
-	if resp.SecurityUpdates != nil {
-		r.SecurityUpdates = types.BoolValue(*resp.SecurityUpdates)
-	} else {
-		r.SecurityUpdates = types.BoolNull()
-	}
+	r.OrganizationID = types.StringPointerValue(resp.OrganizationID)
+	r.SecurityUpdates = types.BoolPointerValue(resp.SecurityUpdates)
 	r.Slug = types.StringValue(resp.Slug)
 	if len(r.WebhookConfigs) > len(resp.WebhookConfigs) {
 		r.WebhookConfigs = r.WebhookConfigs[:len(resp.WebhookConfigs)]
@@ -265,11 +225,7 @@ func (r *WorkspaceDataSourceModel) RefreshFromGetResponse(resp *shared.Workspace
 	for webhookConfigsCount, webhookConfigsItem := range resp.WebhookConfigs {
 		var webhookConfigs1 WebhookConfigRead1
 		webhookConfigs1.ID = types.StringValue(webhookConfigsItem.ID)
-		if webhookConfigsItem.Name != nil {
-			webhookConfigs1.Name = types.StringValue(*webhookConfigsItem.Name)
-		} else {
-			webhookConfigs1.Name = types.StringNull()
-		}
+		webhookConfigs1.Name = types.StringPointerValue(webhookConfigsItem.Name)
 		if webhookConfigsCount+1 > len(r.WebhookConfigs) {
 			r.WebhookConfigs = append(r.WebhookConfigs, webhookConfigs1)
 		} else {

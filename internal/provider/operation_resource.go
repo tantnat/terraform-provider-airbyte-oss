@@ -5,9 +5,11 @@ package provider
 import (
 	"context"
 	"fmt"
+	speakeasy_stringplanmodifier "github.com/aballiet/terraform-provider-airbyte/internal/planmodifiers/stringplanmodifier"
 	"github.com/aballiet/terraform-provider-airbyte/internal/sdk"
-
 	"github.com/aballiet/terraform-provider-airbyte/internal/sdk/pkg/models/shared"
+	speakeasy_int64validators "github.com/aballiet/terraform-provider-airbyte/internal/validators/int64validators"
+	speakeasy_stringvalidators "github.com/aballiet/terraform-provider-airbyte/internal/validators/stringvalidators"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -75,7 +77,12 @@ func (r *OperationResource) Schema(ctx context.Context, req resource.SchemaReque
 								Optional: true,
 							},
 							"git_repo_url": schema.StringAttribute{
-								Required: true,
+								Computed:    true,
+								Optional:    true,
+								Description: `Not Null`,
+								Validators: []validator.String{
+									speakeasy_stringvalidators.NotNull(),
+								},
 							},
 						},
 					},
@@ -115,12 +122,20 @@ func (r *OperationResource) Schema(ctx context.Context, req resource.SchemaReque
 								Optional: true,
 								Attributes: map[string]schema.Attribute{
 									"account_id": schema.Int64Attribute{
-										Required:    true,
-										Description: `The account id associated with the job`,
+										Computed:    true,
+										Optional:    true,
+										Description: `The account id associated with the job. Not Null`,
+										Validators: []validator.Int64{
+											speakeasy_int64validators.NotNull(),
+										},
 									},
 									"job_id": schema.Int64Attribute{
-										Required:    true,
-										Description: `The job id associated with the job`,
+										Computed:    true,
+										Optional:    true,
+										Description: `The job id associated with the job. Not Null`,
+										Validators: []validator.Int64{
+											speakeasy_int64validators.NotNull(),
+										},
 									},
 								},
 							},
@@ -155,9 +170,11 @@ func (r *OperationResource) Schema(ctx context.Context, req resource.SchemaReque
 			},
 			"workspace_id": schema.StringAttribute{
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplace(),
+					stringplanmodifier.RequiresReplaceIfConfigured(),
+					speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
 				},
-				Required: true,
+				Required:    true,
+				Description: `Requires replacement if changed. `,
 			},
 		},
 	}
@@ -185,14 +202,14 @@ func (r *OperationResource) Configure(ctx context.Context, req resource.Configur
 
 func (r *OperationResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	var data *OperationResourceModel
-	var item types.Object
+	var plan types.Object
 
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &item)...)
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	resp.Diagnostics.Append(item.As(ctx, &data, basetypes.ObjectAsOptions{
+	resp.Diagnostics.Append(plan.As(ctx, &data, basetypes.ObjectAsOptions{
 		UnhandledNullAsEmpty:    true,
 		UnhandledUnknownAsEmpty: true,
 	})...)
@@ -201,7 +218,7 @@ func (r *OperationResource) Create(ctx context.Context, req resource.CreateReque
 		return
 	}
 
-	request := *data.ToCreateSDKType()
+	request := *data.ToSharedOperationCreate()
 	res, err := r.client.Operation.CreateOperation(ctx, request)
 	if err != nil {
 		resp.Diagnostics.AddError("failure to invoke API", err.Error())
@@ -222,7 +239,8 @@ func (r *OperationResource) Create(ctx context.Context, req resource.CreateReque
 		resp.Diagnostics.AddError("unexpected response from API. No response body", debugResponse(res.RawResponse))
 		return
 	}
-	data.RefreshFromCreateResponse(res.OperationRead)
+	data.RefreshFromSharedOperationRead(res.OperationRead)
+	refreshPlan(ctx, plan, &data, resp.Diagnostics)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -270,7 +288,7 @@ func (r *OperationResource) Read(ctx context.Context, req resource.ReadRequest, 
 		resp.Diagnostics.AddError("unexpected response from API. No response body", debugResponse(res.RawResponse))
 		return
 	}
-	data.RefreshFromGetResponse(res.OperationRead)
+	data.RefreshFromSharedOperationRead(res.OperationRead)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -278,12 +296,19 @@ func (r *OperationResource) Read(ctx context.Context, req resource.ReadRequest, 
 
 func (r *OperationResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	var data *OperationResourceModel
+	var plan types.Object
+
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	merge(ctx, req, resp, &data)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	request := *data.ToUpdateSDKType()
+	request := *data.ToSharedOperationUpdate()
 	res, err := r.client.Operation.UpdateOperation(ctx, request)
 	if err != nil {
 		resp.Diagnostics.AddError("failure to invoke API", err.Error())
@@ -304,7 +329,8 @@ func (r *OperationResource) Update(ctx context.Context, req resource.UpdateReque
 		resp.Diagnostics.AddError("unexpected response from API. No response body", debugResponse(res.RawResponse))
 		return
 	}
-	data.RefreshFromUpdateResponse(res.OperationRead)
+	data.RefreshFromSharedOperationRead(res.OperationRead)
+	refreshPlan(ctx, plan, &data, resp.Diagnostics)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)

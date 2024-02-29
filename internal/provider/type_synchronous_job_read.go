@@ -5,13 +5,13 @@ package provider
 import "github.com/hashicorp/terraform-plugin-framework/types"
 
 type SynchronousJobRead struct {
-	ID                            types.String   `tfsdk:"id"`
-	ConfigType                    types.String   `tfsdk:"config_type"`
 	ConfigID                      types.String   `tfsdk:"config_id"`
+	ConfigType                    types.String   `tfsdk:"config_type"`
+	ConnectorConfigurationUpdated types.Bool     `tfsdk:"connector_configuration_updated"`
 	CreatedAt                     types.Int64    `tfsdk:"created_at"`
 	EndedAt                       types.Int64    `tfsdk:"ended_at"`
-	Succeeded                     types.Bool     `tfsdk:"succeeded"`
-	ConnectorConfigurationUpdated types.Bool     `tfsdk:"connector_configuration_updated"`
-	Logs                          *LogRead       `tfsdk:"logs"`
 	FailureReason                 *FailureReason `tfsdk:"failure_reason"`
+	ID                            types.String   `tfsdk:"id"`
+	Logs                          *LogRead       `tfsdk:"logs"`
+	Succeeded                     types.Bool     `tfsdk:"succeeded"`
 }

@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"github.com/aballiet/terraform-provider-airbyte/internal/sdk"
 	"github.com/aballiet/terraform-provider-airbyte/internal/sdk/pkg/models/shared"
-
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -132,7 +131,7 @@ func (r *DestinationDataSource) Read(ctx context.Context, req datasource.ReadReq
 		resp.Diagnostics.AddError("unexpected response from API. No response body", debugResponse(res.RawResponse))
 		return
 	}
-	data.RefreshFromGetResponse(res.DestinationRead)
+	data.RefreshFromSharedDestinationRead(res.DestinationRead)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)

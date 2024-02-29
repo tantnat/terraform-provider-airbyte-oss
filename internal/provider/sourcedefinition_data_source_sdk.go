@@ -5,9 +5,10 @@ package provider
 import (
 	"github.com/aballiet/terraform-provider-airbyte/internal/sdk/pkg/models/shared"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"time"
 )
 
-func (r *SourceDefinitionDataSourceModel) ToGetSDKType() *shared.SourceDefinitionIDRequestBody {
+func (r *SourceDefinitionDataSourceModel) ToSharedSourceDefinitionIDRequestBody() *shared.SourceDefinitionIDRequestBody {
 	sourceDefinitionID := r.SourceDefinitionID.ValueString()
 	out := shared.SourceDefinitionIDRequestBody{
 		SourceDefinitionID: sourceDefinitionID,
@@ -15,35 +16,15 @@ func (r *SourceDefinitionDataSourceModel) ToGetSDKType() *shared.SourceDefinitio
 	return &out
 }
 
-func (r *SourceDefinitionDataSourceModel) RefreshFromGetResponse(resp *shared.SourceDefinitionRead) {
-	if resp.Custom != nil {
-		r.Custom = types.BoolValue(*resp.Custom)
-	} else {
-		r.Custom = types.BoolNull()
-	}
+func (r *SourceDefinitionDataSourceModel) RefreshFromSharedSourceDefinitionRead(resp *shared.SourceDefinitionRead) {
+	r.Custom = types.BoolPointerValue(resp.Custom)
 	r.DockerImageTag = types.StringValue(resp.DockerImageTag)
 	r.DockerRepository = types.StringValue(resp.DockerRepository)
-	if resp.DocumentationURL != nil {
-		r.DocumentationURL = types.StringValue(*resp.DocumentationURL)
-	} else {
-		r.DocumentationURL = types.StringNull()
-	}
-	if resp.Icon != nil {
-		r.Icon = types.StringValue(*resp.Icon)
-	} else {
-		r.Icon = types.StringNull()
-	}
-	if resp.MaxSecondsBetweenMessages != nil {
-		r.MaxSecondsBetweenMessages = types.Int64Value(*resp.MaxSecondsBetweenMessages)
-	} else {
-		r.MaxSecondsBetweenMessages = types.Int64Null()
-	}
+	r.DocumentationURL = types.StringPointerValue(resp.DocumentationURL)
+	r.Icon = types.StringPointerValue(resp.Icon)
+	r.MaxSecondsBetweenMessages = types.Int64PointerValue(resp.MaxSecondsBetweenMessages)
 	r.Name = types.StringValue(resp.Name)
-	if resp.ProtocolVersion != nil {
-		r.ProtocolVersion = types.StringValue(*resp.ProtocolVersion)
-	} else {
-		r.ProtocolVersion = types.StringNull()
-	}
+	r.ProtocolVersion = types.StringPointerValue(resp.ProtocolVersion)
 	if resp.ReleaseDate != nil {
 		r.ReleaseDate = types.StringValue(resp.ReleaseDate.String())
 	} else {
@@ -62,26 +43,10 @@ func (r *SourceDefinitionDataSourceModel) RefreshFromGetResponse(resp *shared.So
 			r.ResourceRequirements.Default = nil
 		} else {
 			r.ResourceRequirements.Default = &ResourceRequirements{}
-			if resp.ResourceRequirements.Default.CPURequest != nil {
-				r.ResourceRequirements.Default.CPURequest = types.StringValue(*resp.ResourceRequirements.Default.CPURequest)
-			} else {
-				r.ResourceRequirements.Default.CPURequest = types.StringNull()
-			}
-			if resp.ResourceRequirements.Default.CPULimit != nil {
-				r.ResourceRequirements.Default.CPULimit = types.StringValue(*resp.ResourceRequirements.Default.CPULimit)
-			} else {
-				r.ResourceRequirements.Default.CPULimit = types.StringNull()
-			}
-			if resp.ResourceRequirements.Default.MemoryRequest != nil {
-				r.ResourceRequirements.Default.MemoryRequest = types.StringValue(*resp.ResourceRequirements.Default.MemoryRequest)
-			} else {
-				r.ResourceRequirements.Default.MemoryRequest = types.StringNull()
-			}
-			if resp.ResourceRequirements.Default.MemoryLimit != nil {
-				r.ResourceRequirements.Default.MemoryLimit = types.StringValue(*resp.ResourceRequirements.Default.MemoryLimit)
-			} else {
-				r.ResourceRequirements.Default.MemoryLimit = types.StringNull()
-			}
+			r.ResourceRequirements.Default.CPULimit = types.StringPointerValue(resp.ResourceRequirements.Default.CPULimit)
+			r.ResourceRequirements.Default.CPURequest = types.StringPointerValue(resp.ResourceRequirements.Default.CPURequest)
+			r.ResourceRequirements.Default.MemoryLimit = types.StringPointerValue(resp.ResourceRequirements.Default.MemoryLimit)
+			r.ResourceRequirements.Default.MemoryRequest = types.StringPointerValue(resp.ResourceRequirements.Default.MemoryRequest)
 		}
 		if len(r.ResourceRequirements.JobSpecific) > len(resp.ResourceRequirements.JobSpecific) {
 			r.ResourceRequirements.JobSpecific = r.ResourceRequirements.JobSpecific[:len(resp.ResourceRequirements.JobSpecific)]
@@ -89,26 +54,10 @@ func (r *SourceDefinitionDataSourceModel) RefreshFromGetResponse(resp *shared.So
 		for jobSpecificCount, jobSpecificItem := range resp.ResourceRequirements.JobSpecific {
 			var jobSpecific1 JobTypeResourceLimit
 			jobSpecific1.JobType = types.StringValue(string(jobSpecificItem.JobType))
-			if jobSpecificItem.ResourceRequirements.CPURequest != nil {
-				jobSpecific1.ResourceRequirements.CPURequest = types.StringValue(*jobSpecificItem.ResourceRequirements.CPURequest)
-			} else {
-				jobSpecific1.ResourceRequirements.CPURequest = types.StringNull()
-			}
-			if jobSpecificItem.ResourceRequirements.CPULimit != nil {
-				jobSpecific1.ResourceRequirements.CPULimit = types.StringValue(*jobSpecificItem.ResourceRequirements.CPULimit)
-			} else {
-				jobSpecific1.ResourceRequirements.CPULimit = types.StringNull()
-			}
-			if jobSpecificItem.ResourceRequirements.MemoryRequest != nil {
-				jobSpecific1.ResourceRequirements.MemoryRequest = types.StringValue(*jobSpecificItem.ResourceRequirements.MemoryRequest)
-			} else {
-				jobSpecific1.ResourceRequirements.MemoryRequest = types.StringNull()
-			}
-			if jobSpecificItem.ResourceRequirements.MemoryLimit != nil {
-				jobSpecific1.ResourceRequirements.MemoryLimit = types.StringValue(*jobSpecificItem.ResourceRequirements.MemoryLimit)
-			} else {
-				jobSpecific1.ResourceRequirements.MemoryLimit = types.StringNull()
-			}
+			jobSpecific1.ResourceRequirements.CPULimit = types.StringPointerValue(jobSpecificItem.ResourceRequirements.CPULimit)
+			jobSpecific1.ResourceRequirements.CPURequest = types.StringPointerValue(jobSpecificItem.ResourceRequirements.CPURequest)
+			jobSpecific1.ResourceRequirements.MemoryLimit = types.StringPointerValue(jobSpecificItem.ResourceRequirements.MemoryLimit)
+			jobSpecific1.ResourceRequirements.MemoryRequest = types.StringPointerValue(jobSpecificItem.ResourceRequirements.MemoryRequest)
 			if jobSpecificCount+1 > len(r.ResourceRequirements.JobSpecific) {
 				r.ResourceRequirements.JobSpecific = append(r.ResourceRequirements.JobSpecific, jobSpecific1)
 			} else {

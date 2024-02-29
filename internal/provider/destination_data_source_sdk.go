@@ -7,15 +7,11 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-func (r *DestinationDataSourceModel) RefreshFromGetResponse(resp *shared.DestinationRead) {
+func (r *DestinationDataSourceModel) RefreshFromSharedDestinationRead(resp *shared.DestinationRead) {
 	r.DestinationDefinitionID = types.StringValue(resp.DestinationDefinitionID)
 	r.DestinationID = types.StringValue(resp.DestinationID)
 	r.DestinationName = types.StringValue(resp.DestinationName)
-	if resp.Icon != nil {
-		r.Icon = types.StringValue(*resp.Icon)
-	} else {
-		r.Icon = types.StringNull()
-	}
+	r.Icon = types.StringPointerValue(resp.Icon)
 	r.Name = types.StringValue(resp.Name)
 	r.WorkspaceID = types.StringValue(resp.WorkspaceID)
 }

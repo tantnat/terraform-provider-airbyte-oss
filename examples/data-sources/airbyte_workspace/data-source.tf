@@ -1,3 +1,3 @@
 data "airbyte_workspace" "my_workspace" {
-  workspace_id = "ea9808f3-1bb1-41a6-8314-62ad4d59ef89"
+  workspace_id = "a20e3344-987d-4e77-90fb-df6188b86c7c"
 }

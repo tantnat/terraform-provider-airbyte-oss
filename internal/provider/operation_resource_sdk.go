@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-func (r *OperationResourceModel) ToCreateSDKType() *shared.OperationCreate {
+func (r *OperationResourceModel) ToSharedOperationCreate() *shared.OperationCreate {
 	workspaceID := r.WorkspaceID.ValueString()
 	name := r.Name.ValueString()
 	operatorType := shared.OperatorType(r.OperatorConfiguration.OperatorType.ValueString())
@@ -108,12 +108,53 @@ func (r *OperationResourceModel) ToCreateSDKType() *shared.OperationCreate {
 	return &out
 }
 
-func (r *OperationResourceModel) ToGetSDKType() *shared.OperationCreate {
-	out := r.ToCreateSDKType()
-	return out
+func (r *OperationResourceModel) RefreshFromSharedOperationRead(resp *shared.OperationRead) {
+	r.Name = types.StringValue(resp.Name)
+	r.OperationID = types.StringValue(resp.OperationID)
+	if resp.OperatorConfiguration.Dbt == nil {
+		r.OperatorConfiguration.Dbt = nil
+	} else {
+		r.OperatorConfiguration.Dbt = &OperatorDbt{}
+		r.OperatorConfiguration.Dbt.DbtArguments = types.StringPointerValue(resp.OperatorConfiguration.Dbt.DbtArguments)
+		r.OperatorConfiguration.Dbt.DockerImage = types.StringPointerValue(resp.OperatorConfiguration.Dbt.DockerImage)
+		r.OperatorConfiguration.Dbt.GitRepoBranch = types.StringPointerValue(resp.OperatorConfiguration.Dbt.GitRepoBranch)
+		r.OperatorConfiguration.Dbt.GitRepoURL = types.StringValue(resp.OperatorConfiguration.Dbt.GitRepoURL)
+	}
+	if resp.OperatorConfiguration.Normalization == nil {
+		r.OperatorConfiguration.Normalization = nil
+	} else {
+		r.OperatorConfiguration.Normalization = &OperatorNormalization{}
+		if resp.OperatorConfiguration.Normalization.Option != nil {
+			r.OperatorConfiguration.Normalization.Option = types.StringValue(string(*resp.OperatorConfiguration.Normalization.Option))
+		} else {
+			r.OperatorConfiguration.Normalization.Option = types.StringNull()
+		}
+	}
+	r.OperatorConfiguration.OperatorType = types.StringValue(string(resp.OperatorConfiguration.OperatorType))
+	if resp.OperatorConfiguration.Webhook == nil {
+		r.OperatorConfiguration.Webhook = nil
+	} else {
+		r.OperatorConfiguration.Webhook = &OperatorWebhook{}
+		if resp.OperatorConfiguration.Webhook.DbtCloud == nil {
+			r.OperatorConfiguration.Webhook.DbtCloud = nil
+		} else {
+			r.OperatorConfiguration.Webhook.DbtCloud = &DbtCloud{}
+			r.OperatorConfiguration.Webhook.DbtCloud.AccountID = types.Int64Value(resp.OperatorConfiguration.Webhook.DbtCloud.AccountID)
+			r.OperatorConfiguration.Webhook.DbtCloud.JobID = types.Int64Value(resp.OperatorConfiguration.Webhook.DbtCloud.JobID)
+		}
+		r.OperatorConfiguration.Webhook.ExecutionBody = types.StringPointerValue(resp.OperatorConfiguration.Webhook.ExecutionBody)
+		r.OperatorConfiguration.Webhook.ExecutionURL = types.StringPointerValue(resp.OperatorConfiguration.Webhook.ExecutionURL)
+		r.OperatorConfiguration.Webhook.WebhookConfigID = types.StringPointerValue(resp.OperatorConfiguration.Webhook.WebhookConfigID)
+		if resp.OperatorConfiguration.Webhook.WebhookType != nil {
+			r.OperatorConfiguration.Webhook.WebhookType = types.StringValue(string(*resp.OperatorConfiguration.Webhook.WebhookType))
+		} else {
+			r.OperatorConfiguration.Webhook.WebhookType = types.StringNull()
+		}
+	}
+	r.WorkspaceID = types.StringValue(resp.WorkspaceID)
 }
 
-func (r *OperationResourceModel) ToUpdateSDKType() *shared.OperationUpdate {
+func (r *OperationResourceModel) ToSharedOperationUpdate() *shared.OperationUpdate {
 	operationID := r.OperationID.ValueString()
 	name := r.Name.ValueString()
 	operatorType := shared.OperatorType(r.OperatorConfiguration.OperatorType.ValueString())
@@ -212,87 +253,4 @@ func (r *OperationResourceModel) ToUpdateSDKType() *shared.OperationUpdate {
 		OperatorConfiguration: operatorConfiguration,
 	}
 	return &out
-}
-
-func (r *OperationResourceModel) ToDeleteSDKType() *shared.OperationCreate {
-	out := r.ToCreateSDKType()
-	return out
-}
-
-func (r *OperationResourceModel) RefreshFromGetResponse(resp *shared.OperationRead) {
-	r.Name = types.StringValue(resp.Name)
-	r.OperationID = types.StringValue(resp.OperationID)
-	if resp.OperatorConfiguration.Dbt == nil {
-		r.OperatorConfiguration.Dbt = nil
-	} else {
-		r.OperatorConfiguration.Dbt = &OperatorDbt{}
-		if resp.OperatorConfiguration.Dbt.DbtArguments != nil {
-			r.OperatorConfiguration.Dbt.DbtArguments = types.StringValue(*resp.OperatorConfiguration.Dbt.DbtArguments)
-		} else {
-			r.OperatorConfiguration.Dbt.DbtArguments = types.StringNull()
-		}
-		if resp.OperatorConfiguration.Dbt.DockerImage != nil {
-			r.OperatorConfiguration.Dbt.DockerImage = types.StringValue(*resp.OperatorConfiguration.Dbt.DockerImage)
-		} else {
-			r.OperatorConfiguration.Dbt.DockerImage = types.StringNull()
-		}
-		if resp.OperatorConfiguration.Dbt.GitRepoBranch != nil {
-			r.OperatorConfiguration.Dbt.GitRepoBranch = types.StringValue(*resp.OperatorConfiguration.Dbt.GitRepoBranch)
-		} else {
-			r.OperatorConfiguration.Dbt.GitRepoBranch = types.StringNull()
-		}
-		r.OperatorConfiguration.Dbt.GitRepoURL = types.StringValue(resp.OperatorConfiguration.Dbt.GitRepoURL)
-	}
-	if resp.OperatorConfiguration.Normalization == nil {
-		r.OperatorConfiguration.Normalization = nil
-	} else {
-		r.OperatorConfiguration.Normalization = &OperatorNormalization{}
-		if resp.OperatorConfiguration.Normalization.Option != nil {
-			r.OperatorConfiguration.Normalization.Option = types.StringValue(string(*resp.OperatorConfiguration.Normalization.Option))
-		} else {
-			r.OperatorConfiguration.Normalization.Option = types.StringNull()
-		}
-	}
-	r.OperatorConfiguration.OperatorType = types.StringValue(string(resp.OperatorConfiguration.OperatorType))
-	if resp.OperatorConfiguration.Webhook == nil {
-		r.OperatorConfiguration.Webhook = nil
-	} else {
-		r.OperatorConfiguration.Webhook = &OperatorWebhook{}
-		if resp.OperatorConfiguration.Webhook.DbtCloud == nil {
-			r.OperatorConfiguration.Webhook.DbtCloud = nil
-		} else {
-			r.OperatorConfiguration.Webhook.DbtCloud = &DbtCloud{}
-			r.OperatorConfiguration.Webhook.DbtCloud.AccountID = types.Int64Value(resp.OperatorConfiguration.Webhook.DbtCloud.AccountID)
-			r.OperatorConfiguration.Webhook.DbtCloud.JobID = types.Int64Value(resp.OperatorConfiguration.Webhook.DbtCloud.JobID)
-		}
-		if resp.OperatorConfiguration.Webhook.ExecutionBody != nil {
-			r.OperatorConfiguration.Webhook.ExecutionBody = types.StringValue(*resp.OperatorConfiguration.Webhook.ExecutionBody)
-		} else {
-			r.OperatorConfiguration.Webhook.ExecutionBody = types.StringNull()
-		}
-		if resp.OperatorConfiguration.Webhook.ExecutionURL != nil {
-			r.OperatorConfiguration.Webhook.ExecutionURL = types.StringValue(*resp.OperatorConfiguration.Webhook.ExecutionURL)
-		} else {
-			r.OperatorConfiguration.Webhook.ExecutionURL = types.StringNull()
-		}
-		if resp.OperatorConfiguration.Webhook.WebhookConfigID != nil {
-			r.OperatorConfiguration.Webhook.WebhookConfigID = types.StringValue(*resp.OperatorConfiguration.Webhook.WebhookConfigID)
-		} else {
-			r.OperatorConfiguration.Webhook.WebhookConfigID = types.StringNull()
-		}
-		if resp.OperatorConfiguration.Webhook.WebhookType != nil {
-			r.OperatorConfiguration.Webhook.WebhookType = types.StringValue(string(*resp.OperatorConfiguration.Webhook.WebhookType))
-		} else {
-			r.OperatorConfiguration.Webhook.WebhookType = types.StringNull()
-		}
-	}
-	r.WorkspaceID = types.StringValue(resp.WorkspaceID)
-}
-
-func (r *OperationResourceModel) RefreshFromCreateResponse(resp *shared.OperationRead) {
-	r.RefreshFromGetResponse(resp)
-}
-
-func (r *OperationResourceModel) RefreshFromUpdateResponse(resp *shared.OperationRead) {
-	r.RefreshFromGetResponse(resp)
 }

@@ -5,13 +5,15 @@ package provider
 import (
 	"context"
 	"fmt"
+	speakeasy_stringplanmodifier "github.com/aballiet/terraform-provider-airbyte/internal/planmodifiers/stringplanmodifier"
 	"github.com/aballiet/terraform-provider-airbyte/internal/sdk"
-
 	"github.com/aballiet/terraform-provider-airbyte/internal/sdk/pkg/models/shared"
+	speakeasy_stringvalidators "github.com/aballiet/terraform-provider-airbyte/internal/validators/stringvalidators"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
@@ -100,9 +102,11 @@ func (r *WorkspaceResource) Schema(ctx context.Context, req resource.SchemaReque
 			},
 			"name": schema.StringAttribute{
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplace(),
+					stringplanmodifier.RequiresReplaceIfConfigured(),
+					speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
 				},
-				Required: true,
+				Required:    true,
+				Description: `Requires replacement if changed. `,
 			},
 			"news": schema.BoolAttribute{
 				Computed: true,
@@ -119,9 +123,11 @@ func (r *WorkspaceResource) Schema(ctx context.Context, req resource.SchemaReque
 							Attributes: map[string]schema.Attribute{},
 						},
 						"notification_type": schema.StringAttribute{
-							Required:    true,
-							Description: `must be one of ["slack", "customerio"]`,
+							Computed:    true,
+							Optional:    true,
+							Description: `Not Null; must be one of ["slack", "customerio"]`,
 							Validators: []validator.String{
+								speakeasy_stringvalidators.NotNull(),
 								stringvalidator.OneOf(
 									"slack",
 									"customerio",
@@ -131,11 +137,13 @@ func (r *WorkspaceResource) Schema(ctx context.Context, req resource.SchemaReque
 						"send_on_failure": schema.BoolAttribute{
 							Computed:    true,
 							Optional:    true,
+							Default:     booldefault.StaticBool(true),
 							Description: `Default: true`,
 						},
 						"send_on_success": schema.BoolAttribute{
 							Computed:    true,
 							Optional:    true,
+							Default:     booldefault.StaticBool(false),
 							Description: `Default: false`,
 						},
 						"slack_configuration": schema.SingleNestedAttribute{
@@ -143,7 +151,12 @@ func (r *WorkspaceResource) Schema(ctx context.Context, req resource.SchemaReque
 							Optional: true,
 							Attributes: map[string]schema.Attribute{
 								"webhook": schema.StringAttribute{
-									Required: true,
+									Computed:    true,
+									Optional:    true,
+									Description: `Not Null`,
+									Validators: []validator.String{
+										speakeasy_stringvalidators.NotNull(),
+									},
 								},
 							},
 						},
@@ -173,7 +186,12 @@ func (r *WorkspaceResource) Schema(ctx context.Context, req resource.SchemaReque
 								Optional: true,
 								Attributes: map[string]schema.Attribute{
 									"webhook": schema.StringAttribute{
-										Required: true,
+										Computed:    true,
+										Optional:    true,
+										Description: `Not Null`,
+										Validators: []validator.String{
+											speakeasy_stringvalidators.NotNull(),
+										},
 									},
 								},
 							},
@@ -198,7 +216,12 @@ func (r *WorkspaceResource) Schema(ctx context.Context, req resource.SchemaReque
 								Optional: true,
 								Attributes: map[string]schema.Attribute{
 									"webhook": schema.StringAttribute{
-										Required: true,
+										Computed:    true,
+										Optional:    true,
+										Description: `Not Null`,
+										Validators: []validator.String{
+											speakeasy_stringvalidators.NotNull(),
+										},
 									},
 								},
 							},
@@ -223,7 +246,12 @@ func (r *WorkspaceResource) Schema(ctx context.Context, req resource.SchemaReque
 								Optional: true,
 								Attributes: map[string]schema.Attribute{
 									"webhook": schema.StringAttribute{
-										Required: true,
+										Computed:    true,
+										Optional:    true,
+										Description: `Not Null`,
+										Validators: []validator.String{
+											speakeasy_stringvalidators.NotNull(),
+										},
 									},
 								},
 							},
@@ -248,7 +276,12 @@ func (r *WorkspaceResource) Schema(ctx context.Context, req resource.SchemaReque
 								Optional: true,
 								Attributes: map[string]schema.Attribute{
 									"webhook": schema.StringAttribute{
-										Required: true,
+										Computed:    true,
+										Optional:    true,
+										Description: `Not Null`,
+										Validators: []validator.String{
+											speakeasy_stringvalidators.NotNull(),
+										},
 									},
 								},
 							},
@@ -273,7 +306,12 @@ func (r *WorkspaceResource) Schema(ctx context.Context, req resource.SchemaReque
 								Optional: true,
 								Attributes: map[string]schema.Attribute{
 									"webhook": schema.StringAttribute{
-										Required: true,
+										Computed:    true,
+										Optional:    true,
+										Description: `Not Null`,
+										Validators: []validator.String{
+											speakeasy_stringvalidators.NotNull(),
+										},
 									},
 								},
 							},
@@ -298,7 +336,12 @@ func (r *WorkspaceResource) Schema(ctx context.Context, req resource.SchemaReque
 								Optional: true,
 								Attributes: map[string]schema.Attribute{
 									"webhook": schema.StringAttribute{
-										Required: true,
+										Computed:    true,
+										Optional:    true,
+										Description: `Not Null`,
+										Validators: []validator.String{
+											speakeasy_stringvalidators.NotNull(),
+										},
 									},
 								},
 							},
@@ -323,7 +366,12 @@ func (r *WorkspaceResource) Schema(ctx context.Context, req resource.SchemaReque
 								Optional: true,
 								Attributes: map[string]schema.Attribute{
 									"webhook": schema.StringAttribute{
-										Required: true,
+										Computed:    true,
+										Optional:    true,
+										Description: `Not Null`,
+										Validators: []validator.String{
+											speakeasy_stringvalidators.NotNull(),
+										},
 									},
 								},
 							},
@@ -348,7 +396,12 @@ func (r *WorkspaceResource) Schema(ctx context.Context, req resource.SchemaReque
 								Optional: true,
 								Attributes: map[string]schema.Attribute{
 									"webhook": schema.StringAttribute{
-										Required: true,
+										Computed:    true,
+										Optional:    true,
+										Description: `Not Null`,
+										Validators: []validator.String{
+											speakeasy_stringvalidators.NotNull(),
+										},
 									},
 								},
 							},
@@ -359,9 +412,11 @@ func (r *WorkspaceResource) Schema(ctx context.Context, req resource.SchemaReque
 			"organization_id": schema.StringAttribute{
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplace(),
+					stringplanmodifier.RequiresReplaceIfConfigured(),
+					speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
 				},
-				Optional: true,
+				Optional:    true,
+				Description: `Requires replacement if changed. `,
 			},
 			"security_updates": schema.BoolAttribute{
 				Computed: true,
@@ -376,6 +431,7 @@ func (r *WorkspaceResource) Schema(ctx context.Context, req resource.SchemaReque
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"auth_token": schema.StringAttribute{
+							Computed:    true,
 							Optional:    true,
 							Description: `an auth token, to be passed as the value for an HTTP Authorization header.`,
 						},
@@ -388,6 +444,7 @@ func (r *WorkspaceResource) Schema(ctx context.Context, req resource.SchemaReque
 							Description: `human readable name for this webhook e.g. for UI display.`,
 						},
 						"validation_url": schema.StringAttribute{
+							Computed:    true,
 							Optional:    true,
 							Description: `if supplied, the webhook config will be validated by checking that this URL returns a 2xx response.`,
 						},
@@ -423,14 +480,14 @@ func (r *WorkspaceResource) Configure(ctx context.Context, req resource.Configur
 
 func (r *WorkspaceResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	var data *WorkspaceResourceModel
-	var item types.Object
+	var plan types.Object
 
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &item)...)
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	resp.Diagnostics.Append(item.As(ctx, &data, basetypes.ObjectAsOptions{
+	resp.Diagnostics.Append(plan.As(ctx, &data, basetypes.ObjectAsOptions{
 		UnhandledNullAsEmpty:    true,
 		UnhandledUnknownAsEmpty: true,
 	})...)
@@ -439,7 +496,7 @@ func (r *WorkspaceResource) Create(ctx context.Context, req resource.CreateReque
 		return
 	}
 
-	request := *data.ToCreateSDKType()
+	request := *data.ToSharedWorkspaceCreate()
 	res, err := r.client.Workspace.CreateWorkspace(ctx, request)
 	if err != nil {
 		resp.Diagnostics.AddError("failure to invoke API", err.Error())
@@ -460,7 +517,34 @@ func (r *WorkspaceResource) Create(ctx context.Context, req resource.CreateReque
 		resp.Diagnostics.AddError("unexpected response from API. No response body", debugResponse(res.RawResponse))
 		return
 	}
-	data.RefreshFromCreateResponse(res.WorkspaceRead)
+	data.RefreshFromSharedWorkspaceRead(res.WorkspaceRead)
+	refreshPlan(ctx, plan, &data, resp.Diagnostics)
+	workspaceID := data.WorkspaceID.ValueString()
+	request1 := shared.WorkspaceIDRequestBody{
+		WorkspaceID: workspaceID,
+	}
+	res1, err := r.client.Workspace.GetWorkspace(ctx, request1)
+	if err != nil {
+		resp.Diagnostics.AddError("failure to invoke API", err.Error())
+		if res1 != nil && res1.RawResponse != nil {
+			resp.Diagnostics.AddError("unexpected http request/response", debugResponse(res1.RawResponse))
+		}
+		return
+	}
+	if res1 == nil {
+		resp.Diagnostics.AddError("unexpected response from API", fmt.Sprintf("%v", res1))
+		return
+	}
+	if res1.StatusCode != 200 {
+		resp.Diagnostics.AddError(fmt.Sprintf("unexpected response from API. Got an unexpected response code %v", res1.StatusCode), debugResponse(res1.RawResponse))
+		return
+	}
+	if res1.WorkspaceRead == nil {
+		resp.Diagnostics.AddError("unexpected response from API. No response body", debugResponse(res1.RawResponse))
+		return
+	}
+	data.RefreshFromSharedWorkspaceRead(res1.WorkspaceRead)
+	refreshPlan(ctx, plan, &data, resp.Diagnostics)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -508,7 +592,7 @@ func (r *WorkspaceResource) Read(ctx context.Context, req resource.ReadRequest, 
 		resp.Diagnostics.AddError("unexpected response from API. No response body", debugResponse(res.RawResponse))
 		return
 	}
-	data.RefreshFromGetResponse(res.WorkspaceRead)
+	data.RefreshFromSharedWorkspaceRead(res.WorkspaceRead)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -516,12 +600,19 @@ func (r *WorkspaceResource) Read(ctx context.Context, req resource.ReadRequest, 
 
 func (r *WorkspaceResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	var data *WorkspaceResourceModel
+	var plan types.Object
+
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	merge(ctx, req, resp, &data)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	request := *data.ToUpdateSDKType()
+	request := *data.ToSharedWorkspaceUpdate()
 	res, err := r.client.Workspace.UpdateWorkspace(ctx, request)
 	if err != nil {
 		resp.Diagnostics.AddError("failure to invoke API", err.Error())
@@ -542,7 +633,34 @@ func (r *WorkspaceResource) Update(ctx context.Context, req resource.UpdateReque
 		resp.Diagnostics.AddError("unexpected response from API. No response body", debugResponse(res.RawResponse))
 		return
 	}
-	data.RefreshFromUpdateResponse(res.WorkspaceRead)
+	data.RefreshFromSharedWorkspaceRead(res.WorkspaceRead)
+	refreshPlan(ctx, plan, &data, resp.Diagnostics)
+	workspaceID := data.WorkspaceID.ValueString()
+	request1 := shared.WorkspaceIDRequestBody{
+		WorkspaceID: workspaceID,
+	}
+	res1, err := r.client.Workspace.GetWorkspace(ctx, request1)
+	if err != nil {
+		resp.Diagnostics.AddError("failure to invoke API", err.Error())
+		if res1 != nil && res1.RawResponse != nil {
+			resp.Diagnostics.AddError("unexpected http request/response", debugResponse(res1.RawResponse))
+		}
+		return
+	}
+	if res1 == nil {
+		resp.Diagnostics.AddError("unexpected response from API", fmt.Sprintf("%v", res1))
+		return
+	}
+	if res1.StatusCode != 200 {
+		resp.Diagnostics.AddError(fmt.Sprintf("unexpected response from API. Got an unexpected response code %v", res1.StatusCode), debugResponse(res1.RawResponse))
+		return
+	}
+	if res1.WorkspaceRead == nil {
+		resp.Diagnostics.AddError("unexpected response from API. No response body", debugResponse(res1.RawResponse))
+		return
+	}
+	data.RefreshFromSharedWorkspaceRead(res1.WorkspaceRead)
+	refreshPlan(ctx, plan, &data, resp.Diagnostics)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)

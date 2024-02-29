@@ -6,7 +6,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/aballiet/terraform-provider-airbyte/internal/sdk"
-
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -107,7 +106,7 @@ func (r *SourceDataSource) Read(ctx context.Context, req datasource.ReadRequest,
 		return
 	}
 
-	request := *data.ToGetSDKType()
+	request := *data.ToSharedSourceIDRequestBody()
 	res, err := r.client.Source.GetSource(ctx, request)
 	if err != nil {
 		resp.Diagnostics.AddError("failure to invoke API", err.Error())
@@ -128,7 +127,7 @@ func (r *SourceDataSource) Read(ctx context.Context, req datasource.ReadRequest,
 		resp.Diagnostics.AddError("unexpected response from API. No response body", debugResponse(res.RawResponse))
 		return
 	}
-	data.RefreshFromGetResponse(res.SourceRead)
+	data.RefreshFromSharedSourceRead(res.SourceRead)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)

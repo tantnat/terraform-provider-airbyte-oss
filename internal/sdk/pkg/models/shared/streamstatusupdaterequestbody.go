@@ -3,7 +3,6 @@
 package shared
 
 type StreamStatusUpdateRequestBody struct {
-	ID            string `json:"id"`
 	AttemptNumber int    `json:"attemptNumber"`
 	ConnectionID  string `json:"connectionId"`
 	JobID         int64  `json:"jobId"`
@@ -25,13 +24,7 @@ type StreamStatusUpdateRequestBody struct {
 	StreamNamespace *string              `json:"streamNamespace,omitempty"`
 	TransitionedAt  int64                `json:"transitionedAt"`
 	WorkspaceID     string               `json:"workspaceId"`
-}
-
-func (o *StreamStatusUpdateRequestBody) GetID() string {
-	if o == nil {
-		return ""
-	}
-	return o.ID
+	ID              string               `json:"id"`
 }
 
 func (o *StreamStatusUpdateRequestBody) GetAttemptNumber() int {
@@ -102,4 +95,11 @@ func (o *StreamStatusUpdateRequestBody) GetWorkspaceID() string {
 		return ""
 	}
 	return o.WorkspaceID
+}
+
+func (o *StreamStatusUpdateRequestBody) GetID() string {
+	if o == nil {
+		return ""
+	}
+	return o.ID
 }

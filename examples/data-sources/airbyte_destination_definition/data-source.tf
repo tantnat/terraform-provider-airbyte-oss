@@ -1,3 +1,3 @@
 data "airbyte_destination_definition" "my_destinationdefinition" {
-  destination_definition_id = "26a55755-8711-41c3-96fa-6ed0923bff39"
+  destination_definition_id = "9100781f-2dad-4fe3-95f9-7cbac4a9fe32"
 }

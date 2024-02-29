@@ -6,7 +6,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/aballiet/terraform-provider-airbyte/internal/sdk"
-
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -56,9 +55,8 @@ func (r *SourceDefinitionDataSource) Schema(ctx context.Context, req datasource.
 
 		Attributes: map[string]schema.Attribute{
 			"custom": schema.BoolAttribute{
-				Computed: true,
-				MarkdownDescription: `Default: false` + "\n" +
-					`Whether the connector is custom or not`,
+				Computed:    true,
+				Description: `Whether the connector is custom or not`,
 			},
 			"docker_image_tag": schema.StringAttribute{
 				Computed: true,
@@ -97,16 +95,16 @@ func (r *SourceDefinitionDataSource) Schema(ctx context.Context, req datasource.
 					"default": schema.SingleNestedAttribute{
 						Computed: true,
 						Attributes: map[string]schema.Attribute{
-							"cpu_request": schema.StringAttribute{
-								Computed: true,
-							},
 							"cpu_limit": schema.StringAttribute{
 								Computed: true,
 							},
-							"memory_request": schema.StringAttribute{
+							"cpu_request": schema.StringAttribute{
 								Computed: true,
 							},
 							"memory_limit": schema.StringAttribute{
+								Computed: true,
+							},
+							"memory_request": schema.StringAttribute{
 								Computed: true,
 							},
 						},
@@ -117,23 +115,22 @@ func (r *SourceDefinitionDataSource) Schema(ctx context.Context, req datasource.
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
 								"job_type": schema.StringAttribute{
-									Computed: true,
-									MarkdownDescription: `must be one of ["get_spec", "check_connection", "discover_schema", "sync", "reset_connection", "connection_updater", "replicate"]` + "\n" +
-										`enum that describes the different types of jobs that the platform runs.`,
+									Computed:    true,
+									Description: `enum that describes the different types of jobs that the platform runs. must be one of ["get_spec", "check_connection", "discover_schema", "sync", "reset_connection", "connection_updater", "replicate"]`,
 								},
 								"resource_requirements": schema.SingleNestedAttribute{
 									Computed: true,
 									Attributes: map[string]schema.Attribute{
-										"cpu_request": schema.StringAttribute{
-											Computed: true,
-										},
 										"cpu_limit": schema.StringAttribute{
 											Computed: true,
 										},
-										"memory_request": schema.StringAttribute{
+										"cpu_request": schema.StringAttribute{
 											Computed: true,
 										},
 										"memory_limit": schema.StringAttribute{
+											Computed: true,
+										},
+										"memory_request": schema.StringAttribute{
 											Computed: true,
 										},
 									},
@@ -198,7 +195,7 @@ func (r *SourceDefinitionDataSource) Read(ctx context.Context, req datasource.Re
 		return
 	}
 
-	request := *data.ToGetSDKType()
+	request := *data.ToSharedSourceDefinitionIDRequestBody()
 	res, err := r.client.SourceDefinition.GetSourceDefinition(ctx, request)
 	if err != nil {
 		resp.Diagnostics.AddError("failure to invoke API", err.Error())
@@ -219,7 +216,7 @@ func (r *SourceDefinitionDataSource) Read(ctx context.Context, req datasource.Re
 		resp.Diagnostics.AddError("unexpected response from API. No response body", debugResponse(res.RawResponse))
 		return
 	}
-	data.RefreshFromGetResponse(res.SourceDefinitionRead)
+	data.RefreshFromSharedSourceDefinitionRead(res.SourceDefinitionRead)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)

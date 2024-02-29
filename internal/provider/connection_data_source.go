@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"github.com/aballiet/terraform-provider-airbyte/internal/sdk"
 	"github.com/aballiet/terraform-provider-airbyte/internal/sdk/pkg/models/shared"
-
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -79,14 +78,12 @@ func (r *ConnectionDataSource) Schema(ctx context.Context, req datasource.Schema
 				Computed: true,
 			},
 			"namespace_definition": schema.StringAttribute{
-				Computed: true,
-				MarkdownDescription: `must be one of ["source", "destination", "customformat"]` + "\n" +
-					`Method used for computing final namespace in destination`,
+				Computed:    true,
+				Description: `Method used for computing final namespace in destination. must be one of ["source", "destination", "customformat"]`,
 			},
 			"namespace_format": schema.StringAttribute{
-				Computed: true,
-				MarkdownDescription: `Default: null` + "\n" +
-					`Used when namespaceDefinition is 'customformat'. If blank then behaves like namespaceDefinition = 'destination'. If "${SOURCE_NAMESPACE}" then behaves like namespaceDefinition = 'source'.`,
+				Computed:    true,
+				Description: `Used when namespaceDefinition is 'customformat'. If blank then behaves like namespaceDefinition = 'destination'. If "${SOURCE_NAMESPACE}" then behaves like namespaceDefinition = 'source'.`,
 			},
 			"non_breaking_changes_preference": schema.StringAttribute{
 				Computed:    true,
@@ -109,16 +106,16 @@ func (r *ConnectionDataSource) Schema(ctx context.Context, req datasource.Schema
 			"resource_requirements": schema.SingleNestedAttribute{
 				Computed: true,
 				Attributes: map[string]schema.Attribute{
-					"cpu_request": schema.StringAttribute{
-						Computed: true,
-					},
 					"cpu_limit": schema.StringAttribute{
 						Computed: true,
 					},
-					"memory_request": schema.StringAttribute{
+					"cpu_request": schema.StringAttribute{
 						Computed: true,
 					},
 					"memory_limit": schema.StringAttribute{
+						Computed: true,
+					},
+					"memory_request": schema.StringAttribute{
 						Computed: true,
 					},
 				},
@@ -154,9 +151,8 @@ func (r *ConnectionDataSource) Schema(ctx context.Context, req datasource.Schema
 				Description: `schedule for when the the connection should run, per the schedule type`,
 			},
 			"schedule_type": schema.StringAttribute{
-				Computed: true,
-				MarkdownDescription: `must be one of ["manual", "basic", "cron"]` + "\n" +
-					`determine how the schedule data should be interpreted`,
+				Computed:    true,
+				Description: `determine how the schedule data should be interpreted. must be one of ["manual", "basic", "cron"]`,
 			},
 			"source_catalog_id": schema.StringAttribute{
 				Computed: true,
@@ -165,9 +161,8 @@ func (r *ConnectionDataSource) Schema(ctx context.Context, req datasource.Schema
 				Computed: true,
 			},
 			"status": schema.StringAttribute{
-				Computed: true,
-				MarkdownDescription: `must be one of ["active", "inactive", "deprecated"]` + "\n" +
-					`Active means that data is flowing through the connection. Inactive means it is not. Deprecated means the connection is off and cannot be re-activated. the schema field describes the elements of the schema that will be synced.`,
+				Computed:    true,
+				Description: `Active means that data is flowing through the connection. Inactive means it is not. Deprecated means the connection is off and cannot be re-activated. the schema field describes the elements of the schema that will be synced. must be one of ["active", "inactive", "deprecated"]`,
 			},
 			"sync_catalog": schema.SingleNestedAttribute{
 				Computed: true,
@@ -176,51 +171,12 @@ func (r *ConnectionDataSource) Schema(ctx context.Context, req datasource.Schema
 						Computed: true,
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
-								"stream": schema.SingleNestedAttribute{
-									Computed: true,
-									Attributes: map[string]schema.Attribute{
-										"name": schema.StringAttribute{
-											Computed:    true,
-											Description: `Stream's name.`,
-										},
-										"json_schema": schema.MapAttribute{
-											Computed:    true,
-											ElementType: types.StringType,
-											Description: `Stream schema using Json Schema specs.`,
-										},
-										"supported_sync_modes": schema.ListAttribute{
-											Computed:    true,
-											ElementType: types.StringType,
-										},
-										"source_defined_cursor": schema.BoolAttribute{
-											Computed:    true,
-											Description: `If the source defines the cursor field, then any other cursor field inputs will be ignored. If it does not, either the user_provided one is used, or the default one is used as a backup.`,
-										},
-										"default_cursor_field": schema.ListAttribute{
-											Computed:    true,
-											ElementType: types.StringType,
-											Description: `Path to the field that will be used to determine if a record is new or modified since the last sync. If not provided by the source, the end user will have to specify the comparable themselves.`,
-										},
-										"source_defined_primary_key": schema.ListAttribute{
-											Computed: true,
-											ElementType: types.ListType{
-												ElemType: types.StringType,
-											},
-											Description: `If the source defines the primary key, paths to the fields that will be used as a primary key. If not provided by the source, the end user will have to specify the primary key themselves.`,
-										},
-										"namespace": schema.StringAttribute{
-											Computed:    true,
-											Description: `Optional Source-defined namespace. Airbyte streams from the same sources should have the same namespace. Currently only used by JDBC destinations to determine what schema to write to.`,
-										},
-									},
-									Description: `the immutable schema defined by the source`,
-								},
 								"config": schema.SingleNestedAttribute{
 									Computed: true,
 									Attributes: map[string]schema.Attribute{
-										"sync_mode": schema.StringAttribute{
+										"alias_name": schema.StringAttribute{
 											Computed:    true,
-											Description: `must be one of ["full_refresh", "incremental"]`,
+											Description: `Alias name to the stream to be used in the destination`,
 										},
 										"cursor_field": schema.ListAttribute{
 											Computed:    true,
@@ -231,6 +187,10 @@ func (r *ConnectionDataSource) Schema(ctx context.Context, req datasource.Schema
 											Computed:    true,
 											Description: `must be one of ["append", "overwrite", "append_dedup"]`,
 										},
+										"field_selection_enabled": schema.BoolAttribute{
+											Computed:    true,
+											Description: `Whether field selection should be enabled. If this is true, only the properties in ` + "`" + `selectedFields` + "`" + ` will be included.`,
+										},
 										"primary_key": schema.ListAttribute{
 											Computed: true,
 											ElementType: types.ListType{
@@ -238,21 +198,9 @@ func (r *ConnectionDataSource) Schema(ctx context.Context, req datasource.Schema
 											},
 											Description: `Paths to the fields that will be used as primary key. This field is REQUIRED if ` + "`" + `destination_sync_mode` + "`" + ` is ` + "`" + `*_dedup` + "`" + `. Otherwise it is ignored.`,
 										},
-										"alias_name": schema.StringAttribute{
-											Computed:    true,
-											Description: `Alias name to the stream to be used in the destination`,
-										},
 										"selected": schema.BoolAttribute{
 											Computed:    true,
 											Description: `If this is true, the stream is selected with all of its properties. For new connections, this considers if the stream is suggested or not`,
-										},
-										"suggested": schema.BoolAttribute{
-											Computed:    true,
-											Description: `Does the connector suggest that this stream be enabled by default?`,
-										},
-										"field_selection_enabled": schema.BoolAttribute{
-											Computed:    true,
-											Description: `Whether field selection should be enabled. If this is true, only the properties in ` + "`" + `selectedFields` + "`" + ` will be included.`,
 										},
 										"selected_fields": schema.ListNestedAttribute{
 											Computed: true,
@@ -266,8 +214,55 @@ func (r *ConnectionDataSource) Schema(ctx context.Context, req datasource.Schema
 											},
 											Description: `Paths to the fields that will be included in the configured catalog. This must be set if ` + "`" + `fieldSelectedEnabled` + "`" + ` is set. An empty list indicates that no properties will be included.`,
 										},
+										"suggested": schema.BoolAttribute{
+											Computed:    true,
+											Description: `Does the connector suggest that this stream be enabled by default?`,
+										},
+										"sync_mode": schema.StringAttribute{
+											Computed:    true,
+											Description: `must be one of ["full_refresh", "incremental"]`,
+										},
 									},
 									Description: `the mutable part of the stream to configure the destination`,
+								},
+								"stream": schema.SingleNestedAttribute{
+									Computed: true,
+									Attributes: map[string]schema.Attribute{
+										"default_cursor_field": schema.ListAttribute{
+											Computed:    true,
+											ElementType: types.StringType,
+											Description: `Path to the field that will be used to determine if a record is new or modified since the last sync. If not provided by the source, the end user will have to specify the comparable themselves.`,
+										},
+										"json_schema": schema.MapAttribute{
+											Computed:    true,
+											ElementType: types.StringType,
+											Description: `Stream schema using Json Schema specs.`,
+										},
+										"name": schema.StringAttribute{
+											Computed:    true,
+											Description: `Stream's name.`,
+										},
+										"namespace": schema.StringAttribute{
+											Computed:    true,
+											Description: `Optional Source-defined namespace. Airbyte streams from the same sources should have the same namespace. Currently only used by JDBC destinations to determine what schema to write to.`,
+										},
+										"source_defined_cursor": schema.BoolAttribute{
+											Computed:    true,
+											Description: `If the source defines the cursor field, then any other cursor field inputs will be ignored. If it does not, either the user_provided one is used, or the default one is used as a backup.`,
+										},
+										"source_defined_primary_key": schema.ListAttribute{
+											Computed: true,
+											ElementType: types.ListType{
+												ElemType: types.StringType,
+											},
+											Description: `If the source defines the primary key, paths to the fields that will be used as a primary key. If not provided by the source, the end user will have to specify the primary key themselves.`,
+										},
+										"supported_sync_modes": schema.ListAttribute{
+											Computed:    true,
+											ElementType: types.StringType,
+										},
+									},
+									Description: `the immutable schema defined by the source`,
 								},
 							},
 						},
@@ -344,7 +339,7 @@ func (r *ConnectionDataSource) Read(ctx context.Context, req datasource.ReadRequ
 		resp.Diagnostics.AddError("unexpected response from API. No response body", debugResponse(res.RawResponse))
 		return
 	}
-	data.RefreshFromGetResponse(res.ConnectionRead)
+	data.RefreshFromSharedConnectionRead(res.ConnectionRead)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)

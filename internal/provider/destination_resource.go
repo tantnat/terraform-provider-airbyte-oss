@@ -4,9 +4,10 @@ package provider
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	speakeasy_stringplanmodifier "github.com/aballiet/terraform-provider-airbyte/internal/planmodifiers/stringplanmodifier"
 	"github.com/aballiet/terraform-provider-airbyte/internal/sdk"
-
 	"github.com/aballiet/terraform-provider-airbyte/internal/sdk/pkg/models/shared"
 	"github.com/aballiet/terraform-provider-airbyte/internal/validators"
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -53,18 +54,19 @@ func (r *DestinationResource) Schema(ctx context.Context, req resource.SchemaReq
 
 		Attributes: map[string]schema.Attribute{
 			"connection_configuration": schema.StringAttribute{
-				Required: true,
-				MarkdownDescription: `Parsed as JSON.` + "\n" +
-					`The values required to configure the destination. The schema for this must match the schema return by destination_definition_specifications/get for the destinationDefinition.`,
+				Required:    true,
+				Description: `The values required to configure the destination. The schema for this must match the schema return by destination_definition_specifications/get for the destinationDefinition. Parsed as JSON.`,
 				Validators: []validator.String{
 					validators.IsValidJSON(),
 				},
 			},
 			"destination_definition_id": schema.StringAttribute{
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplace(),
+					stringplanmodifier.RequiresReplaceIfConfigured(),
+					speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
 				},
-				Required: true,
+				Required:    true,
+				Description: `Requires replacement if changed. `,
 			},
 			"destination_id": schema.StringAttribute{
 				Computed: true,
@@ -80,9 +82,11 @@ func (r *DestinationResource) Schema(ctx context.Context, req resource.SchemaReq
 			},
 			"workspace_id": schema.StringAttribute{
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplace(),
+					stringplanmodifier.RequiresReplaceIfConfigured(),
+					speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
 				},
-				Required: true,
+				Required:    true,
+				Description: `Requires replacement if changed. `,
 			},
 		},
 	}
@@ -110,14 +114,14 @@ func (r *DestinationResource) Configure(ctx context.Context, req resource.Config
 
 func (r *DestinationResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	var data *DestinationResourceModel
-	var item types.Object
+	var plan types.Object
 
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &item)...)
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	resp.Diagnostics.Append(item.As(ctx, &data, basetypes.ObjectAsOptions{
+	resp.Diagnostics.Append(plan.As(ctx, &data, basetypes.ObjectAsOptions{
 		UnhandledNullAsEmpty:    true,
 		UnhandledUnknownAsEmpty: true,
 	})...)
@@ -126,7 +130,17 @@ func (r *DestinationResource) Create(ctx context.Context, req resource.CreateReq
 		return
 	}
 
-	request := *data.ToCreateSDKType()
+	workspaceID := data.WorkspaceID.ValueString()
+	name := data.Name.ValueString()
+	destinationDefinitionID := data.DestinationDefinitionID.ValueString()
+	var connectionConfiguration interface{}
+	_ = json.Unmarshal([]byte(data.ConnectionConfiguration.ValueString()), &connectionConfiguration)
+	request := shared.DestinationCreate{
+		WorkspaceID:             workspaceID,
+		Name:                    name,
+		DestinationDefinitionID: destinationDefinitionID,
+		ConnectionConfiguration: connectionConfiguration,
+	}
 	res, err := r.client.Destination.CreateDestination(ctx, request)
 	if err != nil {
 		resp.Diagnostics.AddError("failure to invoke API", err.Error())
@@ -147,7 +161,34 @@ func (r *DestinationResource) Create(ctx context.Context, req resource.CreateReq
 		resp.Diagnostics.AddError("unexpected response from API. No response body", debugResponse(res.RawResponse))
 		return
 	}
-	data.RefreshFromCreateResponse(res.DestinationRead)
+	data.RefreshFromSharedDestinationRead(res.DestinationRead)
+	refreshPlan(ctx, plan, &data, resp.Diagnostics)
+	destinationID := data.DestinationID.ValueString()
+	request1 := shared.DestinationIDRequestBody{
+		DestinationID: destinationID,
+	}
+	res1, err := r.client.Destination.GetDestination(ctx, request1)
+	if err != nil {
+		resp.Diagnostics.AddError("failure to invoke API", err.Error())
+		if res1 != nil && res1.RawResponse != nil {
+			resp.Diagnostics.AddError("unexpected http request/response", debugResponse(res1.RawResponse))
+		}
+		return
+	}
+	if res1 == nil {
+		resp.Diagnostics.AddError("unexpected response from API", fmt.Sprintf("%v", res1))
+		return
+	}
+	if res1.StatusCode != 200 {
+		resp.Diagnostics.AddError(fmt.Sprintf("unexpected response from API. Got an unexpected response code %v", res1.StatusCode), debugResponse(res1.RawResponse))
+		return
+	}
+	if res1.DestinationRead == nil {
+		resp.Diagnostics.AddError("unexpected response from API. No response body", debugResponse(res1.RawResponse))
+		return
+	}
+	data.RefreshFromSharedDestinationRead(res1.DestinationRead)
+	refreshPlan(ctx, plan, &data, resp.Diagnostics)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -195,7 +236,7 @@ func (r *DestinationResource) Read(ctx context.Context, req resource.ReadRequest
 		resp.Diagnostics.AddError("unexpected response from API. No response body", debugResponse(res.RawResponse))
 		return
 	}
-	data.RefreshFromGetResponse(res.DestinationRead)
+	data.RefreshFromSharedDestinationRead(res.DestinationRead)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -203,12 +244,27 @@ func (r *DestinationResource) Read(ctx context.Context, req resource.ReadRequest
 
 func (r *DestinationResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	var data *DestinationResourceModel
+	var plan types.Object
+
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	merge(ctx, req, resp, &data)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	request := *data.ToUpdateSDKType()
+	destinationID := data.DestinationID.ValueString()
+	var connectionConfiguration interface{}
+	_ = json.Unmarshal([]byte(data.ConnectionConfiguration.ValueString()), &connectionConfiguration)
+	name := data.Name.ValueString()
+	request := shared.DestinationUpdate{
+		DestinationID:           destinationID,
+		ConnectionConfiguration: connectionConfiguration,
+		Name:                    name,
+	}
 	res, err := r.client.Destination.UpdateDestination(ctx, request)
 	if err != nil {
 		resp.Diagnostics.AddError("failure to invoke API", err.Error())
@@ -229,7 +285,34 @@ func (r *DestinationResource) Update(ctx context.Context, req resource.UpdateReq
 		resp.Diagnostics.AddError("unexpected response from API. No response body", debugResponse(res.RawResponse))
 		return
 	}
-	data.RefreshFromUpdateResponse(res.DestinationRead)
+	data.RefreshFromSharedDestinationRead(res.DestinationRead)
+	refreshPlan(ctx, plan, &data, resp.Diagnostics)
+	destinationId1 := data.DestinationID.ValueString()
+	request1 := shared.DestinationIDRequestBody{
+		DestinationID: destinationId1,
+	}
+	res1, err := r.client.Destination.GetDestination(ctx, request1)
+	if err != nil {
+		resp.Diagnostics.AddError("failure to invoke API", err.Error())
+		if res1 != nil && res1.RawResponse != nil {
+			resp.Diagnostics.AddError("unexpected http request/response", debugResponse(res1.RawResponse))
+		}
+		return
+	}
+	if res1 == nil {
+		resp.Diagnostics.AddError("unexpected response from API", fmt.Sprintf("%v", res1))
+		return
+	}
+	if res1.StatusCode != 200 {
+		resp.Diagnostics.AddError(fmt.Sprintf("unexpected response from API. Got an unexpected response code %v", res1.StatusCode), debugResponse(res1.RawResponse))
+		return
+	}
+	if res1.DestinationRead == nil {
+		resp.Diagnostics.AddError("unexpected response from API. No response body", debugResponse(res1.RawResponse))
+		return
+	}
+	data.RefreshFromSharedDestinationRead(res1.DestinationRead)
+	refreshPlan(ctx, plan, &data, resp.Diagnostics)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
