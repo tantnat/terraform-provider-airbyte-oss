@@ -7,6 +7,106 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
+func (r *DestinationDefinitionResourceModel) ToSharedDestinationDefinitionCreate() *shared.DestinationDefinitionCreate {
+	name := r.Name.ValueString()
+	dockerRepository := r.DockerRepository.ValueString()
+	dockerImageTag := r.DockerImageTag.ValueString()
+	documentationURL := r.DocumentationURL.ValueString()
+	icon := new(string)
+	if !r.Icon.IsUnknown() && !r.Icon.IsNull() {
+		*icon = r.Icon.ValueString()
+	} else {
+		icon = nil
+	}
+	var resourceRequirements *shared.ActorDefinitionResourceRequirements
+	if r.ResourceRequirements != nil {
+		var defaultVar *shared.ResourceRequirements
+		if r.ResourceRequirements.Default != nil {
+			cpuRequest := new(string)
+			if !r.ResourceRequirements.Default.CPURequest.IsUnknown() && !r.ResourceRequirements.Default.CPURequest.IsNull() {
+				*cpuRequest = r.ResourceRequirements.Default.CPURequest.ValueString()
+			} else {
+				cpuRequest = nil
+			}
+			cpuLimit := new(string)
+			if !r.ResourceRequirements.Default.CPULimit.IsUnknown() && !r.ResourceRequirements.Default.CPULimit.IsNull() {
+				*cpuLimit = r.ResourceRequirements.Default.CPULimit.ValueString()
+			} else {
+				cpuLimit = nil
+			}
+			memoryRequest := new(string)
+			if !r.ResourceRequirements.Default.MemoryRequest.IsUnknown() && !r.ResourceRequirements.Default.MemoryRequest.IsNull() {
+				*memoryRequest = r.ResourceRequirements.Default.MemoryRequest.ValueString()
+			} else {
+				memoryRequest = nil
+			}
+			memoryLimit := new(string)
+			if !r.ResourceRequirements.Default.MemoryLimit.IsUnknown() && !r.ResourceRequirements.Default.MemoryLimit.IsNull() {
+				*memoryLimit = r.ResourceRequirements.Default.MemoryLimit.ValueString()
+			} else {
+				memoryLimit = nil
+			}
+			defaultVar = &shared.ResourceRequirements{
+				CPURequest:    cpuRequest,
+				CPULimit:      cpuLimit,
+				MemoryRequest: memoryRequest,
+				MemoryLimit:   memoryLimit,
+			}
+		}
+		var jobSpecific []shared.JobTypeResourceLimit = nil
+		for _, jobSpecificItem := range r.ResourceRequirements.JobSpecific {
+			jobType := shared.JobType(jobSpecificItem.JobType.ValueString())
+			cpuRequest1 := new(string)
+			if !jobSpecificItem.ResourceRequirements.CPURequest.IsUnknown() && !jobSpecificItem.ResourceRequirements.CPURequest.IsNull() {
+				*cpuRequest1 = jobSpecificItem.ResourceRequirements.CPURequest.ValueString()
+			} else {
+				cpuRequest1 = nil
+			}
+			cpuLimit1 := new(string)
+			if !jobSpecificItem.ResourceRequirements.CPULimit.IsUnknown() && !jobSpecificItem.ResourceRequirements.CPULimit.IsNull() {
+				*cpuLimit1 = jobSpecificItem.ResourceRequirements.CPULimit.ValueString()
+			} else {
+				cpuLimit1 = nil
+			}
+			memoryRequest1 := new(string)
+			if !jobSpecificItem.ResourceRequirements.MemoryRequest.IsUnknown() && !jobSpecificItem.ResourceRequirements.MemoryRequest.IsNull() {
+				*memoryRequest1 = jobSpecificItem.ResourceRequirements.MemoryRequest.ValueString()
+			} else {
+				memoryRequest1 = nil
+			}
+			memoryLimit1 := new(string)
+			if !jobSpecificItem.ResourceRequirements.MemoryLimit.IsUnknown() && !jobSpecificItem.ResourceRequirements.MemoryLimit.IsNull() {
+				*memoryLimit1 = jobSpecificItem.ResourceRequirements.MemoryLimit.ValueString()
+			} else {
+				memoryLimit1 = nil
+			}
+			resourceRequirements1 := shared.ResourceRequirements{
+				CPURequest:    cpuRequest1,
+				CPULimit:      cpuLimit1,
+				MemoryRequest: memoryRequest1,
+				MemoryLimit:   memoryLimit1,
+			}
+			jobSpecific = append(jobSpecific, shared.JobTypeResourceLimit{
+				JobType:              jobType,
+				ResourceRequirements: resourceRequirements1,
+			})
+		}
+		resourceRequirements = &shared.ActorDefinitionResourceRequirements{
+			Default:     defaultVar,
+			JobSpecific: jobSpecific,
+		}
+	}
+	out := shared.DestinationDefinitionCreate{
+		Name:                 name,
+		DockerRepository:     dockerRepository,
+		DockerImageTag:       dockerImageTag,
+		DocumentationURL:     documentationURL,
+		Icon:                 icon,
+		ResourceRequirements: resourceRequirements,
+	}
+	return &out
+}
+
 func (r *DestinationDefinitionResourceModel) RefreshFromSharedDestinationDefinitionRead(resp *shared.DestinationDefinitionRead) {
 	r.Custom = types.BoolPointerValue(resp.Custom)
 	r.DestinationDefinitionID = types.StringValue(resp.DestinationDefinitionID)
@@ -67,4 +167,98 @@ func (r *DestinationDefinitionResourceModel) RefreshFromSharedDestinationDefinit
 		r.SupportLevel = types.StringNull()
 	}
 	r.SupportsDbt = types.BoolValue(resp.SupportsDbt)
+}
+
+func (r *DestinationDefinitionResourceModel) ToSharedDestinationDefinitionUpdate() *shared.DestinationDefinitionUpdate {
+	destinationDefinitionID := r.DestinationDefinitionID.ValueString()
+	dockerImageTag := new(string)
+	if !r.DockerImageTag.IsUnknown() && !r.DockerImageTag.IsNull() {
+		*dockerImageTag = r.DockerImageTag.ValueString()
+	} else {
+		dockerImageTag = nil
+	}
+	var resourceRequirements *shared.ActorDefinitionResourceRequirements
+	if r.ResourceRequirements != nil {
+		var defaultVar *shared.ResourceRequirements
+		if r.ResourceRequirements.Default != nil {
+			cpuRequest := new(string)
+			if !r.ResourceRequirements.Default.CPURequest.IsUnknown() && !r.ResourceRequirements.Default.CPURequest.IsNull() {
+				*cpuRequest = r.ResourceRequirements.Default.CPURequest.ValueString()
+			} else {
+				cpuRequest = nil
+			}
+			cpuLimit := new(string)
+			if !r.ResourceRequirements.Default.CPULimit.IsUnknown() && !r.ResourceRequirements.Default.CPULimit.IsNull() {
+				*cpuLimit = r.ResourceRequirements.Default.CPULimit.ValueString()
+			} else {
+				cpuLimit = nil
+			}
+			memoryRequest := new(string)
+			if !r.ResourceRequirements.Default.MemoryRequest.IsUnknown() && !r.ResourceRequirements.Default.MemoryRequest.IsNull() {
+				*memoryRequest = r.ResourceRequirements.Default.MemoryRequest.ValueString()
+			} else {
+				memoryRequest = nil
+			}
+			memoryLimit := new(string)
+			if !r.ResourceRequirements.Default.MemoryLimit.IsUnknown() && !r.ResourceRequirements.Default.MemoryLimit.IsNull() {
+				*memoryLimit = r.ResourceRequirements.Default.MemoryLimit.ValueString()
+			} else {
+				memoryLimit = nil
+			}
+			defaultVar = &shared.ResourceRequirements{
+				CPURequest:    cpuRequest,
+				CPULimit:      cpuLimit,
+				MemoryRequest: memoryRequest,
+				MemoryLimit:   memoryLimit,
+			}
+		}
+		var jobSpecific []shared.JobTypeResourceLimit = nil
+		for _, jobSpecificItem := range r.ResourceRequirements.JobSpecific {
+			jobType := shared.JobType(jobSpecificItem.JobType.ValueString())
+			cpuRequest1 := new(string)
+			if !jobSpecificItem.ResourceRequirements.CPURequest.IsUnknown() && !jobSpecificItem.ResourceRequirements.CPURequest.IsNull() {
+				*cpuRequest1 = jobSpecificItem.ResourceRequirements.CPURequest.ValueString()
+			} else {
+				cpuRequest1 = nil
+			}
+			cpuLimit1 := new(string)
+			if !jobSpecificItem.ResourceRequirements.CPULimit.IsUnknown() && !jobSpecificItem.ResourceRequirements.CPULimit.IsNull() {
+				*cpuLimit1 = jobSpecificItem.ResourceRequirements.CPULimit.ValueString()
+			} else {
+				cpuLimit1 = nil
+			}
+			memoryRequest1 := new(string)
+			if !jobSpecificItem.ResourceRequirements.MemoryRequest.IsUnknown() && !jobSpecificItem.ResourceRequirements.MemoryRequest.IsNull() {
+				*memoryRequest1 = jobSpecificItem.ResourceRequirements.MemoryRequest.ValueString()
+			} else {
+				memoryRequest1 = nil
+			}
+			memoryLimit1 := new(string)
+			if !jobSpecificItem.ResourceRequirements.MemoryLimit.IsUnknown() && !jobSpecificItem.ResourceRequirements.MemoryLimit.IsNull() {
+				*memoryLimit1 = jobSpecificItem.ResourceRequirements.MemoryLimit.ValueString()
+			} else {
+				memoryLimit1 = nil
+			}
+			resourceRequirements1 := shared.ResourceRequirements{
+				CPURequest:    cpuRequest1,
+				CPULimit:      cpuLimit1,
+				MemoryRequest: memoryRequest1,
+				MemoryLimit:   memoryLimit1,
+			}
+			jobSpecific = append(jobSpecific, shared.JobTypeResourceLimit{
+				JobType:              jobType,
+				ResourceRequirements: resourceRequirements1,
+			})
+		}
+		resourceRequirements = &shared.ActorDefinitionResourceRequirements{
+			Default:     defaultVar,
+			JobSpecific: jobSpecific,
+		}
+	}
+	out := shared.DestinationDefinitionUpdate{
+		DestinationDefinitionID: destinationDefinitionID,
+		DockerImageTag:          dockerImageTag,
+		ResourceRequirements:    resourceRequirements,
+	}
+	return &out
 }

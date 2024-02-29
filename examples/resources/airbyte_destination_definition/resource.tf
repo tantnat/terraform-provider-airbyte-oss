@@ -1,15 +1,10 @@
 resource "airbyte_destination_definition" "my_destinationdefinition" {
-  cpu_limit         = "...my_cpu_limit..."
-  cpu_request       = "...my_cpu_request..."
   docker_image_tag  = "...my_docker_image_tag..."
   docker_repository = "...my_docker_repository..."
   documentation_url = "https://healthy-bandolier.com"
   icon              = "...my_icon..."
-  job_type          = "get_spec"
-  memory_limit      = "...my_memory_limit..."
-  memory_request    = "...my_memory_request..."
-  name              = "Thelma Dooley"
-  scope_id          = "7515722b-625e-4fa1-bbfa-8d645f719d13"
+  name              = "Julie Frami"
+  scope_id          = "87515722-b625-4efa-9bbf-a8d645f719d1"
   scope_type        = "workspace"
-  workspace_id      = "279f15ad-8bb3-4fe3-bfac-9256cf878498"
+  workspace_id      = "3279f15a-d8bb-43fe-b3fa-c9256cf87849"
 }

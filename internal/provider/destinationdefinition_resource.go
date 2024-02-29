@@ -9,6 +9,8 @@ import (
 	"github.com/aballiet/terraform-provider-airbyte/internal/sdk"
 	"github.com/aballiet/terraform-provider-airbyte/internal/sdk/pkg/models/shared"
 	"github.com/aballiet/terraform-provider-airbyte/internal/validators"
+	speakeasy_objectvalidators "github.com/aballiet/terraform-provider-airbyte/internal/validators/objectvalidators"
+	speakeasy_stringvalidators "github.com/aballiet/terraform-provider-airbyte/internal/validators/stringvalidators"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -35,17 +37,12 @@ type DestinationDefinitionResource struct {
 
 // DestinationDefinitionResourceModel describes the resource data model.
 type DestinationDefinitionResourceModel struct {
-	CPULimit                types.String                             `tfsdk:"cpu_limit"`
-	CPURequest              types.String                             `tfsdk:"cpu_request"`
 	Custom                  types.Bool                               `tfsdk:"custom"`
 	DestinationDefinitionID types.String                             `tfsdk:"destination_definition_id"`
 	DockerImageTag          types.String                             `tfsdk:"docker_image_tag"`
 	DockerRepository        types.String                             `tfsdk:"docker_repository"`
 	DocumentationURL        types.String                             `tfsdk:"documentation_url"`
 	Icon                    types.String                             `tfsdk:"icon"`
-	JobType                 types.String                             `tfsdk:"job_type"`
-	MemoryLimit             types.String                             `tfsdk:"memory_limit"`
-	MemoryRequest           types.String                             `tfsdk:"memory_request"`
 	Name                    types.String                             `tfsdk:"name"`
 	NormalizationConfig     NormalizationDestinationDefinitionConfig `tfsdk:"normalization_config"`
 	ProtocolVersion         types.String                             `tfsdk:"protocol_version"`
@@ -68,12 +65,6 @@ func (r *DestinationDefinitionResource) Schema(ctx context.Context, req resource
 		MarkdownDescription: "DestinationDefinition Resource",
 
 		Attributes: map[string]schema.Attribute{
-			"cpu_limit": schema.StringAttribute{
-				Optional: true,
-			},
-			"cpu_request": schema.StringAttribute{
-				Optional: true,
-			},
 			"custom": schema.BoolAttribute{
 				Computed:    true,
 				Description: `Whether the connector is custom or not`,
@@ -108,27 +99,6 @@ func (r *DestinationDefinitionResource) Schema(ctx context.Context, req resource
 				},
 				Optional:    true,
 				Description: `Requires replacement if changed. `,
-			},
-			"job_type": schema.StringAttribute{
-				Required:    true,
-				Description: `enum that describes the different types of jobs that the platform runs. must be one of ["get_spec", "check_connection", "discover_schema", "sync", "reset_connection", "connection_updater", "replicate"]`,
-				Validators: []validator.String{
-					stringvalidator.OneOf(
-						"get_spec",
-						"check_connection",
-						"discover_schema",
-						"sync",
-						"reset_connection",
-						"connection_updater",
-						"replicate",
-					),
-				},
-			},
-			"memory_limit": schema.StringAttribute{
-				Optional: true,
-			},
-			"memory_request": schema.StringAttribute{
-				Optional: true,
 			},
 			"name": schema.StringAttribute{
 				PlanModifiers: []planmodifier.String{
@@ -185,33 +155,42 @@ func (r *DestinationDefinitionResource) Schema(ctx context.Context, req resource
 			},
 			"resource_requirements": schema.SingleNestedAttribute{
 				Computed: true,
+				Optional: true,
 				Attributes: map[string]schema.Attribute{
 					"default": schema.SingleNestedAttribute{
 						Computed: true,
+						Optional: true,
 						Attributes: map[string]schema.Attribute{
 							"cpu_limit": schema.StringAttribute{
 								Computed: true,
+								Optional: true,
 							},
 							"cpu_request": schema.StringAttribute{
 								Computed: true,
+								Optional: true,
 							},
 							"memory_limit": schema.StringAttribute{
 								Computed: true,
+								Optional: true,
 							},
 							"memory_request": schema.StringAttribute{
 								Computed: true,
+								Optional: true,
 							},
 						},
 						Description: `optional resource requirements to run workers (blank for unbounded allocations)`,
 					},
 					"job_specific": schema.ListNestedAttribute{
 						Computed: true,
+						Optional: true,
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
 								"job_type": schema.StringAttribute{
 									Computed:    true,
-									Description: `enum that describes the different types of jobs that the platform runs. must be one of ["get_spec", "check_connection", "discover_schema", "sync", "reset_connection", "connection_updater", "replicate"]`,
+									Optional:    true,
+									Description: `enum that describes the different types of jobs that the platform runs. Not Null; must be one of ["get_spec", "check_connection", "discover_schema", "sync", "reset_connection", "connection_updater", "replicate"]`,
 									Validators: []validator.String{
+										speakeasy_stringvalidators.NotNull(),
 										stringvalidator.OneOf(
 											"get_spec",
 											"check_connection",
@@ -225,21 +204,29 @@ func (r *DestinationDefinitionResource) Schema(ctx context.Context, req resource
 								},
 								"resource_requirements": schema.SingleNestedAttribute{
 									Computed: true,
+									Optional: true,
 									Attributes: map[string]schema.Attribute{
 										"cpu_limit": schema.StringAttribute{
 											Computed: true,
+											Optional: true,
 										},
 										"cpu_request": schema.StringAttribute{
 											Computed: true,
+											Optional: true,
 										},
 										"memory_limit": schema.StringAttribute{
 											Computed: true,
+											Optional: true,
 										},
 										"memory_request": schema.StringAttribute{
 											Computed: true,
+											Optional: true,
 										},
 									},
-									Description: `optional resource requirements to run workers (blank for unbounded allocations)`,
+									Description: `optional resource requirements to run workers (blank for unbounded allocations). Not Null`,
+									Validators: []validator.Object{
+										speakeasy_objectvalidators.NotNull(),
+									},
 								},
 							},
 						},
@@ -338,80 +325,7 @@ func (r *DestinationDefinitionResource) Create(ctx context.Context, req resource
 	} else {
 		workspaceID = nil
 	}
-	name := data.Name.ValueString()
-	dockerRepository := data.DockerRepository.ValueString()
-	dockerImageTag := data.DockerImageTag.ValueString()
-	documentationURL := data.DocumentationURL.ValueString()
-	icon := new(string)
-	if !data.Icon.IsUnknown() && !data.Icon.IsNull() {
-		*icon = data.Icon.ValueString()
-	} else {
-		icon = nil
-	}
-	var resourceRequirements *shared.ActorDefinitionResourceRequirements
-	if data != nil {
-		var defaultVar *shared.ResourceRequirements
-		if data != nil {
-			cpuRequest := new(string)
-			if !data.CPURequest.IsUnknown() && !data.CPURequest.IsNull() {
-				*cpuRequest = data.CPURequest.ValueString()
-			} else {
-				cpuRequest = nil
-			}
-			cpuLimit := new(string)
-			if !data.CPULimit.IsUnknown() && !data.CPULimit.IsNull() {
-				*cpuLimit = data.CPULimit.ValueString()
-			} else {
-				cpuLimit = nil
-			}
-			memoryRequest := new(string)
-			if !data.MemoryRequest.IsUnknown() && !data.MemoryRequest.IsNull() {
-				*memoryRequest = data.MemoryRequest.ValueString()
-			} else {
-				memoryRequest = nil
-			}
-			memoryLimit := new(string)
-			if !data.MemoryLimit.IsUnknown() && !data.MemoryLimit.IsNull() {
-				*memoryLimit = data.MemoryLimit.ValueString()
-			} else {
-				memoryLimit = nil
-			}
-			defaultVar = &shared.ResourceRequirements{
-				CPURequest:    cpuRequest,
-				CPULimit:      cpuLimit,
-				MemoryRequest: memoryRequest,
-				MemoryLimit:   memoryLimit,
-			}
-		}
-		var jobType *shared.JobType
-		var cpuRequest1 *string
-		var cpuLimit1 *string
-		var memoryRequest1 *string
-		var memoryLimit1 *string
-		resourceRequirements1 := shared.ResourceRequirements{
-			CPURequest:    cpuRequest1,
-			CPULimit:      cpuLimit1,
-			MemoryRequest: memoryRequest1,
-			MemoryLimit:   memoryLimit1,
-		}
-		jobSpecificSingleton := shared.JobTypeResourceLimit{
-			JobType:              *jobType,
-			ResourceRequirements: resourceRequirements1,
-		}
-		jobSpecific := []shared.JobTypeResourceLimit{jobSpecificSingleton}
-		resourceRequirements = &shared.ActorDefinitionResourceRequirements{
-			Default:     defaultVar,
-			JobSpecific: jobSpecific,
-		}
-	}
-	destinationDefinition := shared.DestinationDefinitionCreate{
-		Name:                 name,
-		DockerRepository:     dockerRepository,
-		DockerImageTag:       dockerImageTag,
-		DocumentationURL:     documentationURL,
-		Icon:                 icon,
-		ResourceRequirements: resourceRequirements,
-	}
+	destinationDefinition := *data.ToSharedDestinationDefinitionCreate()
 	scopeID := new(string)
 	if !data.ScopeID.IsUnknown() && !data.ScopeID.IsNull() {
 		*scopeID = data.ScopeID.ValueString()
@@ -545,74 +459,7 @@ func (r *DestinationDefinitionResource) Update(ctx context.Context, req resource
 		return
 	}
 
-	destinationDefinitionID := data.DestinationDefinitionID.ValueString()
-	dockerImageTag := new(string)
-	if !data.DockerImageTag.IsUnknown() && !data.DockerImageTag.IsNull() {
-		*dockerImageTag = data.DockerImageTag.ValueString()
-	} else {
-		dockerImageTag = nil
-	}
-	var resourceRequirements *shared.ActorDefinitionResourceRequirements
-	if data != nil {
-		var defaultVar *shared.ResourceRequirements
-		if data != nil {
-			cpuRequest := new(string)
-			if !data.CPURequest.IsUnknown() && !data.CPURequest.IsNull() {
-				*cpuRequest = data.CPURequest.ValueString()
-			} else {
-				cpuRequest = nil
-			}
-			cpuLimit := new(string)
-			if !data.CPULimit.IsUnknown() && !data.CPULimit.IsNull() {
-				*cpuLimit = data.CPULimit.ValueString()
-			} else {
-				cpuLimit = nil
-			}
-			memoryRequest := new(string)
-			if !data.MemoryRequest.IsUnknown() && !data.MemoryRequest.IsNull() {
-				*memoryRequest = data.MemoryRequest.ValueString()
-			} else {
-				memoryRequest = nil
-			}
-			memoryLimit := new(string)
-			if !data.MemoryLimit.IsUnknown() && !data.MemoryLimit.IsNull() {
-				*memoryLimit = data.MemoryLimit.ValueString()
-			} else {
-				memoryLimit = nil
-			}
-			defaultVar = &shared.ResourceRequirements{
-				CPURequest:    cpuRequest,
-				CPULimit:      cpuLimit,
-				MemoryRequest: memoryRequest,
-				MemoryLimit:   memoryLimit,
-			}
-		}
-		var jobType *shared.JobType
-		var cpuRequest1 *string
-		var cpuLimit1 *string
-		var memoryRequest1 *string
-		var memoryLimit1 *string
-		resourceRequirements1 := shared.ResourceRequirements{
-			CPURequest:    cpuRequest1,
-			CPULimit:      cpuLimit1,
-			MemoryRequest: memoryRequest1,
-			MemoryLimit:   memoryLimit1,
-		}
-		jobSpecificSingleton := shared.JobTypeResourceLimit{
-			JobType:              *jobType,
-			ResourceRequirements: resourceRequirements1,
-		}
-		jobSpecific := []shared.JobTypeResourceLimit{jobSpecificSingleton}
-		resourceRequirements = &shared.ActorDefinitionResourceRequirements{
-			Default:     defaultVar,
-			JobSpecific: jobSpecific,
-		}
-	}
-	request := shared.DestinationDefinitionUpdate{
-		DestinationDefinitionID: destinationDefinitionID,
-		DockerImageTag:          dockerImageTag,
-		ResourceRequirements:    resourceRequirements,
-	}
+	request := *data.ToSharedDestinationDefinitionUpdate()
 	res, err := r.client.DestinationDefinition.UpdateDestinationDefinition(ctx, request)
 	if err != nil {
 		resp.Diagnostics.AddError("failure to invoke API", err.Error())
@@ -634,32 +481,6 @@ func (r *DestinationDefinitionResource) Update(ctx context.Context, req resource
 		return
 	}
 	data.RefreshFromSharedDestinationDefinitionRead(res.DestinationDefinitionRead)
-	refreshPlan(ctx, plan, &data, resp.Diagnostics)
-	destinationDefinitionId1 := data.DestinationDefinitionID.ValueString()
-	request1 := shared.DestinationDefinitionIDRequestBody{
-		DestinationDefinitionID: destinationDefinitionId1,
-	}
-	res1, err := r.client.DestinationDefinition.GetDestinationDefinition(ctx, request1)
-	if err != nil {
-		resp.Diagnostics.AddError("failure to invoke API", err.Error())
-		if res1 != nil && res1.RawResponse != nil {
-			resp.Diagnostics.AddError("unexpected http request/response", debugResponse(res1.RawResponse))
-		}
-		return
-	}
-	if res1 == nil {
-		resp.Diagnostics.AddError("unexpected response from API", fmt.Sprintf("%v", res1))
-		return
-	}
-	if res1.StatusCode != 200 {
-		resp.Diagnostics.AddError(fmt.Sprintf("unexpected response from API. Got an unexpected response code %v", res1.StatusCode), debugResponse(res1.RawResponse))
-		return
-	}
-	if res1.DestinationDefinitionRead == nil {
-		resp.Diagnostics.AddError("unexpected response from API. No response body", debugResponse(res1.RawResponse))
-		return
-	}
-	data.RefreshFromSharedDestinationDefinitionRead(res1.DestinationDefinitionRead)
 	refreshPlan(ctx, plan, &data, resp.Diagnostics)
 
 	// Save updated data into Terraform state

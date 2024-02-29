@@ -14,19 +14,14 @@ DestinationDefinition Resource
 
 ```terraform
 resource "airbyte_destination_definition" "my_destinationdefinition" {
-  cpu_limit         = "...my_cpu_limit..."
-  cpu_request       = "...my_cpu_request..."
   docker_image_tag  = "...my_docker_image_tag..."
   docker_repository = "...my_docker_repository..."
   documentation_url = "https://healthy-bandolier.com"
   icon              = "...my_icon..."
-  job_type          = "get_spec"
-  memory_limit      = "...my_memory_limit..."
-  memory_request    = "...my_memory_request..."
-  name              = "Thelma Dooley"
-  scope_id          = "7515722b-625e-4fa1-bbfa-8d645f719d13"
+  name              = "Julie Frami"
+  scope_id          = "87515722-b625-4efa-9bbf-a8d645f719d1"
   scope_type        = "workspace"
-  workspace_id      = "279f15ad-8bb3-4fe3-bfac-9256cf878498"
+  workspace_id      = "3279f15a-d8bb-43fe-b3fa-c9256cf87849"
 }
 ```
 
@@ -38,16 +33,12 @@ resource "airbyte_destination_definition" "my_destinationdefinition" {
 - `docker_image_tag` (String)
 - `docker_repository` (String) Requires replacement if changed.
 - `documentation_url` (String) Requires replacement if changed.
-- `job_type` (String) enum that describes the different types of jobs that the platform runs. must be one of ["get_spec", "check_connection", "discover_schema", "sync", "reset_connection", "connection_updater", "replicate"]
 - `name` (String) Requires replacement if changed.
 
 ### Optional
 
-- `cpu_limit` (String)
-- `cpu_request` (String)
 - `icon` (String) Requires replacement if changed.
-- `memory_limit` (String)
-- `memory_request` (String)
+- `resource_requirements` (Attributes) actor definition specific resource requirements. if default is set, these are the requirements that should be set for ALL jobs run for this actor definition. it is overriden by the job type specific configurations. if not set, the platform will use defaults. these values will be overriden by configuration at the connection level. (see [below for nested schema](#nestedatt--resource_requirements))
 - `scope_id` (String) Requires replacement if changed.
 - `scope_type` (String) Requires replacement if changed. ; must be one of ["workspace", "organization"]
 - `workspace_id` (String) Requires replacement if changed.
@@ -60,25 +51,13 @@ resource "airbyte_destination_definition" "my_destinationdefinition" {
 - `protocol_version` (String) The Airbyte Protocol version supported by the connector
 - `release_date` (String) The date when this connector was first released, in yyyy-mm-dd format.
 - `release_stage` (String) must be one of ["alpha", "beta", "generally_available", "custom"]
-- `resource_requirements` (Attributes) actor definition specific resource requirements. if default is set, these are the requirements that should be set for ALL jobs run for this actor definition. it is overriden by the job type specific configurations. if not set, the platform will use defaults. these values will be overriden by configuration at the connection level. (see [below for nested schema](#nestedatt--resource_requirements))
 - `support_level` (String) must be one of ["community", "certified", "none"]
 - `supports_dbt` (Boolean) an optional flag indicating whether DBT is used in the normalization. If the flag value is NULL - DBT is not used.
-
-<a id="nestedatt--normalization_config"></a>
-### Nested Schema for `normalization_config`
-
-Read-Only:
-
-- `normalization_integration_type` (String) a field indicating the type of integration dialect to use for normalization.
-- `normalization_repository` (String) a field indicating the name of the repository to be used for normalization. If the value of the flag is NULL - normalization is not used.
-- `normalization_tag` (String) a field indicating the tag of the docker repository to be used for normalization.
-- `supported` (Boolean) whether the destination definition supports normalization.
-
 
 <a id="nestedatt--resource_requirements"></a>
 ### Nested Schema for `resource_requirements`
 
-Read-Only:
+Optional:
 
 - `default` (Attributes) optional resource requirements to run workers (blank for unbounded allocations) (see [below for nested schema](#nestedatt--resource_requirements--default))
 - `job_specific` (Attributes List) (see [below for nested schema](#nestedatt--resource_requirements--job_specific))
@@ -86,7 +65,7 @@ Read-Only:
 <a id="nestedatt--resource_requirements--default"></a>
 ### Nested Schema for `resource_requirements.default`
 
-Read-Only:
+Optional:
 
 - `cpu_limit` (String)
 - `cpu_request` (String)
@@ -97,19 +76,32 @@ Read-Only:
 <a id="nestedatt--resource_requirements--job_specific"></a>
 ### Nested Schema for `resource_requirements.job_specific`
 
-Read-Only:
+Optional:
 
-- `job_type` (String) enum that describes the different types of jobs that the platform runs. must be one of ["get_spec", "check_connection", "discover_schema", "sync", "reset_connection", "connection_updater", "replicate"]
-- `resource_requirements` (Attributes) optional resource requirements to run workers (blank for unbounded allocations) (see [below for nested schema](#nestedatt--resource_requirements--job_specific--resource_requirements))
+- `job_type` (String) enum that describes the different types of jobs that the platform runs. Not Null; must be one of ["get_spec", "check_connection", "discover_schema", "sync", "reset_connection", "connection_updater", "replicate"]
+- `resource_requirements` (Attributes) optional resource requirements to run workers (blank for unbounded allocations). Not Null (see [below for nested schema](#nestedatt--resource_requirements--job_specific--resource_requirements))
 
 <a id="nestedatt--resource_requirements--job_specific--resource_requirements"></a>
 ### Nested Schema for `resource_requirements.job_specific.resource_requirements`
 
-Read-Only:
+Optional:
 
 - `cpu_limit` (String)
 - `cpu_request` (String)
 - `memory_limit` (String)
 - `memory_request` (String)
+
+
+
+
+<a id="nestedatt--normalization_config"></a>
+### Nested Schema for `normalization_config`
+
+Read-Only:
+
+- `normalization_integration_type` (String) a field indicating the type of integration dialect to use for normalization.
+- `normalization_repository` (String) a field indicating the name of the repository to be used for normalization. If the value of the flag is NULL - normalization is not used.
+- `normalization_tag` (String) a field indicating the tag of the docker repository to be used for normalization.
+- `supported` (Boolean) whether the destination definition supports normalization.
 
 

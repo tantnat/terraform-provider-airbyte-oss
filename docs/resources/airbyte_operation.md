@@ -14,7 +14,7 @@ Operation Resource
 
 ```terraform
 resource "airbyte_operation" "my_operation" {
-  name = "Jeff Barton"
+  name = "Dr. Arturo Fisher"
   operator_configuration = {
     dbt = {
       dbt_arguments   = "...my_dbt_arguments..."
