@@ -5,49 +5,22 @@ package provider
 import (
 	"github.com/aballiet/terraform-provider-airbyte/internal/sdk/pkg/models/shared"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"time"
 )
 
-func (r *DestinationDefinitionDataSourceModel) RefreshFromGetResponse(resp *shared.DestinationDefinitionRead) {
-	if resp.Custom != nil {
-		r.Custom = types.BoolValue(*resp.Custom)
-	} else {
-		r.Custom = types.BoolNull()
-	}
+func (r *DestinationDefinitionDataSourceModel) RefreshFromSharedDestinationDefinitionRead(resp *shared.DestinationDefinitionRead) {
+	r.Custom = types.BoolPointerValue(resp.Custom)
 	r.DestinationDefinitionID = types.StringValue(resp.DestinationDefinitionID)
 	r.DockerImageTag = types.StringValue(resp.DockerImageTag)
 	r.DockerRepository = types.StringValue(resp.DockerRepository)
 	r.DocumentationURL = types.StringValue(resp.DocumentationURL)
-	if resp.Icon != nil {
-		r.Icon = types.StringValue(*resp.Icon)
-	} else {
-		r.Icon = types.StringNull()
-	}
+	r.Icon = types.StringPointerValue(resp.Icon)
 	r.Name = types.StringValue(resp.Name)
-	if resp.NormalizationConfig.Supported != nil {
-		r.NormalizationConfig.Supported = types.BoolValue(*resp.NormalizationConfig.Supported)
-	} else {
-		r.NormalizationConfig.Supported = types.BoolNull()
-	}
-	if resp.NormalizationConfig.NormalizationRepository != nil {
-		r.NormalizationConfig.NormalizationRepository = types.StringValue(*resp.NormalizationConfig.NormalizationRepository)
-	} else {
-		r.NormalizationConfig.NormalizationRepository = types.StringNull()
-	}
-	if resp.NormalizationConfig.NormalizationTag != nil {
-		r.NormalizationConfig.NormalizationTag = types.StringValue(*resp.NormalizationConfig.NormalizationTag)
-	} else {
-		r.NormalizationConfig.NormalizationTag = types.StringNull()
-	}
-	if resp.NormalizationConfig.NormalizationIntegrationType != nil {
-		r.NormalizationConfig.NormalizationIntegrationType = types.StringValue(*resp.NormalizationConfig.NormalizationIntegrationType)
-	} else {
-		r.NormalizationConfig.NormalizationIntegrationType = types.StringNull()
-	}
-	if resp.ProtocolVersion != nil {
-		r.ProtocolVersion = types.StringValue(*resp.ProtocolVersion)
-	} else {
-		r.ProtocolVersion = types.StringNull()
-	}
+	r.NormalizationConfig.NormalizationIntegrationType = types.StringPointerValue(resp.NormalizationConfig.NormalizationIntegrationType)
+	r.NormalizationConfig.NormalizationRepository = types.StringPointerValue(resp.NormalizationConfig.NormalizationRepository)
+	r.NormalizationConfig.NormalizationTag = types.StringPointerValue(resp.NormalizationConfig.NormalizationTag)
+	r.NormalizationConfig.Supported = types.BoolPointerValue(resp.NormalizationConfig.Supported)
+	r.ProtocolVersion = types.StringPointerValue(resp.ProtocolVersion)
 	if resp.ReleaseDate != nil {
 		r.ReleaseDate = types.StringValue(resp.ReleaseDate.String())
 	} else {
@@ -66,26 +39,10 @@ func (r *DestinationDefinitionDataSourceModel) RefreshFromGetResponse(resp *shar
 			r.ResourceRequirements.Default = nil
 		} else {
 			r.ResourceRequirements.Default = &ResourceRequirements{}
-			if resp.ResourceRequirements.Default.CPURequest != nil {
-				r.ResourceRequirements.Default.CPURequest = types.StringValue(*resp.ResourceRequirements.Default.CPURequest)
-			} else {
-				r.ResourceRequirements.Default.CPURequest = types.StringNull()
-			}
-			if resp.ResourceRequirements.Default.CPULimit != nil {
-				r.ResourceRequirements.Default.CPULimit = types.StringValue(*resp.ResourceRequirements.Default.CPULimit)
-			} else {
-				r.ResourceRequirements.Default.CPULimit = types.StringNull()
-			}
-			if resp.ResourceRequirements.Default.MemoryRequest != nil {
-				r.ResourceRequirements.Default.MemoryRequest = types.StringValue(*resp.ResourceRequirements.Default.MemoryRequest)
-			} else {
-				r.ResourceRequirements.Default.MemoryRequest = types.StringNull()
-			}
-			if resp.ResourceRequirements.Default.MemoryLimit != nil {
-				r.ResourceRequirements.Default.MemoryLimit = types.StringValue(*resp.ResourceRequirements.Default.MemoryLimit)
-			} else {
-				r.ResourceRequirements.Default.MemoryLimit = types.StringNull()
-			}
+			r.ResourceRequirements.Default.CPULimit = types.StringPointerValue(resp.ResourceRequirements.Default.CPULimit)
+			r.ResourceRequirements.Default.CPURequest = types.StringPointerValue(resp.ResourceRequirements.Default.CPURequest)
+			r.ResourceRequirements.Default.MemoryLimit = types.StringPointerValue(resp.ResourceRequirements.Default.MemoryLimit)
+			r.ResourceRequirements.Default.MemoryRequest = types.StringPointerValue(resp.ResourceRequirements.Default.MemoryRequest)
 		}
 		if len(r.ResourceRequirements.JobSpecific) > len(resp.ResourceRequirements.JobSpecific) {
 			r.ResourceRequirements.JobSpecific = r.ResourceRequirements.JobSpecific[:len(resp.ResourceRequirements.JobSpecific)]
@@ -93,26 +50,10 @@ func (r *DestinationDefinitionDataSourceModel) RefreshFromGetResponse(resp *shar
 		for jobSpecificCount, jobSpecificItem := range resp.ResourceRequirements.JobSpecific {
 			var jobSpecific1 JobTypeResourceLimit
 			jobSpecific1.JobType = types.StringValue(string(jobSpecificItem.JobType))
-			if jobSpecificItem.ResourceRequirements.CPURequest != nil {
-				jobSpecific1.ResourceRequirements.CPURequest = types.StringValue(*jobSpecificItem.ResourceRequirements.CPURequest)
-			} else {
-				jobSpecific1.ResourceRequirements.CPURequest = types.StringNull()
-			}
-			if jobSpecificItem.ResourceRequirements.CPULimit != nil {
-				jobSpecific1.ResourceRequirements.CPULimit = types.StringValue(*jobSpecificItem.ResourceRequirements.CPULimit)
-			} else {
-				jobSpecific1.ResourceRequirements.CPULimit = types.StringNull()
-			}
-			if jobSpecificItem.ResourceRequirements.MemoryRequest != nil {
-				jobSpecific1.ResourceRequirements.MemoryRequest = types.StringValue(*jobSpecificItem.ResourceRequirements.MemoryRequest)
-			} else {
-				jobSpecific1.ResourceRequirements.MemoryRequest = types.StringNull()
-			}
-			if jobSpecificItem.ResourceRequirements.MemoryLimit != nil {
-				jobSpecific1.ResourceRequirements.MemoryLimit = types.StringValue(*jobSpecificItem.ResourceRequirements.MemoryLimit)
-			} else {
-				jobSpecific1.ResourceRequirements.MemoryLimit = types.StringNull()
-			}
+			jobSpecific1.ResourceRequirements.CPULimit = types.StringPointerValue(jobSpecificItem.ResourceRequirements.CPULimit)
+			jobSpecific1.ResourceRequirements.CPURequest = types.StringPointerValue(jobSpecificItem.ResourceRequirements.CPURequest)
+			jobSpecific1.ResourceRequirements.MemoryLimit = types.StringPointerValue(jobSpecificItem.ResourceRequirements.MemoryLimit)
+			jobSpecific1.ResourceRequirements.MemoryRequest = types.StringPointerValue(jobSpecificItem.ResourceRequirements.MemoryRequest)
 			if jobSpecificCount+1 > len(r.ResourceRequirements.JobSpecific) {
 				r.ResourceRequirements.JobSpecific = append(r.ResourceRequirements.JobSpecific, jobSpecific1)
 			} else {

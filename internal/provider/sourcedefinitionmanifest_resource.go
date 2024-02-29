@@ -6,7 +6,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/aballiet/terraform-provider-airbyte/internal/sdk"
-
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
@@ -33,16 +32,10 @@ type SourceDefinitionManifestResource struct {
 
 // SourceDefinitionManifestResourceModel describes the resource data model.
 type SourceDefinitionManifestResourceModel struct {
-	DeclarativeManifest         DeclarativeSourceManifest `tfsdk:"declarative_manifest"`
-	ExceptionClassName          types.String              `tfsdk:"exception_class_name"`
-	ExceptionStack              []types.String            `tfsdk:"exception_stack"`
-	ID                          types.String              `tfsdk:"id"`
-	Message                     types.String              `tfsdk:"message"`
-	RootCauseExceptionClassName types.String              `tfsdk:"root_cause_exception_class_name"`
-	RootCauseExceptionStack     []types.String            `tfsdk:"root_cause_exception_stack"`
-	SetAsActiveManifest         types.Bool                `tfsdk:"set_as_active_manifest"`
-	SourceDefinitionID          types.String              `tfsdk:"source_definition_id"`
-	WorkspaceID                 types.String              `tfsdk:"workspace_id"`
+	DeclarativeManifest DeclarativeSourceManifest `tfsdk:"declarative_manifest"`
+	SetAsActiveManifest types.Bool                `tfsdk:"set_as_active_manifest"`
+	SourceDefinitionID  types.String              `tfsdk:"source_definition_id"`
+	WorkspaceID         types.String              `tfsdk:"workspace_id"`
 }
 
 func (r *SourceDefinitionManifestResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -56,65 +49,49 @@ func (r *SourceDefinitionManifestResource) Schema(ctx context.Context, req resou
 		Attributes: map[string]schema.Attribute{
 			"declarative_manifest": schema.SingleNestedAttribute{
 				PlanModifiers: []planmodifier.Object{
-					objectplanmodifier.RequiresReplace(),
+					objectplanmodifier.RequiresReplaceIfConfigured(),
 				},
 				Required: true,
 				Attributes: map[string]schema.Attribute{
 					"description": schema.StringAttribute{
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.RequiresReplace(),
+							stringplanmodifier.RequiresReplaceIfConfigured(),
 						},
-						Required: true,
+						Required:    true,
+						Description: `Requires replacement if changed. `,
 					},
 					"manifest": schema.SingleNestedAttribute{
 						PlanModifiers: []planmodifier.Object{
-							objectplanmodifier.RequiresReplace(),
+							objectplanmodifier.RequiresReplaceIfConfigured(),
 						},
 						Required:    true,
 						Attributes:  map[string]schema.Attribute{},
-						Description: `Low code CDK manifest JSON object`,
+						Description: `Low code CDK manifest JSON object. Requires replacement if changed. `,
 					},
 					"spec": schema.SingleNestedAttribute{
 						PlanModifiers: []planmodifier.Object{
-							objectplanmodifier.RequiresReplace(),
+							objectplanmodifier.RequiresReplaceIfConfigured(),
 						},
 						Required:    true,
 						Attributes:  map[string]schema.Attribute{},
-						Description: `The specification for what values are required to configure the sourceDefinition.`,
+						Description: `The specification for what values are required to configure the sourceDefinition. Requires replacement if changed. `,
 					},
 					"version": schema.Int64Attribute{
 						PlanModifiers: []planmodifier.Int64{
-							int64planmodifier.RequiresReplace(),
+							int64planmodifier.RequiresReplaceIfConfigured(),
 						},
-						Required: true,
+						Required:    true,
+						Description: `Requires replacement if changed. `,
 					},
 				},
-			},
-			"exception_class_name": schema.StringAttribute{
-				Computed: true,
-			},
-			"exception_stack": schema.ListAttribute{
-				Computed:    true,
-				ElementType: types.StringType,
-			},
-			"id": schema.StringAttribute{
-				Computed: true,
-			},
-			"message": schema.StringAttribute{
-				Computed: true,
-			},
-			"root_cause_exception_class_name": schema.StringAttribute{
-				Computed: true,
-			},
-			"root_cause_exception_stack": schema.ListAttribute{
-				Computed:    true,
-				ElementType: types.StringType,
+				Description: `Requires replacement if changed. `,
 			},
 			"set_as_active_manifest": schema.BoolAttribute{
 				PlanModifiers: []planmodifier.Bool{
-					boolplanmodifier.RequiresReplace(),
+					boolplanmodifier.RequiresReplaceIfConfigured(),
 				},
-				Required: true,
+				Required:    true,
+				Description: `Requires replacement if changed. `,
 			},
 			"source_definition_id": schema.StringAttribute{
 				Required: true,
@@ -148,14 +125,14 @@ func (r *SourceDefinitionManifestResource) Configure(ctx context.Context, req re
 
 func (r *SourceDefinitionManifestResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	var data *SourceDefinitionManifestResourceModel
-	var item types.Object
+	var plan types.Object
 
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &item)...)
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	resp.Diagnostics.Append(item.As(ctx, &data, basetypes.ObjectAsOptions{
+	resp.Diagnostics.Append(plan.As(ctx, &data, basetypes.ObjectAsOptions{
 		UnhandledNullAsEmpty:    true,
 		UnhandledUnknownAsEmpty: true,
 	})...)
@@ -164,7 +141,7 @@ func (r *SourceDefinitionManifestResource) Create(ctx context.Context, req resou
 		return
 	}
 
-	request := *data.ToCreateSDKType()
+	request := *data.ToSharedDeclarativeSourceDefinitionCreateManifestRequestBody()
 	res, err := r.client.DeclarativeSourceDefinitions.CreateDeclarativeSourceDefinitionManifest(ctx, request)
 	if err != nil {
 		resp.Diagnostics.AddError("failure to invoke API", err.Error())
@@ -181,11 +158,7 @@ func (r *SourceDefinitionManifestResource) Create(ctx context.Context, req resou
 		resp.Diagnostics.AddError(fmt.Sprintf("unexpected response from API. Got an unexpected response code %v", res.StatusCode), debugResponse(res.RawResponse))
 		return
 	}
-	if res.NotFoundKnownExceptionInfo == nil {
-		resp.Diagnostics.AddError("unexpected response from API. No response body", debugResponse(res.RawResponse))
-		return
-	}
-	data.RefreshFromCreateResponse(res.NotFoundKnownExceptionInfo)
+	refreshPlan(ctx, plan, &data, resp.Diagnostics)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -217,12 +190,19 @@ func (r *SourceDefinitionManifestResource) Read(ctx context.Context, req resourc
 
 func (r *SourceDefinitionManifestResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	var data *SourceDefinitionManifestResourceModel
+	var plan types.Object
+
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	merge(ctx, req, resp, &data)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	request := *data.ToUpdateSDKType()
+	request := *data.ToSharedUpdateActiveManifestRequestBody()
 	res, err := r.client.DeclarativeSourceDefinitions.UpdateDeclarativeManifestVersion(ctx, request)
 	if err != nil {
 		resp.Diagnostics.AddError("failure to invoke API", err.Error())
@@ -239,11 +219,7 @@ func (r *SourceDefinitionManifestResource) Update(ctx context.Context, req resou
 		resp.Diagnostics.AddError(fmt.Sprintf("unexpected response from API. Got an unexpected response code %v", res.StatusCode), debugResponse(res.RawResponse))
 		return
 	}
-	if res.NotFoundKnownExceptionInfo == nil {
-		resp.Diagnostics.AddError("unexpected response from API. No response body", debugResponse(res.RawResponse))
-		return
-	}
-	data.RefreshFromUpdateResponse(res.NotFoundKnownExceptionInfo)
+	refreshPlan(ctx, plan, &data, resp.Diagnostics)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)

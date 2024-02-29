@@ -5,8 +5,8 @@ package provider
 import (
 	"context"
 	"fmt"
+	speakeasy_stringplanmodifier "github.com/aballiet/terraform-provider-airbyte/internal/planmodifiers/stringplanmodifier"
 	"github.com/aballiet/terraform-provider-airbyte/internal/sdk"
-
 	"github.com/aballiet/terraform-provider-airbyte/internal/validators"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -52,9 +52,8 @@ func (r *SourceResource) Schema(ctx context.Context, req resource.SchemaRequest,
 
 		Attributes: map[string]schema.Attribute{
 			"connection_configuration": schema.StringAttribute{
-				Required: true,
-				MarkdownDescription: `Parsed as JSON.` + "\n" +
-					`The values required to configure the source. The schema for this must match the schema return by source_definition_specifications/get for the source.`,
+				Required:    true,
+				Description: `The values required to configure the source. The schema for this must match the schema return by source_definition_specifications/get for the source. Parsed as JSON.`,
 				Validators: []validator.String{
 					validators.IsValidJSON(),
 				},
@@ -70,9 +69,11 @@ func (r *SourceResource) Schema(ctx context.Context, req resource.SchemaRequest,
 			},
 			"source_definition_id": schema.StringAttribute{
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplace(),
+					stringplanmodifier.RequiresReplaceIfConfigured(),
+					speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
 				},
-				Required: true,
+				Required:    true,
+				Description: `Requires replacement if changed. `,
 			},
 			"source_id": schema.StringAttribute{
 				Computed: true,
@@ -82,9 +83,11 @@ func (r *SourceResource) Schema(ctx context.Context, req resource.SchemaRequest,
 			},
 			"workspace_id": schema.StringAttribute{
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplace(),
+					stringplanmodifier.RequiresReplaceIfConfigured(),
+					speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
 				},
-				Required: true,
+				Required:    true,
+				Description: `Requires replacement if changed. `,
 			},
 		},
 	}
@@ -112,14 +115,14 @@ func (r *SourceResource) Configure(ctx context.Context, req resource.ConfigureRe
 
 func (r *SourceResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	var data *SourceResourceModel
-	var item types.Object
+	var plan types.Object
 
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &item)...)
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	resp.Diagnostics.Append(item.As(ctx, &data, basetypes.ObjectAsOptions{
+	resp.Diagnostics.Append(plan.As(ctx, &data, basetypes.ObjectAsOptions{
 		UnhandledNullAsEmpty:    true,
 		UnhandledUnknownAsEmpty: true,
 	})...)
@@ -128,7 +131,7 @@ func (r *SourceResource) Create(ctx context.Context, req resource.CreateRequest,
 		return
 	}
 
-	request := *data.ToCreateSDKType()
+	request := *data.ToSharedSourceCreate()
 	res, err := r.client.Source.CreateSource(ctx, request)
 	if err != nil {
 		resp.Diagnostics.AddError("failure to invoke API", err.Error())
@@ -149,7 +152,31 @@ func (r *SourceResource) Create(ctx context.Context, req resource.CreateRequest,
 		resp.Diagnostics.AddError("unexpected response from API. No response body", debugResponse(res.RawResponse))
 		return
 	}
-	data.RefreshFromCreateResponse(res.SourceRead)
+	data.RefreshFromSharedSourceRead(res.SourceRead)
+	refreshPlan(ctx, plan, &data, resp.Diagnostics)
+	request1 := *data.ToSharedSourceIDRequestBody()
+	res1, err := r.client.Source.GetSource(ctx, request1)
+	if err != nil {
+		resp.Diagnostics.AddError("failure to invoke API", err.Error())
+		if res1 != nil && res1.RawResponse != nil {
+			resp.Diagnostics.AddError("unexpected http request/response", debugResponse(res1.RawResponse))
+		}
+		return
+	}
+	if res1 == nil {
+		resp.Diagnostics.AddError("unexpected response from API", fmt.Sprintf("%v", res1))
+		return
+	}
+	if res1.StatusCode != 200 {
+		resp.Diagnostics.AddError(fmt.Sprintf("unexpected response from API. Got an unexpected response code %v", res1.StatusCode), debugResponse(res1.RawResponse))
+		return
+	}
+	if res1.SourceRead == nil {
+		resp.Diagnostics.AddError("unexpected response from API. No response body", debugResponse(res1.RawResponse))
+		return
+	}
+	data.RefreshFromSharedSourceRead(res1.SourceRead)
+	refreshPlan(ctx, plan, &data, resp.Diagnostics)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -173,7 +200,7 @@ func (r *SourceResource) Read(ctx context.Context, req resource.ReadRequest, res
 		return
 	}
 
-	request := *data.ToGetSDKType()
+	request := *data.ToSharedSourceIDRequestBody()
 	res, err := r.client.Source.GetSource(ctx, request)
 	if err != nil {
 		resp.Diagnostics.AddError("failure to invoke API", err.Error())
@@ -194,7 +221,7 @@ func (r *SourceResource) Read(ctx context.Context, req resource.ReadRequest, res
 		resp.Diagnostics.AddError("unexpected response from API. No response body", debugResponse(res.RawResponse))
 		return
 	}
-	data.RefreshFromGetResponse(res.SourceRead)
+	data.RefreshFromSharedSourceRead(res.SourceRead)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -202,12 +229,19 @@ func (r *SourceResource) Read(ctx context.Context, req resource.ReadRequest, res
 
 func (r *SourceResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	var data *SourceResourceModel
+	var plan types.Object
+
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	merge(ctx, req, resp, &data)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	request := *data.ToUpdateSDKType()
+	request := *data.ToSharedSourceUpdate()
 	res, err := r.client.Source.UpdateSource(ctx, request)
 	if err != nil {
 		resp.Diagnostics.AddError("failure to invoke API", err.Error())
@@ -228,7 +262,31 @@ func (r *SourceResource) Update(ctx context.Context, req resource.UpdateRequest,
 		resp.Diagnostics.AddError("unexpected response from API. No response body", debugResponse(res.RawResponse))
 		return
 	}
-	data.RefreshFromUpdateResponse(res.SourceRead)
+	data.RefreshFromSharedSourceRead(res.SourceRead)
+	refreshPlan(ctx, plan, &data, resp.Diagnostics)
+	request1 := *data.ToSharedSourceIDRequestBody()
+	res1, err := r.client.Source.GetSource(ctx, request1)
+	if err != nil {
+		resp.Diagnostics.AddError("failure to invoke API", err.Error())
+		if res1 != nil && res1.RawResponse != nil {
+			resp.Diagnostics.AddError("unexpected http request/response", debugResponse(res1.RawResponse))
+		}
+		return
+	}
+	if res1 == nil {
+		resp.Diagnostics.AddError("unexpected response from API", fmt.Sprintf("%v", res1))
+		return
+	}
+	if res1.StatusCode != 200 {
+		resp.Diagnostics.AddError(fmt.Sprintf("unexpected response from API. Got an unexpected response code %v", res1.StatusCode), debugResponse(res1.RawResponse))
+		return
+	}
+	if res1.SourceRead == nil {
+		resp.Diagnostics.AddError("unexpected response from API. No response body", debugResponse(res1.RawResponse))
+		return
+	}
+	data.RefreshFromSharedSourceRead(res1.SourceRead)
+	refreshPlan(ctx, plan, &data, resp.Diagnostics)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -252,7 +310,7 @@ func (r *SourceResource) Delete(ctx context.Context, req resource.DeleteRequest,
 		return
 	}
 
-	request := *data.ToDeleteSDKType()
+	request := *data.ToSharedSourceIDRequestBody()
 	res, err := r.client.Source.DeleteSource(ctx, request)
 	if err != nil {
 		resp.Diagnostics.AddError("failure to invoke API", err.Error())

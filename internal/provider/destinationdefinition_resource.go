@@ -5,16 +5,14 @@ package provider
 import (
 	"context"
 	"fmt"
+	speakeasy_stringplanmodifier "github.com/aballiet/terraform-provider-airbyte/internal/planmodifiers/stringplanmodifier"
 	"github.com/aballiet/terraform-provider-airbyte/internal/sdk"
-
 	"github.com/aballiet/terraform-provider-airbyte/internal/sdk/pkg/models/shared"
 	"github.com/aballiet/terraform-provider-airbyte/internal/validators"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
@@ -37,13 +35,17 @@ type DestinationDefinitionResource struct {
 
 // DestinationDefinitionResourceModel describes the resource data model.
 type DestinationDefinitionResourceModel struct {
+	CPULimit                types.String                             `tfsdk:"cpu_limit"`
+	CPURequest              types.String                             `tfsdk:"cpu_request"`
 	Custom                  types.Bool                               `tfsdk:"custom"`
-	DestinationDefinition   DestinationDefinitionCreate              `tfsdk:"destination_definition"`
 	DestinationDefinitionID types.String                             `tfsdk:"destination_definition_id"`
 	DockerImageTag          types.String                             `tfsdk:"docker_image_tag"`
 	DockerRepository        types.String                             `tfsdk:"docker_repository"`
 	DocumentationURL        types.String                             `tfsdk:"documentation_url"`
 	Icon                    types.String                             `tfsdk:"icon"`
+	JobType                 types.String                             `tfsdk:"job_type"`
+	MemoryLimit             types.String                             `tfsdk:"memory_limit"`
+	MemoryRequest           types.String                             `tfsdk:"memory_request"`
 	Name                    types.String                             `tfsdk:"name"`
 	NormalizationConfig     NormalizationDestinationDefinitionConfig `tfsdk:"normalization_config"`
 	ProtocolVersion         types.String                             `tfsdk:"protocol_version"`
@@ -66,170 +68,75 @@ func (r *DestinationDefinitionResource) Schema(ctx context.Context, req resource
 		MarkdownDescription: "DestinationDefinition Resource",
 
 		Attributes: map[string]schema.Attribute{
-			"custom": schema.BoolAttribute{
-				Computed: true,
-				MarkdownDescription: `Default: false` + "\n" +
-					`Whether the connector is custom or not`,
+			"cpu_limit": schema.StringAttribute{
+				Optional: true,
 			},
-			"destination_definition": schema.SingleNestedAttribute{
-				PlanModifiers: []planmodifier.Object{
-					objectplanmodifier.RequiresReplace(),
-				},
-				Required: true,
-				Attributes: map[string]schema.Attribute{
-					"name": schema.StringAttribute{
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.RequiresReplace(),
-						},
-						Required: true,
-					},
-					"docker_repository": schema.StringAttribute{
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.RequiresReplace(),
-						},
-						Required: true,
-					},
-					"docker_image_tag": schema.StringAttribute{
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.RequiresReplace(),
-						},
-						Required: true,
-					},
-					"documentation_url": schema.StringAttribute{
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.RequiresReplace(),
-						},
-						Required: true,
-					},
-					"icon": schema.StringAttribute{
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.RequiresReplace(),
-						},
-						Optional: true,
-					},
-					"resource_requirements": schema.SingleNestedAttribute{
-						PlanModifiers: []planmodifier.Object{
-							objectplanmodifier.RequiresReplace(),
-						},
-						Optional: true,
-						Attributes: map[string]schema.Attribute{
-							"default": schema.SingleNestedAttribute{
-								PlanModifiers: []planmodifier.Object{
-									objectplanmodifier.RequiresReplace(),
-								},
-								Optional: true,
-								Attributes: map[string]schema.Attribute{
-									"cpu_request": schema.StringAttribute{
-										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.RequiresReplace(),
-										},
-										Optional: true,
-									},
-									"cpu_limit": schema.StringAttribute{
-										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.RequiresReplace(),
-										},
-										Optional: true,
-									},
-									"memory_request": schema.StringAttribute{
-										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.RequiresReplace(),
-										},
-										Optional: true,
-									},
-									"memory_limit": schema.StringAttribute{
-										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.RequiresReplace(),
-										},
-										Optional: true,
-									},
-								},
-								Description: `optional resource requirements to run workers (blank for unbounded allocations)`,
-							},
-							"job_specific": schema.ListNestedAttribute{
-								PlanModifiers: []planmodifier.List{
-									listplanmodifier.RequiresReplace(),
-								},
-								Optional: true,
-								NestedObject: schema.NestedAttributeObject{
-									Attributes: map[string]schema.Attribute{
-										"job_type": schema.StringAttribute{
-											PlanModifiers: []planmodifier.String{
-												stringplanmodifier.RequiresReplace(),
-											},
-											Required: true,
-											MarkdownDescription: `must be one of ["get_spec", "check_connection", "discover_schema", "sync", "reset_connection", "connection_updater", "replicate"]` + "\n" +
-												`enum that describes the different types of jobs that the platform runs.`,
-											Validators: []validator.String{
-												stringvalidator.OneOf(
-													"get_spec",
-													"check_connection",
-													"discover_schema",
-													"sync",
-													"reset_connection",
-													"connection_updater",
-													"replicate",
-												),
-											},
-										},
-										"resource_requirements": schema.SingleNestedAttribute{
-											PlanModifiers: []planmodifier.Object{
-												objectplanmodifier.RequiresReplace(),
-											},
-											Required: true,
-											Attributes: map[string]schema.Attribute{
-												"cpu_request": schema.StringAttribute{
-													PlanModifiers: []planmodifier.String{
-														stringplanmodifier.RequiresReplace(),
-													},
-													Optional: true,
-												},
-												"cpu_limit": schema.StringAttribute{
-													PlanModifiers: []planmodifier.String{
-														stringplanmodifier.RequiresReplace(),
-													},
-													Optional: true,
-												},
-												"memory_request": schema.StringAttribute{
-													PlanModifiers: []planmodifier.String{
-														stringplanmodifier.RequiresReplace(),
-													},
-													Optional: true,
-												},
-												"memory_limit": schema.StringAttribute{
-													PlanModifiers: []planmodifier.String{
-														stringplanmodifier.RequiresReplace(),
-													},
-													Optional: true,
-												},
-											},
-											Description: `optional resource requirements to run workers (blank for unbounded allocations)`,
-										},
-									},
-								},
-							},
-						},
-						Description: `actor definition specific resource requirements. if default is set, these are the requirements that should be set for ALL jobs run for this actor definition. it is overriden by the job type specific configurations. if not set, the platform will use defaults. these values will be overriden by configuration at the connection level.`,
-					},
-				},
+			"cpu_request": schema.StringAttribute{
+				Optional: true,
+			},
+			"custom": schema.BoolAttribute{
+				Computed:    true,
+				Description: `Whether the connector is custom or not`,
 			},
 			"destination_definition_id": schema.StringAttribute{
 				Computed: true,
 			},
 			"docker_image_tag": schema.StringAttribute{
-				Computed: true,
+				Required: true,
 			},
 			"docker_repository": schema.StringAttribute{
-				Computed: true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplaceIfConfigured(),
+					speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
+				},
+				Required:    true,
+				Description: `Requires replacement if changed. `,
 			},
 			"documentation_url": schema.StringAttribute{
-				Computed: true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplaceIfConfigured(),
+					speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
+				},
+				Required:    true,
+				Description: `Requires replacement if changed. `,
 			},
 			"icon": schema.StringAttribute{
 				Computed: true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplaceIfConfigured(),
+					speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
+				},
+				Optional:    true,
+				Description: `Requires replacement if changed. `,
+			},
+			"job_type": schema.StringAttribute{
+				Required:    true,
+				Description: `enum that describes the different types of jobs that the platform runs. must be one of ["get_spec", "check_connection", "discover_schema", "sync", "reset_connection", "connection_updater", "replicate"]`,
+				Validators: []validator.String{
+					stringvalidator.OneOf(
+						"get_spec",
+						"check_connection",
+						"discover_schema",
+						"sync",
+						"reset_connection",
+						"connection_updater",
+						"replicate",
+					),
+				},
+			},
+			"memory_limit": schema.StringAttribute{
+				Optional: true,
+			},
+			"memory_request": schema.StringAttribute{
+				Optional: true,
 			},
 			"name": schema.StringAttribute{
-				Computed: true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.RequiresReplaceIfConfigured(),
+					speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
+				},
+				Required:    true,
+				Description: `Requires replacement if changed. `,
 			},
 			"normalization_config": schema.SingleNestedAttribute{
 				Computed: true,
@@ -247,9 +154,8 @@ func (r *DestinationDefinitionResource) Schema(ctx context.Context, req resource
 						Description: `a field indicating the tag of the docker repository to be used for normalization.`,
 					},
 					"supported": schema.BoolAttribute{
-						Computed: true,
-						MarkdownDescription: `Default: false` + "\n" +
-							`whether the destination definition supports normalization.`,
+						Computed:    true,
+						Description: `whether the destination definition supports normalization.`,
 					},
 				},
 				Description: `describes a normalization config for destination definition version`,
@@ -303,9 +209,8 @@ func (r *DestinationDefinitionResource) Schema(ctx context.Context, req resource
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
 								"job_type": schema.StringAttribute{
-									Computed: true,
-									MarkdownDescription: `must be one of ["get_spec", "check_connection", "discover_schema", "sync", "reset_connection", "connection_updater", "replicate"]` + "\n" +
-										`enum that describes the different types of jobs that the platform runs.`,
+									Computed:    true,
+									Description: `enum that describes the different types of jobs that the platform runs. must be one of ["get_spec", "check_connection", "discover_schema", "sync", "reset_connection", "connection_updater", "replicate"]`,
 									Validators: []validator.String{
 										stringvalidator.OneOf(
 											"get_spec",
@@ -344,16 +249,17 @@ func (r *DestinationDefinitionResource) Schema(ctx context.Context, req resource
 			},
 			"scope_id": schema.StringAttribute{
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplace(),
+					stringplanmodifier.RequiresReplaceIfConfigured(),
 				},
-				Optional: true,
+				Optional:    true,
+				Description: `Requires replacement if changed. `,
 			},
 			"scope_type": schema.StringAttribute{
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplace(),
+					stringplanmodifier.RequiresReplaceIfConfigured(),
 				},
 				Optional:    true,
-				Description: `must be one of ["workspace", "organization"]`,
+				Description: `Requires replacement if changed. ; must be one of ["workspace", "organization"]`,
 				Validators: []validator.String{
 					stringvalidator.OneOf(
 						"workspace",
@@ -378,9 +284,10 @@ func (r *DestinationDefinitionResource) Schema(ctx context.Context, req resource
 			},
 			"workspace_id": schema.StringAttribute{
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplace(),
+					stringplanmodifier.RequiresReplaceIfConfigured(),
 				},
-				Optional: true,
+				Optional:    true,
+				Description: `Requires replacement if changed. `,
 			},
 		},
 	}
@@ -408,14 +315,14 @@ func (r *DestinationDefinitionResource) Configure(ctx context.Context, req resou
 
 func (r *DestinationDefinitionResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	var data *DestinationDefinitionResourceModel
-	var item types.Object
+	var plan types.Object
 
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &item)...)
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	resp.Diagnostics.Append(item.As(ctx, &data, basetypes.ObjectAsOptions{
+	resp.Diagnostics.Append(plan.As(ctx, &data, basetypes.ObjectAsOptions{
 		UnhandledNullAsEmpty:    true,
 		UnhandledUnknownAsEmpty: true,
 	})...)
@@ -424,7 +331,105 @@ func (r *DestinationDefinitionResource) Create(ctx context.Context, req resource
 		return
 	}
 
-	request := data.ToCreateSDKType()
+	var request *shared.CustomDestinationDefinitionCreate
+	workspaceID := new(string)
+	if !data.WorkspaceID.IsUnknown() && !data.WorkspaceID.IsNull() {
+		*workspaceID = data.WorkspaceID.ValueString()
+	} else {
+		workspaceID = nil
+	}
+	name := data.Name.ValueString()
+	dockerRepository := data.DockerRepository.ValueString()
+	dockerImageTag := data.DockerImageTag.ValueString()
+	documentationURL := data.DocumentationURL.ValueString()
+	icon := new(string)
+	if !data.Icon.IsUnknown() && !data.Icon.IsNull() {
+		*icon = data.Icon.ValueString()
+	} else {
+		icon = nil
+	}
+	var resourceRequirements *shared.ActorDefinitionResourceRequirements
+	if data != nil {
+		var defaultVar *shared.ResourceRequirements
+		if data != nil {
+			cpuRequest := new(string)
+			if !data.CPURequest.IsUnknown() && !data.CPURequest.IsNull() {
+				*cpuRequest = data.CPURequest.ValueString()
+			} else {
+				cpuRequest = nil
+			}
+			cpuLimit := new(string)
+			if !data.CPULimit.IsUnknown() && !data.CPULimit.IsNull() {
+				*cpuLimit = data.CPULimit.ValueString()
+			} else {
+				cpuLimit = nil
+			}
+			memoryRequest := new(string)
+			if !data.MemoryRequest.IsUnknown() && !data.MemoryRequest.IsNull() {
+				*memoryRequest = data.MemoryRequest.ValueString()
+			} else {
+				memoryRequest = nil
+			}
+			memoryLimit := new(string)
+			if !data.MemoryLimit.IsUnknown() && !data.MemoryLimit.IsNull() {
+				*memoryLimit = data.MemoryLimit.ValueString()
+			} else {
+				memoryLimit = nil
+			}
+			defaultVar = &shared.ResourceRequirements{
+				CPURequest:    cpuRequest,
+				CPULimit:      cpuLimit,
+				MemoryRequest: memoryRequest,
+				MemoryLimit:   memoryLimit,
+			}
+		}
+		var jobType *shared.JobType
+		var cpuRequest1 *string
+		var cpuLimit1 *string
+		var memoryRequest1 *string
+		var memoryLimit1 *string
+		resourceRequirements1 := shared.ResourceRequirements{
+			CPURequest:    cpuRequest1,
+			CPULimit:      cpuLimit1,
+			MemoryRequest: memoryRequest1,
+			MemoryLimit:   memoryLimit1,
+		}
+		jobSpecificSingleton := shared.JobTypeResourceLimit{
+			JobType:              jobType,
+			ResourceRequirements: resourceRequirements1,
+		}
+		jobSpecific := []shared.JobTypeResourceLimit{jobSpecificSingleton}
+		resourceRequirements = &shared.ActorDefinitionResourceRequirements{
+			Default:     defaultVar,
+			JobSpecific: jobSpecific,
+		}
+	}
+	destinationDefinition := shared.DestinationDefinitionCreate{
+		Name:                 name,
+		DockerRepository:     dockerRepository,
+		DockerImageTag:       dockerImageTag,
+		DocumentationURL:     documentationURL,
+		Icon:                 icon,
+		ResourceRequirements: resourceRequirements,
+	}
+	scopeID := new(string)
+	if !data.ScopeID.IsUnknown() && !data.ScopeID.IsNull() {
+		*scopeID = data.ScopeID.ValueString()
+	} else {
+		scopeID = nil
+	}
+	scopeType := new(shared.ScopeType)
+	if !data.ScopeType.IsUnknown() && !data.ScopeType.IsNull() {
+		*scopeType = shared.ScopeType(data.ScopeType.ValueString())
+	} else {
+		scopeType = nil
+	}
+	request = &shared.CustomDestinationDefinitionCreate{
+		WorkspaceID:           workspaceID,
+		DestinationDefinition: destinationDefinition,
+		ScopeID:               scopeID,
+		ScopeType:             scopeType,
+	}
 	res, err := r.client.DestinationDefinition.CreateCustomDestinationDefinition(ctx, request)
 	if err != nil {
 		resp.Diagnostics.AddError("failure to invoke API", err.Error())
@@ -445,7 +450,34 @@ func (r *DestinationDefinitionResource) Create(ctx context.Context, req resource
 		resp.Diagnostics.AddError("unexpected response from API. No response body", debugResponse(res.RawResponse))
 		return
 	}
-	data.RefreshFromCreateResponse(res.DestinationDefinitionRead)
+	data.RefreshFromSharedDestinationDefinitionRead(res.DestinationDefinitionRead)
+	refreshPlan(ctx, plan, &data, resp.Diagnostics)
+	destinationDefinitionID := data.DestinationDefinitionID.ValueString()
+	request1 := shared.DestinationDefinitionIDRequestBody{
+		DestinationDefinitionID: destinationDefinitionID,
+	}
+	res1, err := r.client.DestinationDefinition.GetDestinationDefinition(ctx, request1)
+	if err != nil {
+		resp.Diagnostics.AddError("failure to invoke API", err.Error())
+		if res1 != nil && res1.RawResponse != nil {
+			resp.Diagnostics.AddError("unexpected http request/response", debugResponse(res1.RawResponse))
+		}
+		return
+	}
+	if res1 == nil {
+		resp.Diagnostics.AddError("unexpected response from API", fmt.Sprintf("%v", res1))
+		return
+	}
+	if res1.StatusCode != 200 {
+		resp.Diagnostics.AddError(fmt.Sprintf("unexpected response from API. Got an unexpected response code %v", res1.StatusCode), debugResponse(res1.RawResponse))
+		return
+	}
+	if res1.DestinationDefinitionRead == nil {
+		resp.Diagnostics.AddError("unexpected response from API. No response body", debugResponse(res1.RawResponse))
+		return
+	}
+	data.RefreshFromSharedDestinationDefinitionRead(res1.DestinationDefinitionRead)
+	refreshPlan(ctx, plan, &data, resp.Diagnostics)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -493,7 +525,7 @@ func (r *DestinationDefinitionResource) Read(ctx context.Context, req resource.R
 		resp.Diagnostics.AddError("unexpected response from API. No response body", debugResponse(res.RawResponse))
 		return
 	}
-	data.RefreshFromGetResponse(res.DestinationDefinitionRead)
+	data.RefreshFromSharedDestinationDefinitionRead(res.DestinationDefinitionRead)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -501,12 +533,86 @@ func (r *DestinationDefinitionResource) Read(ctx context.Context, req resource.R
 
 func (r *DestinationDefinitionResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	var data *DestinationDefinitionResourceModel
+	var plan types.Object
+
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	merge(ctx, req, resp, &data)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	request := *data.ToUpdateSDKType()
+	destinationDefinitionID := data.DestinationDefinitionID.ValueString()
+	dockerImageTag := new(string)
+	if !data.DockerImageTag.IsUnknown() && !data.DockerImageTag.IsNull() {
+		*dockerImageTag = data.DockerImageTag.ValueString()
+	} else {
+		dockerImageTag = nil
+	}
+	var resourceRequirements *shared.ActorDefinitionResourceRequirements
+	if data != nil {
+		var defaultVar *shared.ResourceRequirements
+		if data != nil {
+			cpuRequest := new(string)
+			if !data.CPURequest.IsUnknown() && !data.CPURequest.IsNull() {
+				*cpuRequest = data.CPURequest.ValueString()
+			} else {
+				cpuRequest = nil
+			}
+			cpuLimit := new(string)
+			if !data.CPULimit.IsUnknown() && !data.CPULimit.IsNull() {
+				*cpuLimit = data.CPULimit.ValueString()
+			} else {
+				cpuLimit = nil
+			}
+			memoryRequest := new(string)
+			if !data.MemoryRequest.IsUnknown() && !data.MemoryRequest.IsNull() {
+				*memoryRequest = data.MemoryRequest.ValueString()
+			} else {
+				memoryRequest = nil
+			}
+			memoryLimit := new(string)
+			if !data.MemoryLimit.IsUnknown() && !data.MemoryLimit.IsNull() {
+				*memoryLimit = data.MemoryLimit.ValueString()
+			} else {
+				memoryLimit = nil
+			}
+			defaultVar = &shared.ResourceRequirements{
+				CPURequest:    cpuRequest,
+				CPULimit:      cpuLimit,
+				MemoryRequest: memoryRequest,
+				MemoryLimit:   memoryLimit,
+			}
+		}
+		var jobType *shared.JobType
+		var cpuRequest1 *string
+		var cpuLimit1 *string
+		var memoryRequest1 *string
+		var memoryLimit1 *string
+		resourceRequirements1 := shared.ResourceRequirements{
+			CPURequest:    cpuRequest1,
+			CPULimit:      cpuLimit1,
+			MemoryRequest: memoryRequest1,
+			MemoryLimit:   memoryLimit1,
+		}
+		jobSpecificSingleton := shared.JobTypeResourceLimit{
+			JobType:              jobType,
+			ResourceRequirements: resourceRequirements1,
+		}
+		jobSpecific := []shared.JobTypeResourceLimit{jobSpecificSingleton}
+		resourceRequirements = &shared.ActorDefinitionResourceRequirements{
+			Default:     defaultVar,
+			JobSpecific: jobSpecific,
+		}
+	}
+	request := shared.DestinationDefinitionUpdate{
+		DestinationDefinitionID: destinationDefinitionID,
+		DockerImageTag:          dockerImageTag,
+		ResourceRequirements:    resourceRequirements,
+	}
 	res, err := r.client.DestinationDefinition.UpdateDestinationDefinition(ctx, request)
 	if err != nil {
 		resp.Diagnostics.AddError("failure to invoke API", err.Error())
@@ -527,7 +633,34 @@ func (r *DestinationDefinitionResource) Update(ctx context.Context, req resource
 		resp.Diagnostics.AddError("unexpected response from API. No response body", debugResponse(res.RawResponse))
 		return
 	}
-	data.RefreshFromUpdateResponse(res.DestinationDefinitionRead)
+	data.RefreshFromSharedDestinationDefinitionRead(res.DestinationDefinitionRead)
+	refreshPlan(ctx, plan, &data, resp.Diagnostics)
+	destinationDefinitionId1 := data.DestinationDefinitionID.ValueString()
+	request1 := shared.DestinationDefinitionIDRequestBody{
+		DestinationDefinitionID: destinationDefinitionId1,
+	}
+	res1, err := r.client.DestinationDefinition.GetDestinationDefinition(ctx, request1)
+	if err != nil {
+		resp.Diagnostics.AddError("failure to invoke API", err.Error())
+		if res1 != nil && res1.RawResponse != nil {
+			resp.Diagnostics.AddError("unexpected http request/response", debugResponse(res1.RawResponse))
+		}
+		return
+	}
+	if res1 == nil {
+		resp.Diagnostics.AddError("unexpected response from API", fmt.Sprintf("%v", res1))
+		return
+	}
+	if res1.StatusCode != 200 {
+		resp.Diagnostics.AddError(fmt.Sprintf("unexpected response from API. Got an unexpected response code %v", res1.StatusCode), debugResponse(res1.RawResponse))
+		return
+	}
+	if res1.DestinationDefinitionRead == nil {
+		resp.Diagnostics.AddError("unexpected response from API. No response body", debugResponse(res1.RawResponse))
+		return
+	}
+	data.RefreshFromSharedDestinationDefinitionRead(res1.DestinationDefinitionRead)
+	refreshPlan(ctx, plan, &data, resp.Diagnostics)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)

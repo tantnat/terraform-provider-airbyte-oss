@@ -5,7 +5,6 @@ package shared
 type UpdateActiveManifestRequestBody struct {
 	WorkspaceID        string `json:"workspaceId"`
 	SourceDefinitionID string `json:"sourceDefinitionId"`
-	Version            int64  `json:"version"`
 }
 
 func (o *UpdateActiveManifestRequestBody) GetWorkspaceID() string {
@@ -20,11 +19,4 @@ func (o *UpdateActiveManifestRequestBody) GetSourceDefinitionID() string {
 		return ""
 	}
 	return o.SourceDefinitionID
-}
-
-func (o *UpdateActiveManifestRequestBody) GetVersion() int64 {
-	if o == nil {
-		return 0
-	}
-	return o.Version
 }

@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"github.com/aballiet/terraform-provider-airbyte/internal/sdk"
 	"github.com/aballiet/terraform-provider-airbyte/internal/sdk/pkg/models/shared"
-
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -94,17 +93,19 @@ func (r *WorkspaceDataSource) Schema(ctx context.Context, req datasource.SchemaR
 				Computed: true,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
+						"customerio_configuration": schema.SingleNestedAttribute{
+							Computed:   true,
+							Attributes: map[string]schema.Attribute{},
+						},
 						"notification_type": schema.StringAttribute{
 							Computed:    true,
 							Description: `must be one of ["slack", "customerio"]`,
 						},
-						"send_on_success": schema.BoolAttribute{
-							Computed:    true,
-							Description: `Default: false`,
-						},
 						"send_on_failure": schema.BoolAttribute{
-							Computed:    true,
-							Description: `Default: true`,
+							Computed: true,
+						},
+						"send_on_success": schema.BoolAttribute{
+							Computed: true,
 						},
 						"slack_configuration": schema.SingleNestedAttribute{
 							Computed: true,
@@ -114,19 +115,19 @@ func (r *WorkspaceDataSource) Schema(ctx context.Context, req datasource.SchemaR
 								},
 							},
 						},
-						"customerio_configuration": schema.SingleNestedAttribute{
-							Computed:   true,
-							Attributes: map[string]schema.Attribute{},
-						},
 					},
 				},
 			},
 			"notification_settings": schema.SingleNestedAttribute{
 				Computed: true,
 				Attributes: map[string]schema.Attribute{
-					"send_on_success": schema.SingleNestedAttribute{
+					"send_on_breaking_change_syncs_disabled": schema.SingleNestedAttribute{
 						Computed: true,
 						Attributes: map[string]schema.Attribute{
+							"customerio_configuration": schema.SingleNestedAttribute{
+								Computed:   true,
+								Attributes: map[string]schema.Attribute{},
+							},
 							"notification_type": schema.ListAttribute{
 								Computed:    true,
 								ElementType: types.StringType,
@@ -138,121 +139,16 @@ func (r *WorkspaceDataSource) Schema(ctx context.Context, req datasource.SchemaR
 										Computed: true,
 									},
 								},
-							},
-							"customerio_configuration": schema.SingleNestedAttribute{
-								Computed:   true,
-								Attributes: map[string]schema.Attribute{},
-							},
-						},
-					},
-					"send_on_failure": schema.SingleNestedAttribute{
-						Computed: true,
-						Attributes: map[string]schema.Attribute{
-							"notification_type": schema.ListAttribute{
-								Computed:    true,
-								ElementType: types.StringType,
-							},
-							"slack_configuration": schema.SingleNestedAttribute{
-								Computed: true,
-								Attributes: map[string]schema.Attribute{
-									"webhook": schema.StringAttribute{
-										Computed: true,
-									},
-								},
-							},
-							"customerio_configuration": schema.SingleNestedAttribute{
-								Computed:   true,
-								Attributes: map[string]schema.Attribute{},
-							},
-						},
-					},
-					"send_on_sync_disabled": schema.SingleNestedAttribute{
-						Computed: true,
-						Attributes: map[string]schema.Attribute{
-							"notification_type": schema.ListAttribute{
-								Computed:    true,
-								ElementType: types.StringType,
-							},
-							"slack_configuration": schema.SingleNestedAttribute{
-								Computed: true,
-								Attributes: map[string]schema.Attribute{
-									"webhook": schema.StringAttribute{
-										Computed: true,
-									},
-								},
-							},
-							"customerio_configuration": schema.SingleNestedAttribute{
-								Computed:   true,
-								Attributes: map[string]schema.Attribute{},
-							},
-						},
-					},
-					"send_on_sync_disabled_warning": schema.SingleNestedAttribute{
-						Computed: true,
-						Attributes: map[string]schema.Attribute{
-							"notification_type": schema.ListAttribute{
-								Computed:    true,
-								ElementType: types.StringType,
-							},
-							"slack_configuration": schema.SingleNestedAttribute{
-								Computed: true,
-								Attributes: map[string]schema.Attribute{
-									"webhook": schema.StringAttribute{
-										Computed: true,
-									},
-								},
-							},
-							"customerio_configuration": schema.SingleNestedAttribute{
-								Computed:   true,
-								Attributes: map[string]schema.Attribute{},
-							},
-						},
-					},
-					"send_on_connection_update": schema.SingleNestedAttribute{
-						Computed: true,
-						Attributes: map[string]schema.Attribute{
-							"notification_type": schema.ListAttribute{
-								Computed:    true,
-								ElementType: types.StringType,
-							},
-							"slack_configuration": schema.SingleNestedAttribute{
-								Computed: true,
-								Attributes: map[string]schema.Attribute{
-									"webhook": schema.StringAttribute{
-										Computed: true,
-									},
-								},
-							},
-							"customerio_configuration": schema.SingleNestedAttribute{
-								Computed:   true,
-								Attributes: map[string]schema.Attribute{},
-							},
-						},
-					},
-					"send_on_connection_update_action_required": schema.SingleNestedAttribute{
-						Computed: true,
-						Attributes: map[string]schema.Attribute{
-							"notification_type": schema.ListAttribute{
-								Computed:    true,
-								ElementType: types.StringType,
-							},
-							"slack_configuration": schema.SingleNestedAttribute{
-								Computed: true,
-								Attributes: map[string]schema.Attribute{
-									"webhook": schema.StringAttribute{
-										Computed: true,
-									},
-								},
-							},
-							"customerio_configuration": schema.SingleNestedAttribute{
-								Computed:   true,
-								Attributes: map[string]schema.Attribute{},
 							},
 						},
 					},
 					"send_on_breaking_change_warning": schema.SingleNestedAttribute{
 						Computed: true,
 						Attributes: map[string]schema.Attribute{
+							"customerio_configuration": schema.SingleNestedAttribute{
+								Computed:   true,
+								Attributes: map[string]schema.Attribute{},
+							},
 							"notification_type": schema.ListAttribute{
 								Computed:    true,
 								ElementType: types.StringType,
@@ -264,16 +160,16 @@ func (r *WorkspaceDataSource) Schema(ctx context.Context, req datasource.SchemaR
 										Computed: true,
 									},
 								},
-							},
-							"customerio_configuration": schema.SingleNestedAttribute{
-								Computed:   true,
-								Attributes: map[string]schema.Attribute{},
 							},
 						},
 					},
-					"send_on_breaking_change_syncs_disabled": schema.SingleNestedAttribute{
+					"send_on_connection_update": schema.SingleNestedAttribute{
 						Computed: true,
 						Attributes: map[string]schema.Attribute{
+							"customerio_configuration": schema.SingleNestedAttribute{
+								Computed:   true,
+								Attributes: map[string]schema.Attribute{},
+							},
 							"notification_type": schema.ListAttribute{
 								Computed:    true,
 								ElementType: types.StringType,
@@ -286,9 +182,110 @@ func (r *WorkspaceDataSource) Schema(ctx context.Context, req datasource.SchemaR
 									},
 								},
 							},
+						},
+					},
+					"send_on_connection_update_action_required": schema.SingleNestedAttribute{
+						Computed: true,
+						Attributes: map[string]schema.Attribute{
 							"customerio_configuration": schema.SingleNestedAttribute{
 								Computed:   true,
 								Attributes: map[string]schema.Attribute{},
+							},
+							"notification_type": schema.ListAttribute{
+								Computed:    true,
+								ElementType: types.StringType,
+							},
+							"slack_configuration": schema.SingleNestedAttribute{
+								Computed: true,
+								Attributes: map[string]schema.Attribute{
+									"webhook": schema.StringAttribute{
+										Computed: true,
+									},
+								},
+							},
+						},
+					},
+					"send_on_failure": schema.SingleNestedAttribute{
+						Computed: true,
+						Attributes: map[string]schema.Attribute{
+							"customerio_configuration": schema.SingleNestedAttribute{
+								Computed:   true,
+								Attributes: map[string]schema.Attribute{},
+							},
+							"notification_type": schema.ListAttribute{
+								Computed:    true,
+								ElementType: types.StringType,
+							},
+							"slack_configuration": schema.SingleNestedAttribute{
+								Computed: true,
+								Attributes: map[string]schema.Attribute{
+									"webhook": schema.StringAttribute{
+										Computed: true,
+									},
+								},
+							},
+						},
+					},
+					"send_on_success": schema.SingleNestedAttribute{
+						Computed: true,
+						Attributes: map[string]schema.Attribute{
+							"customerio_configuration": schema.SingleNestedAttribute{
+								Computed:   true,
+								Attributes: map[string]schema.Attribute{},
+							},
+							"notification_type": schema.ListAttribute{
+								Computed:    true,
+								ElementType: types.StringType,
+							},
+							"slack_configuration": schema.SingleNestedAttribute{
+								Computed: true,
+								Attributes: map[string]schema.Attribute{
+									"webhook": schema.StringAttribute{
+										Computed: true,
+									},
+								},
+							},
+						},
+					},
+					"send_on_sync_disabled": schema.SingleNestedAttribute{
+						Computed: true,
+						Attributes: map[string]schema.Attribute{
+							"customerio_configuration": schema.SingleNestedAttribute{
+								Computed:   true,
+								Attributes: map[string]schema.Attribute{},
+							},
+							"notification_type": schema.ListAttribute{
+								Computed:    true,
+								ElementType: types.StringType,
+							},
+							"slack_configuration": schema.SingleNestedAttribute{
+								Computed: true,
+								Attributes: map[string]schema.Attribute{
+									"webhook": schema.StringAttribute{
+										Computed: true,
+									},
+								},
+							},
+						},
+					},
+					"send_on_sync_disabled_warning": schema.SingleNestedAttribute{
+						Computed: true,
+						Attributes: map[string]schema.Attribute{
+							"customerio_configuration": schema.SingleNestedAttribute{
+								Computed:   true,
+								Attributes: map[string]schema.Attribute{},
+							},
+							"notification_type": schema.ListAttribute{
+								Computed:    true,
+								ElementType: types.StringType,
+							},
+							"slack_configuration": schema.SingleNestedAttribute{
+								Computed: true,
+								Attributes: map[string]schema.Attribute{
+									"webhook": schema.StringAttribute{
+										Computed: true,
+									},
+								},
 							},
 						},
 					},
@@ -386,7 +383,7 @@ func (r *WorkspaceDataSource) Read(ctx context.Context, req datasource.ReadReque
 		resp.Diagnostics.AddError("unexpected response from API. No response body", debugResponse(res.RawResponse))
 		return
 	}
-	data.RefreshFromGetResponse(res.WorkspaceRead)
+	data.RefreshFromSharedWorkspaceRead(res.WorkspaceRead)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)

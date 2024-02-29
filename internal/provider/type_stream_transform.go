@@ -5,7 +5,7 @@ package provider
 import "github.com/hashicorp/terraform-plugin-framework/types"
 
 type StreamTransform struct {
-	TransformType    types.String     `tfsdk:"transform_type"`
 	StreamDescriptor StreamDescriptor `tfsdk:"stream_descriptor"`
+	TransformType    types.String     `tfsdk:"transform_type"`
 	UpdateStream     []FieldTransform `tfsdk:"update_stream"`
 }

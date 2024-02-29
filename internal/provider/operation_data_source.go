@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"github.com/aballiet/terraform-provider-airbyte/internal/sdk"
 	"github.com/aballiet/terraform-provider-airbyte/internal/sdk/pkg/models/shared"
-
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -55,9 +54,22 @@ func (r *OperationDataSource) Schema(ctx context.Context, req datasource.SchemaR
 			"operator_configuration": schema.SingleNestedAttribute{
 				Computed: true,
 				Attributes: map[string]schema.Attribute{
-					"operator_type": schema.StringAttribute{
-						Computed:    true,
-						Description: `must be one of ["normalization", "dbt", "webhook"]`,
+					"dbt": schema.SingleNestedAttribute{
+						Computed: true,
+						Attributes: map[string]schema.Attribute{
+							"dbt_arguments": schema.StringAttribute{
+								Computed: true,
+							},
+							"docker_image": schema.StringAttribute{
+								Computed: true,
+							},
+							"git_repo_branch": schema.StringAttribute{
+								Computed: true,
+							},
+							"git_repo_url": schema.StringAttribute{
+								Computed: true,
+							},
+						},
 					},
 					"normalization": schema.SingleNestedAttribute{
 						Computed: true,
@@ -68,34 +80,13 @@ func (r *OperationDataSource) Schema(ctx context.Context, req datasource.SchemaR
 							},
 						},
 					},
-					"dbt": schema.SingleNestedAttribute{
-						Computed: true,
-						Attributes: map[string]schema.Attribute{
-							"git_repo_url": schema.StringAttribute{
-								Computed: true,
-							},
-							"git_repo_branch": schema.StringAttribute{
-								Computed: true,
-							},
-							"docker_image": schema.StringAttribute{
-								Computed: true,
-							},
-							"dbt_arguments": schema.StringAttribute{
-								Computed: true,
-							},
-						},
+					"operator_type": schema.StringAttribute{
+						Computed:    true,
+						Description: `must be one of ["normalization", "dbt", "webhook"]`,
 					},
 					"webhook": schema.SingleNestedAttribute{
 						Computed: true,
 						Attributes: map[string]schema.Attribute{
-							"webhook_config_id": schema.StringAttribute{
-								Computed:    true,
-								Description: `The id of the webhook configs to use from the workspace.`,
-							},
-							"webhook_type": schema.StringAttribute{
-								Computed:    true,
-								Description: `must be one of ["dbtCloud"]`,
-							},
 							"dbt_cloud": schema.SingleNestedAttribute{
 								Computed: true,
 								Attributes: map[string]schema.Attribute{
@@ -109,13 +100,21 @@ func (r *OperationDataSource) Schema(ctx context.Context, req datasource.SchemaR
 									},
 								},
 							},
+							"execution_body": schema.StringAttribute{
+								Computed:    true,
+								Description: `DEPRECATED. Populate dbtCloud instead.`,
+							},
 							"execution_url": schema.StringAttribute{
 								Computed:    true,
 								Description: `DEPRECATED. Populate dbtCloud instead.`,
 							},
-							"execution_body": schema.StringAttribute{
+							"webhook_config_id": schema.StringAttribute{
 								Computed:    true,
-								Description: `DEPRECATED. Populate dbtCloud instead.`,
+								Description: `The id of the webhook configs to use from the workspace.`,
+							},
+							"webhook_type": schema.StringAttribute{
+								Computed:    true,
+								Description: `must be one of ["dbtCloud"]`,
 							},
 						},
 					},
@@ -190,7 +189,7 @@ func (r *OperationDataSource) Read(ctx context.Context, req datasource.ReadReque
 		resp.Diagnostics.AddError("unexpected response from API. No response body", debugResponse(res.RawResponse))
 		return
 	}
-	data.RefreshFromGetResponse(res.OperationRead)
+	data.RefreshFromSharedOperationRead(res.OperationRead)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)

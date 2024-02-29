@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-func (r *SourceDataSourceModel) ToGetSDKType() *shared.SourceIDRequestBody {
+func (r *SourceDataSourceModel) ToSharedSourceIDRequestBody() *shared.SourceIDRequestBody {
 	sourceID := r.SourceID.ValueString()
 	out := shared.SourceIDRequestBody{
 		SourceID: sourceID,
@@ -15,12 +15,8 @@ func (r *SourceDataSourceModel) ToGetSDKType() *shared.SourceIDRequestBody {
 	return &out
 }
 
-func (r *SourceDataSourceModel) RefreshFromGetResponse(resp *shared.SourceRead) {
-	if resp.Icon != nil {
-		r.Icon = types.StringValue(*resp.Icon)
-	} else {
-		r.Icon = types.StringNull()
-	}
+func (r *SourceDataSourceModel) RefreshFromSharedSourceRead(resp *shared.SourceRead) {
+	r.Icon = types.StringPointerValue(resp.Icon)
 	r.Name = types.StringValue(resp.Name)
 	r.SourceDefinitionID = types.StringValue(resp.SourceDefinitionID)
 	r.SourceID = types.StringValue(resp.SourceID)

@@ -1,19 +1,17 @@
-configVersion: 1.0.0
+configVersion: 2.0.0
 generation:
-  comments: {}
   sdkClassName: SDK
   maintainOpenAPIOrder: true
   usageSnippets:
     optionalPropertyRendering: withExample
-features:
-  terraform:
-    constsAndDefaults: 0.1.2
-    core: 3.6.0
-    deprecations: 2.81.1
-    globalSecurity: 2.81.2
-    globalServerURLs: 2.82.1
+  fixes:
+    nameResolutionDec2023: false
+    parameterOrderingFeb2024: false
+    requestResponseComponentNamesFeb2024: false
+  auth:
+    oAuth2ClientCredentialsEnabled: false
 terraform:
-  version: 1.1.1
+  version: 1.2.0
   author: aballiet
   imports:
     option: openapi

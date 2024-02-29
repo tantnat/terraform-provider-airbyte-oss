@@ -1,3 +1,3 @@
 data "airbyte_connection" "my_connection" {
-  connection_id = "aaa86acf-aeba-4dc8-b85b-cf425a69f844"
+  connection_id = "0839cded-c24b-4e26-ba48-a24e9eaedfd4"
 }

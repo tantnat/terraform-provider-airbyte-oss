@@ -8,7 +8,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-func (r *ConnectionResourceModel) ToCreateSDKType() *shared.ConnectionCreate {
+func (r *ConnectionResourceModel) ToSharedConnectionCreate() *shared.ConnectionCreate {
 	name := new(string)
 	if !r.Name.IsUnknown() && !r.Name.IsNull() {
 		*name = r.Name.ValueString()
@@ -278,12 +278,157 @@ func (r *ConnectionResourceModel) ToCreateSDKType() *shared.ConnectionCreate {
 	return &out
 }
 
-func (r *ConnectionResourceModel) ToGetSDKType() *shared.ConnectionCreate {
-	out := r.ToCreateSDKType()
-	return out
+func (r *ConnectionResourceModel) RefreshFromSharedConnectionRead(resp *shared.ConnectionRead) {
+	r.BreakingChange = types.BoolValue(resp.BreakingChange)
+	r.ConnectionID = types.StringValue(resp.ConnectionID)
+	r.DestinationID = types.StringValue(resp.DestinationID)
+	if resp.Geography != nil {
+		r.Geography = types.StringValue(string(*resp.Geography))
+	} else {
+		r.Geography = types.StringNull()
+	}
+	r.Name = types.StringValue(resp.Name)
+	if resp.NamespaceDefinition != nil {
+		r.NamespaceDefinition = types.StringValue(string(*resp.NamespaceDefinition))
+	} else {
+		r.NamespaceDefinition = types.StringNull()
+	}
+	r.NamespaceFormat = types.StringPointerValue(resp.NamespaceFormat)
+	if resp.NonBreakingChangesPreference != nil {
+		r.NonBreakingChangesPreference = types.StringValue(string(*resp.NonBreakingChangesPreference))
+	} else {
+		r.NonBreakingChangesPreference = types.StringNull()
+	}
+	r.NotifySchemaChanges = types.BoolPointerValue(resp.NotifySchemaChanges)
+	r.NotifySchemaChangesByEmail = types.BoolPointerValue(resp.NotifySchemaChangesByEmail)
+	r.OperationIds = nil
+	for _, v := range resp.OperationIds {
+		r.OperationIds = append(r.OperationIds, types.StringValue(v))
+	}
+	r.Prefix = types.StringPointerValue(resp.Prefix)
+	if resp.ResourceRequirements == nil {
+		r.ResourceRequirements = nil
+	} else {
+		r.ResourceRequirements = &ResourceRequirements{}
+		r.ResourceRequirements.CPULimit = types.StringPointerValue(resp.ResourceRequirements.CPULimit)
+		r.ResourceRequirements.CPURequest = types.StringPointerValue(resp.ResourceRequirements.CPURequest)
+		r.ResourceRequirements.MemoryLimit = types.StringPointerValue(resp.ResourceRequirements.MemoryLimit)
+		r.ResourceRequirements.MemoryRequest = types.StringPointerValue(resp.ResourceRequirements.MemoryRequest)
+	}
+	if resp.ScheduleData == nil {
+		r.ScheduleData = nil
+	} else {
+		r.ScheduleData = &ConnectionScheduleData{}
+		if resp.ScheduleData.BasicSchedule == nil {
+			r.ScheduleData.BasicSchedule = nil
+		} else {
+			r.ScheduleData.BasicSchedule = &BasicSchedule{}
+			r.ScheduleData.BasicSchedule.TimeUnit = types.StringValue(string(resp.ScheduleData.BasicSchedule.TimeUnit))
+			r.ScheduleData.BasicSchedule.Units = types.Int64Value(resp.ScheduleData.BasicSchedule.Units)
+		}
+		if resp.ScheduleData.Cron == nil {
+			r.ScheduleData.Cron = nil
+		} else {
+			r.ScheduleData.Cron = &Cron{}
+			r.ScheduleData.Cron.CronExpression = types.StringValue(resp.ScheduleData.Cron.CronExpression)
+			r.ScheduleData.Cron.CronTimeZone = types.StringValue(resp.ScheduleData.Cron.CronTimeZone)
+		}
+	}
+	if resp.ScheduleType != nil {
+		r.ScheduleType = types.StringValue(string(*resp.ScheduleType))
+	} else {
+		r.ScheduleType = types.StringNull()
+	}
+	r.SourceCatalogID = types.StringPointerValue(resp.SourceCatalogID)
+	r.SourceID = types.StringValue(resp.SourceID)
+	r.Status = types.StringValue(string(resp.Status))
+	if r.SyncCatalog == nil {
+		r.SyncCatalog = &AirbyteCatalog{}
+	}
+	if len(r.SyncCatalog.Streams) > len(resp.SyncCatalog.Streams) {
+		r.SyncCatalog.Streams = r.SyncCatalog.Streams[:len(resp.SyncCatalog.Streams)]
+	}
+	for streamsCount, streamsItem := range resp.SyncCatalog.Streams {
+		var streams1 AirbyteStreamAndConfiguration
+		if streamsItem.Config == nil {
+			streams1.Config = nil
+		} else {
+			streams1.Config = &AirbyteStreamConfiguration{}
+			streams1.Config.AliasName = types.StringPointerValue(streamsItem.Config.AliasName)
+			streams1.Config.CursorField = nil
+			for _, v := range streamsItem.Config.CursorField {
+				streams1.Config.CursorField = append(streams1.Config.CursorField, types.StringValue(v))
+			}
+			streams1.Config.DestinationSyncMode = types.StringValue(string(streamsItem.Config.DestinationSyncMode))
+			streams1.Config.FieldSelectionEnabled = types.BoolPointerValue(streamsItem.Config.FieldSelectionEnabled)
+			streams1.Config.PrimaryKey = nil
+			for _, primaryKeyItem := range streamsItem.Config.PrimaryKey {
+				var primaryKey1 []types.String
+				primaryKey1 = nil
+				for _, v := range primaryKeyItem {
+					primaryKey1 = append(primaryKey1, types.StringValue(v))
+				}
+				streams1.Config.PrimaryKey = append(streams1.Config.PrimaryKey, primaryKey1)
+			}
+			streams1.Config.Selected = types.BoolPointerValue(streamsItem.Config.Selected)
+			for selectedFieldsCount, selectedFieldsItem := range streamsItem.Config.SelectedFields {
+				var selectedFields1 SelectedFieldInfo
+				selectedFields1.FieldPath = nil
+				for _, v := range selectedFieldsItem.FieldPath {
+					selectedFields1.FieldPath = append(selectedFields1.FieldPath, types.StringValue(v))
+				}
+				if selectedFieldsCount+1 > len(streams1.Config.SelectedFields) {
+					streams1.Config.SelectedFields = append(streams1.Config.SelectedFields, selectedFields1)
+				} else {
+					streams1.Config.SelectedFields[selectedFieldsCount].FieldPath = selectedFields1.FieldPath
+				}
+			}
+			streams1.Config.Suggested = types.BoolPointerValue(streamsItem.Config.Suggested)
+			streams1.Config.SyncMode = types.StringValue(string(streamsItem.Config.SyncMode))
+		}
+		if streamsItem.Stream == nil {
+			streams1.Stream = nil
+		} else {
+			streams1.Stream = &AirbyteStream{}
+			streams1.Stream.DefaultCursorField = nil
+			for _, v := range streamsItem.Stream.DefaultCursorField {
+				streams1.Stream.DefaultCursorField = append(streams1.Stream.DefaultCursorField, types.StringValue(v))
+			}
+			if len(streamsItem.Stream.JSONSchema) > 0 {
+				streams1.Stream.JSONSchema = make(map[string]types.String)
+				for key, value := range streamsItem.Stream.JSONSchema {
+					result, _ := json.Marshal(value)
+					streams1.Stream.JSONSchema[key] = types.StringValue(string(result))
+				}
+			}
+			streams1.Stream.Name = types.StringValue(streamsItem.Stream.Name)
+			streams1.Stream.Namespace = types.StringPointerValue(streamsItem.Stream.Namespace)
+			streams1.Stream.SourceDefinedCursor = types.BoolPointerValue(streamsItem.Stream.SourceDefinedCursor)
+			streams1.Stream.SourceDefinedPrimaryKey = nil
+			for _, sourceDefinedPrimaryKeyItem := range streamsItem.Stream.SourceDefinedPrimaryKey {
+				var sourceDefinedPrimaryKey1 []types.String
+				sourceDefinedPrimaryKey1 = nil
+				for _, v := range sourceDefinedPrimaryKeyItem {
+					sourceDefinedPrimaryKey1 = append(sourceDefinedPrimaryKey1, types.StringValue(v))
+				}
+				streams1.Stream.SourceDefinedPrimaryKey = append(streams1.Stream.SourceDefinedPrimaryKey, sourceDefinedPrimaryKey1)
+			}
+			streams1.Stream.SupportedSyncModes = nil
+			for _, v := range streamsItem.Stream.SupportedSyncModes {
+				streams1.Stream.SupportedSyncModes = append(streams1.Stream.SupportedSyncModes, types.StringValue(string(v)))
+			}
+		}
+		if streamsCount+1 > len(r.SyncCatalog.Streams) {
+			r.SyncCatalog.Streams = append(r.SyncCatalog.Streams, streams1)
+		} else {
+			r.SyncCatalog.Streams[streamsCount].Config = streams1.Config
+			r.SyncCatalog.Streams[streamsCount].Stream = streams1.Stream
+		}
+	}
+	r.WorkspaceID = types.StringPointerValue(resp.WorkspaceID)
 }
 
-func (r *ConnectionResourceModel) ToUpdateSDKType() *shared.ConnectionUpdate {
+func (r *ConnectionResourceModel) ToSharedConnectionUpdate() *shared.ConnectionUpdate {
 	connectionID := r.ConnectionID.ValueString()
 	namespaceDefinition := new(shared.NamespaceDefinitionType)
 	if !r.NamespaceDefinition.IsUnknown() && !r.NamespaceDefinition.IsNull() {
@@ -561,234 +706,4 @@ func (r *ConnectionResourceModel) ToUpdateSDKType() *shared.ConnectionUpdate {
 		BreakingChange:               breakingChange,
 	}
 	return &out
-}
-
-func (r *ConnectionResourceModel) ToDeleteSDKType() *shared.ConnectionCreate {
-	out := r.ToCreateSDKType()
-	return out
-}
-
-func (r *ConnectionResourceModel) RefreshFromGetResponse(resp *shared.ConnectionRead) {
-	r.BreakingChange = types.BoolValue(resp.BreakingChange)
-	r.ConnectionID = types.StringValue(resp.ConnectionID)
-	r.DestinationID = types.StringValue(resp.DestinationID)
-	if resp.Geography != nil {
-		r.Geography = types.StringValue(string(*resp.Geography))
-	} else {
-		r.Geography = types.StringNull()
-	}
-	r.Name = types.StringValue(resp.Name)
-	if resp.NamespaceDefinition != nil {
-		r.NamespaceDefinition = types.StringValue(string(*resp.NamespaceDefinition))
-	} else {
-		r.NamespaceDefinition = types.StringNull()
-	}
-	if resp.NamespaceFormat != nil {
-		r.NamespaceFormat = types.StringValue(*resp.NamespaceFormat)
-	} else {
-		r.NamespaceFormat = types.StringNull()
-	}
-	if resp.NonBreakingChangesPreference != nil {
-		r.NonBreakingChangesPreference = types.StringValue(string(*resp.NonBreakingChangesPreference))
-	} else {
-		r.NonBreakingChangesPreference = types.StringNull()
-	}
-	if resp.NotifySchemaChanges != nil {
-		r.NotifySchemaChanges = types.BoolValue(*resp.NotifySchemaChanges)
-	} else {
-		r.NotifySchemaChanges = types.BoolNull()
-	}
-	if resp.NotifySchemaChangesByEmail != nil {
-		r.NotifySchemaChangesByEmail = types.BoolValue(*resp.NotifySchemaChangesByEmail)
-	} else {
-		r.NotifySchemaChangesByEmail = types.BoolNull()
-	}
-	r.OperationIds = nil
-	for _, v := range resp.OperationIds {
-		r.OperationIds = append(r.OperationIds, types.StringValue(v))
-	}
-	if resp.Prefix != nil {
-		r.Prefix = types.StringValue(*resp.Prefix)
-	} else {
-		r.Prefix = types.StringNull()
-	}
-	if resp.ResourceRequirements == nil {
-		r.ResourceRequirements = nil
-	} else {
-		r.ResourceRequirements = &ResourceRequirements{}
-		if resp.ResourceRequirements.CPULimit != nil {
-			r.ResourceRequirements.CPULimit = types.StringValue(*resp.ResourceRequirements.CPULimit)
-		} else {
-			r.ResourceRequirements.CPULimit = types.StringNull()
-		}
-		if resp.ResourceRequirements.CPURequest != nil {
-			r.ResourceRequirements.CPURequest = types.StringValue(*resp.ResourceRequirements.CPURequest)
-		} else {
-			r.ResourceRequirements.CPURequest = types.StringNull()
-		}
-		if resp.ResourceRequirements.MemoryLimit != nil {
-			r.ResourceRequirements.MemoryLimit = types.StringValue(*resp.ResourceRequirements.MemoryLimit)
-		} else {
-			r.ResourceRequirements.MemoryLimit = types.StringNull()
-		}
-		if resp.ResourceRequirements.MemoryRequest != nil {
-			r.ResourceRequirements.MemoryRequest = types.StringValue(*resp.ResourceRequirements.MemoryRequest)
-		} else {
-			r.ResourceRequirements.MemoryRequest = types.StringNull()
-		}
-	}
-	if resp.ScheduleData == nil {
-		r.ScheduleData = nil
-	} else {
-		r.ScheduleData = &ConnectionScheduleData{}
-		if resp.ScheduleData.BasicSchedule == nil {
-			r.ScheduleData.BasicSchedule = nil
-		} else {
-			r.ScheduleData.BasicSchedule = &BasicSchedule{}
-			r.ScheduleData.BasicSchedule.TimeUnit = types.StringValue(string(resp.ScheduleData.BasicSchedule.TimeUnit))
-			r.ScheduleData.BasicSchedule.Units = types.Int64Value(resp.ScheduleData.BasicSchedule.Units)
-		}
-		if resp.ScheduleData.Cron == nil {
-			r.ScheduleData.Cron = nil
-		} else {
-			r.ScheduleData.Cron = &Cron{}
-			r.ScheduleData.Cron.CronExpression = types.StringValue(resp.ScheduleData.Cron.CronExpression)
-			r.ScheduleData.Cron.CronTimeZone = types.StringValue(resp.ScheduleData.Cron.CronTimeZone)
-		}
-	}
-	if resp.ScheduleType != nil {
-		r.ScheduleType = types.StringValue(string(*resp.ScheduleType))
-	} else {
-		r.ScheduleType = types.StringNull()
-	}
-	if resp.SourceCatalogID != nil {
-		r.SourceCatalogID = types.StringValue(*resp.SourceCatalogID)
-	} else {
-		r.SourceCatalogID = types.StringNull()
-	}
-	r.SourceID = types.StringValue(resp.SourceID)
-	r.Status = types.StringValue(string(resp.Status))
-	if r.SyncCatalog == nil {
-		r.SyncCatalog = &AirbyteCatalog{}
-	}
-	if len(r.SyncCatalog.Streams) > len(resp.SyncCatalog.Streams) {
-		r.SyncCatalog.Streams = r.SyncCatalog.Streams[:len(resp.SyncCatalog.Streams)]
-	}
-	for streamsCount, streamsItem := range resp.SyncCatalog.Streams {
-		var streams1 AirbyteStreamAndConfiguration
-		if streamsItem.Config == nil {
-			streams1.Config = nil
-		} else {
-			streams1.Config = &AirbyteStreamConfiguration{}
-			if streamsItem.Config.AliasName != nil {
-				streams1.Config.AliasName = types.StringValue(*streamsItem.Config.AliasName)
-			} else {
-				streams1.Config.AliasName = types.StringNull()
-			}
-			streams1.Config.CursorField = nil
-			for _, v := range streamsItem.Config.CursorField {
-				streams1.Config.CursorField = append(streams1.Config.CursorField, types.StringValue(v))
-			}
-			streams1.Config.DestinationSyncMode = types.StringValue(string(streamsItem.Config.DestinationSyncMode))
-			if streamsItem.Config.FieldSelectionEnabled != nil {
-				streams1.Config.FieldSelectionEnabled = types.BoolValue(*streamsItem.Config.FieldSelectionEnabled)
-			} else {
-				streams1.Config.FieldSelectionEnabled = types.BoolNull()
-			}
-			streams1.Config.PrimaryKey = nil
-			for _, primaryKeyItem := range streamsItem.Config.PrimaryKey {
-				var primaryKey1 []types.String
-				primaryKey1 = nil
-				for _, v := range primaryKeyItem {
-					primaryKey1 = append(primaryKey1, types.StringValue(v))
-				}
-				streams1.Config.PrimaryKey = append(streams1.Config.PrimaryKey, primaryKey1)
-			}
-			if streamsItem.Config.Selected != nil {
-				streams1.Config.Selected = types.BoolValue(*streamsItem.Config.Selected)
-			} else {
-				streams1.Config.Selected = types.BoolNull()
-			}
-			if len(streams1.Config.SelectedFields) > len(streamsItem.Config.SelectedFields) {
-				streams1.Config.SelectedFields = streams1.Config.SelectedFields[:len(streamsItem.Config.SelectedFields)]
-			}
-			for selectedFieldsCount, selectedFieldsItem := range streamsItem.Config.SelectedFields {
-				var selectedFields1 SelectedFieldInfo
-				selectedFields1.FieldPath = nil
-				for _, v := range selectedFieldsItem.FieldPath {
-					selectedFields1.FieldPath = append(selectedFields1.FieldPath, types.StringValue(v))
-				}
-				if selectedFieldsCount+1 > len(streams1.Config.SelectedFields) {
-					streams1.Config.SelectedFields = append(streams1.Config.SelectedFields, selectedFields1)
-				} else {
-					streams1.Config.SelectedFields[selectedFieldsCount].FieldPath = selectedFields1.FieldPath
-				}
-			}
-			if streamsItem.Config.Suggested != nil {
-				streams1.Config.Suggested = types.BoolValue(*streamsItem.Config.Suggested)
-			} else {
-				streams1.Config.Suggested = types.BoolNull()
-			}
-			streams1.Config.SyncMode = types.StringValue(string(streamsItem.Config.SyncMode))
-		}
-		if streamsItem.Stream == nil {
-			streams1.Stream = nil
-		} else {
-			streams1.Stream = &AirbyteStream{}
-			streams1.Stream.DefaultCursorField = nil
-			for _, v := range streamsItem.Stream.DefaultCursorField {
-				streams1.Stream.DefaultCursorField = append(streams1.Stream.DefaultCursorField, types.StringValue(v))
-			}
-			if streams1.Stream.JSONSchema == nil && len(streamsItem.Stream.JSONSchema) > 0 {
-				streams1.Stream.JSONSchema = make(map[string]types.String)
-				for key, value := range streamsItem.Stream.JSONSchema {
-					result, _ := json.Marshal(value)
-					streams1.Stream.JSONSchema[key] = types.StringValue(string(result))
-				}
-			}
-			streams1.Stream.Name = types.StringValue(streamsItem.Stream.Name)
-			if streamsItem.Stream.Namespace != nil {
-				streams1.Stream.Namespace = types.StringValue(*streamsItem.Stream.Namespace)
-			} else {
-				streams1.Stream.Namespace = types.StringNull()
-			}
-			if streamsItem.Stream.SourceDefinedCursor != nil {
-				streams1.Stream.SourceDefinedCursor = types.BoolValue(*streamsItem.Stream.SourceDefinedCursor)
-			} else {
-				streams1.Stream.SourceDefinedCursor = types.BoolNull()
-			}
-			streams1.Stream.SourceDefinedPrimaryKey = nil
-			for _, sourceDefinedPrimaryKeyItem := range streamsItem.Stream.SourceDefinedPrimaryKey {
-				var sourceDefinedPrimaryKey1 []types.String
-				sourceDefinedPrimaryKey1 = nil
-				for _, v := range sourceDefinedPrimaryKeyItem {
-					sourceDefinedPrimaryKey1 = append(sourceDefinedPrimaryKey1, types.StringValue(v))
-				}
-				streams1.Stream.SourceDefinedPrimaryKey = append(streams1.Stream.SourceDefinedPrimaryKey, sourceDefinedPrimaryKey1)
-			}
-			streams1.Stream.SupportedSyncModes = nil
-			for _, v := range streamsItem.Stream.SupportedSyncModes {
-				streams1.Stream.SupportedSyncModes = append(streams1.Stream.SupportedSyncModes, types.StringValue(string(v)))
-			}
-		}
-		if streamsCount+1 > len(r.SyncCatalog.Streams) {
-			r.SyncCatalog.Streams = append(r.SyncCatalog.Streams, streams1)
-		} else {
-			r.SyncCatalog.Streams[streamsCount].Config = streams1.Config
-			r.SyncCatalog.Streams[streamsCount].Stream = streams1.Stream
-		}
-	}
-	if resp.WorkspaceID != nil {
-		r.WorkspaceID = types.StringValue(*resp.WorkspaceID)
-	} else {
-		r.WorkspaceID = types.StringNull()
-	}
-}
-
-func (r *ConnectionResourceModel) RefreshFromCreateResponse(resp *shared.ConnectionRead) {
-	r.RefreshFromGetResponse(resp)
-}
-
-func (r *ConnectionResourceModel) RefreshFromUpdateResponse(resp *shared.ConnectionRead) {
-	r.RefreshFromGetResponse(resp)
 }

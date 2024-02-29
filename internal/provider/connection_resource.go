@@ -5,10 +5,13 @@ package provider
 import (
 	"context"
 	"fmt"
+	speakeasy_stringplanmodifier "github.com/aballiet/terraform-provider-airbyte/internal/planmodifiers/stringplanmodifier"
 	"github.com/aballiet/terraform-provider-airbyte/internal/sdk"
-
 	"github.com/aballiet/terraform-provider-airbyte/internal/sdk/pkg/models/shared"
 	"github.com/aballiet/terraform-provider-airbyte/internal/validators"
+	speakeasy_int64validators "github.com/aballiet/terraform-provider-airbyte/internal/validators/int64validators"
+	speakeasy_listvalidators "github.com/aballiet/terraform-provider-airbyte/internal/validators/listvalidators"
+	speakeasy_stringvalidators "github.com/aballiet/terraform-provider-airbyte/internal/validators/stringvalidators"
 	"github.com/hashicorp/terraform-plugin-framework-validators/mapvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -75,9 +78,11 @@ func (r *ConnectionResource) Schema(ctx context.Context, req resource.SchemaRequ
 			},
 			"destination_id": schema.StringAttribute{
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplace(),
+					stringplanmodifier.RequiresReplaceIfConfigured(),
+					speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
 				},
-				Required: true,
+				Required:    true,
+				Description: `Requires replacement if changed. `,
 			},
 			"geography": schema.StringAttribute{
 				Computed:    true,
@@ -97,10 +102,9 @@ func (r *ConnectionResource) Schema(ctx context.Context, req resource.SchemaRequ
 				Description: `Optional name of the connection`,
 			},
 			"namespace_definition": schema.StringAttribute{
-				Computed: true,
-				Optional: true,
-				MarkdownDescription: `must be one of ["source", "destination", "customformat"]` + "\n" +
-					`Method used for computing final namespace in destination`,
+				Computed:    true,
+				Optional:    true,
+				Description: `Method used for computing final namespace in destination. must be one of ["source", "destination", "customformat"]`,
 				Validators: []validator.String{
 					stringvalidator.OneOf(
 						"source",
@@ -110,10 +114,9 @@ func (r *ConnectionResource) Schema(ctx context.Context, req resource.SchemaRequ
 				},
 			},
 			"namespace_format": schema.StringAttribute{
-				Computed: true,
-				Optional: true,
-				MarkdownDescription: `Default: null` + "\n" +
-					`Used when namespaceDefinition is 'customformat'. If blank then behaves like namespaceDefinition = 'destination'. If "${SOURCE_NAMESPACE}" then behaves like namespaceDefinition = 'source'.`,
+				Computed:    true,
+				Optional:    true,
+				Description: `Used when namespaceDefinition is 'customformat'. If blank then behaves like namespaceDefinition = 'destination'. If "${SOURCE_NAMESPACE}" then behaves like namespaceDefinition = 'source'. Default: null`,
 			},
 			"non_breaking_changes_preference": schema.StringAttribute{
 				Computed:    true,
@@ -178,9 +181,11 @@ func (r *ConnectionResource) Schema(ctx context.Context, req resource.SchemaRequ
 						Optional: true,
 						Attributes: map[string]schema.Attribute{
 							"time_unit": schema.StringAttribute{
-								Required:    true,
-								Description: `must be one of ["minutes", "hours", "days", "weeks", "months"]`,
+								Computed:    true,
+								Optional:    true,
+								Description: `Not Null; must be one of ["minutes", "hours", "days", "weeks", "months"]`,
 								Validators: []validator.String{
+									speakeasy_stringvalidators.NotNull(),
 									stringvalidator.OneOf(
 										"minutes",
 										"hours",
@@ -191,7 +196,12 @@ func (r *ConnectionResource) Schema(ctx context.Context, req resource.SchemaRequ
 								},
 							},
 							"units": schema.Int64Attribute{
-								Required: true,
+								Computed:    true,
+								Optional:    true,
+								Description: `Not Null`,
+								Validators: []validator.Int64{
+									speakeasy_int64validators.NotNull(),
+								},
 							},
 						},
 					},
@@ -200,10 +210,20 @@ func (r *ConnectionResource) Schema(ctx context.Context, req resource.SchemaRequ
 						Optional: true,
 						Attributes: map[string]schema.Attribute{
 							"cron_expression": schema.StringAttribute{
-								Required: true,
+								Computed:    true,
+								Optional:    true,
+								Description: `Not Null`,
+								Validators: []validator.String{
+									speakeasy_stringvalidators.NotNull(),
+								},
 							},
 							"cron_time_zone": schema.StringAttribute{
-								Required: true,
+								Computed:    true,
+								Optional:    true,
+								Description: `Not Null`,
+								Validators: []validator.String{
+									speakeasy_stringvalidators.NotNull(),
+								},
 							},
 						},
 					},
@@ -211,10 +231,9 @@ func (r *ConnectionResource) Schema(ctx context.Context, req resource.SchemaRequ
 				Description: `schedule for when the the connection should run, per the schedule type`,
 			},
 			"schedule_type": schema.StringAttribute{
-				Computed: true,
-				Optional: true,
-				MarkdownDescription: `must be one of ["manual", "basic", "cron"]` + "\n" +
-					`determine how the schedule data should be interpreted`,
+				Computed:    true,
+				Optional:    true,
+				Description: `determine how the schedule data should be interpreted. must be one of ["manual", "basic", "cron"]`,
 				Validators: []validator.String{
 					stringvalidator.OneOf(
 						"manual",
@@ -229,14 +248,15 @@ func (r *ConnectionResource) Schema(ctx context.Context, req resource.SchemaRequ
 			},
 			"source_id": schema.StringAttribute{
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplace(),
+					stringplanmodifier.RequiresReplaceIfConfigured(),
+					speakeasy_stringplanmodifier.SuppressDiff(speakeasy_stringplanmodifier.ExplicitSuppress),
 				},
-				Required: true,
+				Required:    true,
+				Description: `Requires replacement if changed. `,
 			},
 			"status": schema.StringAttribute{
-				Required: true,
-				MarkdownDescription: `must be one of ["active", "inactive", "deprecated"]` + "\n" +
-					`Active means that data is flowing through the connection. Inactive means it is not. Deprecated means the connection is off and cannot be re-activated. the schema field describes the elements of the schema that will be synced.`,
+				Required:    true,
+				Description: `Active means that data is flowing through the connection. Inactive means it is not. Deprecated means the connection is off and cannot be re-activated. the schema field describes the elements of the schema that will be synced. must be one of ["active", "inactive", "deprecated"]`,
 				Validators: []validator.String{
 					stringvalidator.OneOf(
 						"active",
@@ -250,7 +270,8 @@ func (r *ConnectionResource) Schema(ctx context.Context, req resource.SchemaRequ
 				Optional: true,
 				Attributes: map[string]schema.Attribute{
 					"streams": schema.ListNestedAttribute{
-						Required: true,
+						Computed: true,
+						Optional: true,
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
 								"config": schema.SingleNestedAttribute{
@@ -269,9 +290,11 @@ func (r *ConnectionResource) Schema(ctx context.Context, req resource.SchemaRequ
 											Description: `Path to the field that will be used to determine if a record is new or modified since the last sync. This field is REQUIRED if ` + "`" + `sync_mode` + "`" + ` is ` + "`" + `incremental` + "`" + `. Otherwise it is ignored.`,
 										},
 										"destination_sync_mode": schema.StringAttribute{
-											Required:    true,
-											Description: `must be one of ["append", "overwrite", "append_dedup"]`,
+											Computed:    true,
+											Optional:    true,
+											Description: `Not Null; must be one of ["append", "overwrite", "append_dedup"]`,
 											Validators: []validator.String{
+												speakeasy_stringvalidators.NotNull(),
 												stringvalidator.OneOf(
 													"append",
 													"overwrite",
@@ -317,9 +340,11 @@ func (r *ConnectionResource) Schema(ctx context.Context, req resource.SchemaRequ
 											Description: `Does the connector suggest that this stream be enabled by default?`,
 										},
 										"sync_mode": schema.StringAttribute{
-											Required:    true,
-											Description: `must be one of ["full_refresh", "incremental"]`,
+											Computed:    true,
+											Optional:    true,
+											Description: `Not Null; must be one of ["full_refresh", "incremental"]`,
 											Validators: []validator.String{
+												speakeasy_stringvalidators.NotNull(),
 												stringvalidator.OneOf(
 													"full_refresh",
 													"incremental",
@@ -349,8 +374,12 @@ func (r *ConnectionResource) Schema(ctx context.Context, req resource.SchemaRequ
 											},
 										},
 										"name": schema.StringAttribute{
-											Required:    true,
-											Description: `Stream's name.`,
+											Computed:    true,
+											Optional:    true,
+											Description: `Stream's name. Not Null`,
+											Validators: []validator.String{
+												speakeasy_stringvalidators.NotNull(),
+											},
 										},
 										"namespace": schema.StringAttribute{
 											Computed:    true,
@@ -379,6 +408,10 @@ func (r *ConnectionResource) Schema(ctx context.Context, req resource.SchemaRequ
 									Description: `the immutable schema defined by the source`,
 								},
 							},
+						},
+						Description: `Not Null`,
+						Validators: []validator.List{
+							speakeasy_listvalidators.NotNull(),
 						},
 					},
 				},
@@ -413,14 +446,14 @@ func (r *ConnectionResource) Configure(ctx context.Context, req resource.Configu
 
 func (r *ConnectionResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	var data *ConnectionResourceModel
-	var item types.Object
+	var plan types.Object
 
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &item)...)
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	resp.Diagnostics.Append(item.As(ctx, &data, basetypes.ObjectAsOptions{
+	resp.Diagnostics.Append(plan.As(ctx, &data, basetypes.ObjectAsOptions{
 		UnhandledNullAsEmpty:    true,
 		UnhandledUnknownAsEmpty: true,
 	})...)
@@ -429,7 +462,7 @@ func (r *ConnectionResource) Create(ctx context.Context, req resource.CreateRequ
 		return
 	}
 
-	request := *data.ToCreateSDKType()
+	request := *data.ToSharedConnectionCreate()
 	res, err := r.client.Connection.CreateConnection(ctx, request)
 	if err != nil {
 		resp.Diagnostics.AddError("failure to invoke API", err.Error())
@@ -450,7 +483,8 @@ func (r *ConnectionResource) Create(ctx context.Context, req resource.CreateRequ
 		resp.Diagnostics.AddError("unexpected response from API. No response body", debugResponse(res.RawResponse))
 		return
 	}
-	data.RefreshFromCreateResponse(res.ConnectionRead)
+	data.RefreshFromSharedConnectionRead(res.ConnectionRead)
+	refreshPlan(ctx, plan, &data, resp.Diagnostics)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -498,7 +532,7 @@ func (r *ConnectionResource) Read(ctx context.Context, req resource.ReadRequest,
 		resp.Diagnostics.AddError("unexpected response from API. No response body", debugResponse(res.RawResponse))
 		return
 	}
-	data.RefreshFromGetResponse(res.ConnectionRead)
+	data.RefreshFromSharedConnectionRead(res.ConnectionRead)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -506,12 +540,19 @@ func (r *ConnectionResource) Read(ctx context.Context, req resource.ReadRequest,
 
 func (r *ConnectionResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	var data *ConnectionResourceModel
+	var plan types.Object
+
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	merge(ctx, req, resp, &data)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	request := *data.ToUpdateSDKType()
+	request := *data.ToSharedConnectionUpdate()
 	res, err := r.client.Connection.UpdateConnection(ctx, request)
 	if err != nil {
 		resp.Diagnostics.AddError("failure to invoke API", err.Error())
@@ -532,7 +573,8 @@ func (r *ConnectionResource) Update(ctx context.Context, req resource.UpdateRequ
 		resp.Diagnostics.AddError("unexpected response from API. No response body", debugResponse(res.RawResponse))
 		return
 	}
-	data.RefreshFromUpdateResponse(res.ConnectionRead)
+	data.RefreshFromSharedConnectionRead(res.ConnectionRead)
+	refreshPlan(ctx, plan, &data, resp.Diagnostics)
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)

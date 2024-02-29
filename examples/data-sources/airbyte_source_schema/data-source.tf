@@ -1,6 +1,6 @@
 data "airbyte_source_schema" "my_sourceschema" {
-  connection_id        = "75ad76ab-ad25-4e96-813a-8182106e4b2c"
+  connection_id        = "ff392053-3529-44d0-addf-f687ccb9e13e"
   disable_cache        = true
-  notify_schema_change = false
-  source_id            = "663405a2-956a-4dce-a22c-210d6bb60f1f"
+  notify_schema_change = true
+  source_id            = "a5e59828-7a0d-4455-b838-3a0345516193"
 }

@@ -1,31 +1,15 @@
 resource "airbyte_source_definition" "my_sourcedefinition" {
-  scope_id   = "3d9d1434-d468-48b6-8221-d5f1402c7e26"
-  scope_type = "workspace"
-  source_definition = {
-    name              = "Felicia Huels"
-    docker_repository = "...my_docker_repository..."
-    docker_image_tag  = "...my_docker_image_tag..."
-    documentation_url = "http://unnatural-falling-out.biz"
-    icon              = "...my_icon..."
-    resource_requirements = {
-      default = {
-        cpu_request    = "...my_cpu_request..."
-        cpu_limit      = "...my_cpu_limit..."
-        memory_request = "...my_memory_request..."
-        memory_limit   = "...my_memory_limit..."
-      }
-      job_specific = [
-        {
-          job_type = "replicate"
-          resource_requirements = {
-            cpu_request    = "...my_cpu_request..."
-            cpu_limit      = "...my_cpu_limit..."
-            memory_request = "...my_memory_request..."
-            memory_limit   = "...my_memory_limit..."
-          }
-        },
-      ]
-    }
-  }
-  workspace_id = "e038120e-c22a-4c97-8dbe-310dc62194f1"
+  cpu_limit         = "...my_cpu_limit..."
+  cpu_request       = "...my_cpu_request..."
+  docker_image_tag  = "...my_docker_image_tag..."
+  docker_repository = "...my_docker_repository..."
+  documentation_url = "http://jam-packed-guarantee.com"
+  icon              = "...my_icon..."
+  job_type          = "connection_updater"
+  memory_limit      = "...my_memory_limit..."
+  memory_request    = "...my_memory_request..."
+  name              = "Garrett Kirlin"
+  scope_id          = "0b17eae1-dd9c-4435-827c-42c7cd806319"
+  scope_type        = "workspace"
+  workspace_id      = "46c84086-3d9d-4143-8d46-88b60221d5f1"
 }

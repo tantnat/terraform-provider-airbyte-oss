@@ -5,11 +5,11 @@ package provider
 import "github.com/hashicorp/terraform-plugin-framework/types"
 
 type FailureReason struct {
+	ExternalMessage types.String `tfsdk:"external_message"`
 	FailureOrigin   types.String `tfsdk:"failure_origin"`
 	FailureType     types.String `tfsdk:"failure_type"`
-	ExternalMessage types.String `tfsdk:"external_message"`
 	InternalMessage types.String `tfsdk:"internal_message"`
-	Stacktrace      types.String `tfsdk:"stacktrace"`
 	Retryable       types.Bool   `tfsdk:"retryable"`
+	Stacktrace      types.String `tfsdk:"stacktrace"`
 	Timestamp       types.Int64  `tfsdk:"timestamp"`
 }

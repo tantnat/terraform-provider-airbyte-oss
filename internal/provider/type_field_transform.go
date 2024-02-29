@@ -5,10 +5,10 @@ package provider
 import "github.com/hashicorp/terraform-plugin-framework/types"
 
 type FieldTransform struct {
-	TransformType     types.String       `tfsdk:"transform_type"`
-	FieldName         []types.String     `tfsdk:"field_name"`
-	Breaking          types.Bool         `tfsdk:"breaking"`
 	AddField          *FieldAdd          `tfsdk:"add_field"`
+	Breaking          types.Bool         `tfsdk:"breaking"`
+	FieldName         []types.String     `tfsdk:"field_name"`
 	RemoveField       *FieldAdd          `tfsdk:"remove_field"`
+	TransformType     types.String       `tfsdk:"transform_type"`
 	UpdateFieldSchema *FieldSchemaUpdate `tfsdk:"update_field_schema"`
 }
