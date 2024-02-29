@@ -14,7 +14,7 @@ Workspace DataSource
 
 ```terraform
 data "airbyte_workspace" "my_workspace" {
-  workspace_id = "ea9808f3-1bb1-41a6-8314-62ad4d59ef89"
+  workspace_id = "a20e3344-987d-4e77-90fb-df6188b86c7c"
 }
 ```
 
@@ -242,8 +242,8 @@ Read-Only:
 
 - `customerio_configuration` (Attributes) (see [below for nested schema](#nestedatt--notifications--customerio_configuration))
 - `notification_type` (String) must be one of ["slack", "customerio"]
-- `send_on_failure` (Boolean) Default: true
-- `send_on_success` (Boolean) Default: false
+- `send_on_failure` (Boolean)
+- `send_on_success` (Boolean)
 - `slack_configuration` (Attributes) (see [below for nested schema](#nestedatt--notifications--slack_configuration))
 
 <a id="nestedatt--notifications--customerio_configuration"></a>

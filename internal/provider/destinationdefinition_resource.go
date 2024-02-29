@@ -395,7 +395,7 @@ func (r *DestinationDefinitionResource) Create(ctx context.Context, req resource
 			MemoryLimit:   memoryLimit1,
 		}
 		jobSpecificSingleton := shared.JobTypeResourceLimit{
-			JobType:              jobType,
+			JobType:              *jobType,
 			ResourceRequirements: resourceRequirements1,
 		}
 		jobSpecific := []shared.JobTypeResourceLimit{jobSpecificSingleton}
@@ -599,7 +599,7 @@ func (r *DestinationDefinitionResource) Update(ctx context.Context, req resource
 			MemoryLimit:   memoryLimit1,
 		}
 		jobSpecificSingleton := shared.JobTypeResourceLimit{
-			JobType:              jobType,
+			JobType:              *jobType,
 			ResourceRequirements: resourceRequirements1,
 		}
 		jobSpecific := []shared.JobTypeResourceLimit{jobSpecificSingleton}

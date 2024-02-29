@@ -15,10 +15,10 @@ Source Resource
 ```terraform
 resource "airbyte_source" "my_source" {
   connection_configuration = { "user" : "charles" }
-  name                     = "Elizabeth Johnson MD"
+  name                     = "Tamara Carroll IV"
   secret_id                = "airbyte_oauth_workspace_0509f049-d671-48cb-8105-0a23d47e6db6_secret_e0d38206-034e-4d75-9d21-da5a99b02826_v1"
-  source_definition_id     = "10e8de28-ee35-4676-9ccc-7d20b17eae1d"
-  workspace_id             = "d9c43502-7c42-4c7c-9806-319146c84086"
+  source_definition_id     = "b12f607a-ea75-4f35-9b45-bce45de0c203"
+  workspace_id             = "8bc3c121-92fc-4920-a51b-10e8de28ee35"
 }
 ```
 
@@ -27,11 +27,10 @@ resource "airbyte_source" "my_source" {
 
 ### Required
 
-- `connection_configuration` (String) Parsed as JSON.
-The values required to configure the source. The schema for this must match the schema return by source_definition_specifications/get for the source.
+- `connection_configuration` (String) The values required to configure the source. The schema for this must match the schema return by source_definition_specifications/get for the source. Parsed as JSON.
 - `name` (String)
-- `source_definition_id` (String)
-- `workspace_id` (String)
+- `source_definition_id` (String) Requires replacement if changed.
+- `workspace_id` (String) Requires replacement if changed.
 
 ### Optional
 

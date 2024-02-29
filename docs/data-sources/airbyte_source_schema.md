@@ -14,10 +14,10 @@ SourceSchema DataSource
 
 ```terraform
 data "airbyte_source_schema" "my_sourceschema" {
-  connection_id        = "75ad76ab-ad25-4e96-813a-8182106e4b2c"
+  connection_id        = "ff392053-3529-44d0-addf-f687ccb9e13e"
   disable_cache        = true
-  notify_schema_change = false
-  source_id            = "663405a2-956a-4dce-a22c-210d6bb60f1f"
+  notify_schema_change = true
+  source_id            = "a5e59828-7a0d-4455-b838-3a0345516193"
 }
 ```
 
@@ -40,8 +40,7 @@ data "airbyte_source_schema" "my_sourceschema" {
 - `catalog` (Attributes) describes the available schema (catalog). (see [below for nested schema](#nestedatt--catalog))
 - `catalog_diff` (Attributes) Describes the difference between two Airbyte catalogs. (see [below for nested schema](#nestedatt--catalog_diff))
 - `catalog_id` (String)
-- `connection_status` (String) must be one of ["active", "inactive", "deprecated"]
-Active means that data is flowing through the connection. Inactive means it is not. Deprecated means the connection is off and cannot be re-activated. the schema field describes the elements of the schema that will be synced.
+- `connection_status` (String) Active means that data is flowing through the connection. Inactive means it is not. Deprecated means the connection is off and cannot be re-activated. the schema field describes the elements of the schema that will be synced. must be one of ["active", "inactive", "deprecated"]
 - `job_info` (Attributes) (see [below for nested schema](#nestedatt--job_info))
 
 <a id="nestedatt--catalog"></a>
@@ -187,7 +186,7 @@ Read-Only:
 
 - `config_id` (String) only present if a config id was provided.
 - `config_type` (String) must be one of ["check_connection_source", "check_connection_destination", "discover_schema", "get_spec", "sync", "reset_connection"]
-- `connector_configuration_updated` (Boolean) Default: false
+- `connector_configuration_updated` (Boolean)
 - `created_at` (Number)
 - `ended_at` (Number)
 - `failure_reason` (Attributes) (see [below for nested schema](#nestedatt--job_info--failure_reason))
@@ -201,10 +200,8 @@ Read-Only:
 Read-Only:
 
 - `external_message` (String)
-- `failure_origin` (String) must be one of ["source", "destination", "replication", "persistence", "normalization", "dbt", "airbyte_platform", "unknown"]
-Indicates where the error originated. If not set, the origin of error is not well known.
-- `failure_type` (String) must be one of ["config_error", "system_error", "manual_cancellation", "refresh_schema", "heartbeat_timeout", "destination_timeout"]
-Categorizes well known errors into types for programmatic handling. If not set, the type of error is not well known.
+- `failure_origin` (String) Indicates where the error originated. If not set, the origin of error is not well known. must be one of ["source", "destination", "replication", "persistence", "normalization", "dbt", "airbyte_platform", "unknown"]
+- `failure_type` (String) Categorizes well known errors into types for programmatic handling. If not set, the type of error is not well known. must be one of ["config_error", "system_error", "manual_cancellation", "refresh_schema", "heartbeat_timeout", "destination_timeout"]
 - `internal_message` (String)
 - `retryable` (Boolean) True if it is known that retrying may succeed, e.g. for a transient failure. False if it is known that a retry will not succeed, e.g. for a configuration issue. If not set, retryable status is not well known.
 - `stacktrace` (String)

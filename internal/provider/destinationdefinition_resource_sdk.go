@@ -5,7 +5,6 @@ package provider
 import (
 	"github.com/aballiet/terraform-provider-airbyte/internal/sdk/pkg/models/shared"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"time"
 )
 
 func (r *DestinationDefinitionResourceModel) RefreshFromSharedDestinationDefinitionRead(resp *shared.DestinationDefinitionRead) {

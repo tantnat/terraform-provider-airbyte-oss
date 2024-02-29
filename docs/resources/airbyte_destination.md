@@ -15,9 +15,9 @@ Destination Resource
 ```terraform
 resource "airbyte_destination" "my_destination" {
   connection_configuration  = { "user" : "charles" }
-  destination_definition_id = "9db62f95-525d-4bfb-8168-610013358751"
-  name                      = "Heidi Conn"
-  workspace_id              = "625efa1b-bfa8-4d64-9f71-9d133279f15a"
+  destination_definition_id = "1451ef85-fdd6-4486-b963-21f097ee8d40"
+  name                      = "Willie Olson"
+  workspace_id              = "bd3f0511-865e-4c9d-b62f-95525dbfb016"
 }
 ```
 
@@ -26,11 +26,10 @@ resource "airbyte_destination" "my_destination" {
 
 ### Required
 
-- `connection_configuration` (String) Parsed as JSON.
-The values required to configure the destination. The schema for this must match the schema return by destination_definition_specifications/get for the destinationDefinition.
-- `destination_definition_id` (String)
+- `connection_configuration` (String) The values required to configure the destination. The schema for this must match the schema return by destination_definition_specifications/get for the destinationDefinition. Parsed as JSON.
+- `destination_definition_id` (String) Requires replacement if changed.
 - `name` (String)
-- `workspace_id` (String)
+- `workspace_id` (String) Requires replacement if changed.
 
 ### Read-Only
 

@@ -22,79 +22,11 @@ resource "airbyte_connection" "my_connection" {
   non_breaking_changes_preference = "ignore"
   notify_schema_changes           = false
   notify_schema_changes_by_email  = true
-  operation_ids = [
-    "fbb5835b-a03c-430b-b29d-f734fbd43f94",
-  ]
-  prefix = "...my_prefix..."
-  resource_requirements = {
-    cpu_limit      = "...my_cpu_limit..."
-    cpu_request    = "...my_cpu_request..."
-    memory_limit   = "...my_memory_limit..."
-    memory_request = "...my_memory_request..."
-  }
-  schedule_data = {
-    basic_schedule = {
-      time_unit = "minutes"
-      units     = 9
-    }
-    cron = {
-      cron_expression = "...my_cron_expression..."
-      cron_time_zone  = "...my_cron_time_zone..."
-    }
-  }
-  schedule_type     = "cron"
-  source_catalog_id = "aa5e6b8d-d995-4b85-b38d-b9804e4cb5e1"
-  source_id         = "451ef85f-dd64-4863-9632-1f097ee8d406"
-  status            = "inactive"
-  sync_catalog = {
-    streams = [
-      {
-        config = {
-          alias_name = "...my_alias_name..."
-          cursor_field = [
-            "...",
-          ]
-          destination_sync_mode   = "overwrite"
-          field_selection_enabled = true
-          primary_key = [
-            [
-              "...",
-            ],
-          ]
-          selected = false
-          selected_fields = [
-            {
-              field_path = [
-                "...",
-              ]
-            },
-          ]
-          suggested = true
-          sync_mode = "incremental"
-        }
-        stream = {
-          default_cursor_field = [
-            "...",
-          ]
-          json_schema = {
-            "Sausages" = "{ \"see\": \"documentation\" }"
-            "East"     = "{ \"see\": \"documentation\" }"
-          }
-          name                  = "Mildred Lueilwitz"
-          namespace             = "...my_namespace..."
-          source_defined_cursor = false
-          source_defined_primary_key = [
-            [
-              "...",
-            ],
-          ]
-          supported_sync_modes = [
-            "incremental",
-          ]
-        }
-      },
-    ]
-  }
+  prefix                          = "...my_prefix..."
+  schedule_type                   = "cron"
+  source_catalog_id               = "bb5835ba-03c3-40b3-a9df-734fbd43f940"
+  source_id                       = "eaaa5e6b-8dd9-495b-85b3-8db9804e4cb5"
+  status                          = "deprecated"
 }
 ```
 
@@ -103,19 +35,16 @@ resource "airbyte_connection" "my_connection" {
 
 ### Required
 
-- `destination_id` (String)
-- `source_id` (String)
-- `status` (String) must be one of ["active", "inactive", "deprecated"]
-Active means that data is flowing through the connection. Inactive means it is not. Deprecated means the connection is off and cannot be re-activated. the schema field describes the elements of the schema that will be synced.
+- `destination_id` (String) Requires replacement if changed.
+- `source_id` (String) Requires replacement if changed.
+- `status` (String) Active means that data is flowing through the connection. Inactive means it is not. Deprecated means the connection is off and cannot be re-activated. the schema field describes the elements of the schema that will be synced. must be one of ["active", "inactive", "deprecated"]
 
 ### Optional
 
 - `geography` (String) must be one of ["auto", "us", "eu"]
 - `name` (String) Optional name of the connection
-- `namespace_definition` (String) must be one of ["source", "destination", "customformat"]
-Method used for computing final namespace in destination
-- `namespace_format` (String) Default: null
-Used when namespaceDefinition is 'customformat'. If blank then behaves like namespaceDefinition = 'destination'. If "${SOURCE_NAMESPACE}" then behaves like namespaceDefinition = 'source'.
+- `namespace_definition` (String) Method used for computing final namespace in destination. must be one of ["source", "destination", "customformat"]
+- `namespace_format` (String) Used when namespaceDefinition is 'customformat'. If blank then behaves like namespaceDefinition = 'destination'. If "${SOURCE_NAMESPACE}" then behaves like namespaceDefinition = 'source'. Default: null
 - `non_breaking_changes_preference` (String) must be one of ["ignore", "disable", "propagate_columns", "propagate_fully"]
 - `notify_schema_changes` (Boolean)
 - `notify_schema_changes_by_email` (Boolean)
@@ -123,8 +52,7 @@ Used when namespaceDefinition is 'customformat'. If blank then behaves like name
 - `prefix` (String) Prefix that will be prepended to the name of each stream when it is written to the destination.
 - `resource_requirements` (Attributes) optional resource requirements to run workers (blank for unbounded allocations) (see [below for nested schema](#nestedatt--resource_requirements))
 - `schedule_data` (Attributes) schedule for when the the connection should run, per the schedule type (see [below for nested schema](#nestedatt--schedule_data))
-- `schedule_type` (String) must be one of ["manual", "basic", "cron"]
-determine how the schedule data should be interpreted
+- `schedule_type` (String) determine how the schedule data should be interpreted. must be one of ["manual", "basic", "cron"]
 - `source_catalog_id` (String)
 - `sync_catalog` (Attributes) describes the available schema (catalog). (see [below for nested schema](#nestedatt--sync_catalog))
 
@@ -156,28 +84,28 @@ Optional:
 <a id="nestedatt--schedule_data--basic_schedule"></a>
 ### Nested Schema for `schedule_data.basic_schedule`
 
-Required:
+Optional:
 
-- `time_unit` (String) must be one of ["minutes", "hours", "days", "weeks", "months"]
-- `units` (Number)
+- `time_unit` (String) Not Null; must be one of ["minutes", "hours", "days", "weeks", "months"]
+- `units` (Number) Not Null
 
 
 <a id="nestedatt--schedule_data--cron"></a>
 ### Nested Schema for `schedule_data.cron`
 
-Required:
+Optional:
 
-- `cron_expression` (String)
-- `cron_time_zone` (String)
+- `cron_expression` (String) Not Null
+- `cron_time_zone` (String) Not Null
 
 
 
 <a id="nestedatt--sync_catalog"></a>
 ### Nested Schema for `sync_catalog`
 
-Required:
+Optional:
 
-- `streams` (Attributes List) (see [below for nested schema](#nestedatt--sync_catalog--streams))
+- `streams` (Attributes List) Not Null (see [below for nested schema](#nestedatt--sync_catalog--streams))
 
 <a id="nestedatt--sync_catalog--streams"></a>
 ### Nested Schema for `sync_catalog.streams`
@@ -190,23 +118,20 @@ Optional:
 <a id="nestedatt--sync_catalog--streams--config"></a>
 ### Nested Schema for `sync_catalog.streams.config`
 
-Required:
-
-- `destination_sync_mode` (String) must be one of ["append", "overwrite", "append_dedup"]
-- `sync_mode` (String) must be one of ["full_refresh", "incremental"]
-
 Optional:
 
 - `alias_name` (String) Alias name to the stream to be used in the destination
 - `cursor_field` (List of String) Path to the field that will be used to determine if a record is new or modified since the last sync. This field is REQUIRED if `sync_mode` is `incremental`. Otherwise it is ignored.
+- `destination_sync_mode` (String) Not Null; must be one of ["append", "overwrite", "append_dedup"]
 - `field_selection_enabled` (Boolean) Whether field selection should be enabled. If this is true, only the properties in `selectedFields` will be included.
 - `primary_key` (List of List of String) Paths to the fields that will be used as primary key. This field is REQUIRED if `destination_sync_mode` is `*_dedup`. Otherwise it is ignored.
 - `selected` (Boolean) If this is true, the stream is selected with all of its properties. For new connections, this considers if the stream is suggested or not
 - `selected_fields` (Attributes List) Paths to the fields that will be included in the configured catalog. This must be set if `fieldSelectedEnabled` is set. An empty list indicates that no properties will be included. (see [below for nested schema](#nestedatt--sync_catalog--streams--config--selected_fields))
 - `suggested` (Boolean) Does the connector suggest that this stream be enabled by default?
+- `sync_mode` (String) Not Null; must be one of ["full_refresh", "incremental"]
 
 <a id="nestedatt--sync_catalog--streams--config--selected_fields"></a>
-### Nested Schema for `sync_catalog.streams.config.suggested`
+### Nested Schema for `sync_catalog.streams.config.sync_mode`
 
 Optional:
 
@@ -217,14 +142,11 @@ Optional:
 <a id="nestedatt--sync_catalog--streams--stream"></a>
 ### Nested Schema for `sync_catalog.streams.stream`
 
-Required:
-
-- `name` (String) Stream's name.
-
 Optional:
 
 - `default_cursor_field` (List of String) Path to the field that will be used to determine if a record is new or modified since the last sync. If not provided by the source, the end user will have to specify the comparable themselves.
 - `json_schema` (Map of String) Stream schema using Json Schema specs.
+- `name` (String) Stream's name. Not Null
 - `namespace` (String) Optional Source-defined namespace. Airbyte streams from the same sources should have the same namespace. Currently only used by JDBC destinations to determine what schema to write to.
 - `source_defined_cursor` (Boolean) If the source defines the cursor field, then any other cursor field inputs will be ignored. If it does not, either the user_provided one is used, or the default one is used as a backup.
 - `source_defined_primary_key` (List of List of String) If the source defines the primary key, paths to the fields that will be used as a primary key. If not provided by the source, the end user will have to specify the primary key themselves.

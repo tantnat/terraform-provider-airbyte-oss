@@ -14,7 +14,7 @@ Operation Resource
 
 ```terraform
 resource "airbyte_operation" "my_operation" {
-  name = "Ms. Simon Funk"
+  name = "Jeff Barton"
   operator_configuration = {
     dbt = {
       dbt_arguments   = "...my_dbt_arguments..."
@@ -25,19 +25,19 @@ resource "airbyte_operation" "my_operation" {
     normalization = {
       option = "basic"
     }
-    operator_type = "normalization"
+    operator_type = "dbt"
     webhook = {
       dbt_cloud = {
-        account_id = 9
-        job_id     = 4
+        account_id = 10
+        job_id     = 9
       }
       execution_body    = "...my_execution_body..."
       execution_url     = "...my_execution_url..."
-      webhook_config_id = "067c0faa-27e0-4571-907b-12f607aea75f"
+      webhook_config_id = "a0554f68-58fc-4353-9457-d244268ff977"
       webhook_type      = "dbtCloud"
     }
   }
-  workspace_id = "355b45bc-e45d-4e0c-a038-bc3c12192fc9"
+  workspace_id = "c6f814b5-f1dc-4406-93e6-067c0faa27e0"
 }
 ```
 
@@ -48,7 +48,7 @@ resource "airbyte_operation" "my_operation" {
 
 - `name` (String)
 - `operator_configuration` (Attributes) (see [below for nested schema](#nestedatt--operator_configuration))
-- `workspace_id` (String)
+- `workspace_id` (String) Requires replacement if changed.
 
 ### Read-Only
 
@@ -70,15 +70,12 @@ Optional:
 <a id="nestedatt--operator_configuration--dbt"></a>
 ### Nested Schema for `operator_configuration.dbt`
 
-Required:
-
-- `git_repo_url` (String)
-
 Optional:
 
 - `dbt_arguments` (String)
 - `docker_image` (String)
 - `git_repo_branch` (String)
+- `git_repo_url` (String) Not Null
 
 
 <a id="nestedatt--operator_configuration--normalization"></a>
@@ -103,9 +100,9 @@ Optional:
 <a id="nestedatt--operator_configuration--webhook--dbt_cloud"></a>
 ### Nested Schema for `operator_configuration.webhook.dbt_cloud`
 
-Required:
+Optional:
 
-- `account_id` (Number) The account id associated with the job
-- `job_id` (Number) The job id associated with the job
+- `account_id` (Number) The account id associated with the job. Not Null
+- `job_id` (Number) The job id associated with the job. Not Null
 
 

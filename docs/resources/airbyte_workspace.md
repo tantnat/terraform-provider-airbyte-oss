@@ -14,107 +14,14 @@ Workspace Resource
 
 ```terraform
 resource "airbyte_workspace" "my_workspace" {
-  anonymous_data_collection = false
+  anonymous_data_collection = true
   default_geography         = "eu"
   display_setup_wizard      = true
-  email                     = "Nyah70@hotmail.com"
-  name                      = "Brandon Kemmer"
+  email                     = "Santa_Maggio@hotmail.com"
+  name                      = "Penny Padberg"
   news                      = true
-  notifications = [
-    {
-      customerio_configuration = {}
-      notification_type        = "customerio"
-      send_on_failure          = true
-      send_on_success          = false
-      slack_configuration = {
-        webhook = "...my_webhook..."
-      }
-    },
-  ]
-  notification_settings = {
-    send_on_breaking_change_syncs_disabled = {
-      customerio_configuration = {}
-      notification_type = [
-        "slack",
-      ]
-      slack_configuration = {
-        webhook = "...my_webhook..."
-      }
-    }
-    send_on_breaking_change_warning = {
-      customerio_configuration = {}
-      notification_type = [
-        "customerio",
-      ]
-      slack_configuration = {
-        webhook = "...my_webhook..."
-      }
-    }
-    send_on_connection_update = {
-      customerio_configuration = {}
-      notification_type = [
-        "customerio",
-      ]
-      slack_configuration = {
-        webhook = "...my_webhook..."
-      }
-    }
-    send_on_connection_update_action_required = {
-      customerio_configuration = {}
-      notification_type = [
-        "customerio",
-      ]
-      slack_configuration = {
-        webhook = "...my_webhook..."
-      }
-    }
-    send_on_failure = {
-      customerio_configuration = {}
-      notification_type = [
-        "customerio",
-      ]
-      slack_configuration = {
-        webhook = "...my_webhook..."
-      }
-    }
-    send_on_success = {
-      customerio_configuration = {}
-      notification_type = [
-        "customerio",
-      ]
-      slack_configuration = {
-        webhook = "...my_webhook..."
-      }
-    }
-    send_on_sync_disabled = {
-      customerio_configuration = {}
-      notification_type = [
-        "customerio",
-      ]
-      slack_configuration = {
-        webhook = "...my_webhook..."
-      }
-    }
-    send_on_sync_disabled_warning = {
-      customerio_configuration = {}
-      notification_type = [
-        "customerio",
-      ]
-      slack_configuration = {
-        webhook = "...my_webhook..."
-      }
-    }
-  }
-  organization_id  = "d401e41a-e1e8-4142-8fc7-67202da61c2e"
-  security_updates = false
-  webhook_configs = [
-    {
-      auth_token     = "...my_auth_token..."
-      id             = "39100781-f2da-4dfe-b55f-97cbac4a9fe3"
-      name           = "Eloise Senger"
-      validation_url = "...my_validation_url..."
-    },
-  ]
+  organization_id           = "e276dd0a-b8d0-496c-a3af-1300de2cba92"
+  security_updates          = false
 }
 ```
 
@@ -123,7 +30,7 @@ resource "airbyte_workspace" "my_workspace" {
 
 ### Required
 
-- `name` (String)
+- `name` (String) Requires replacement if changed.
 
 ### Optional
 
@@ -134,7 +41,7 @@ resource "airbyte_workspace" "my_workspace" {
 - `news` (Boolean)
 - `notification_settings` (Attributes) (see [below for nested schema](#nestedatt--notification_settings))
 - `notifications` (Attributes List) (see [below for nested schema](#nestedatt--notifications))
-- `organization_id` (String)
+- `organization_id` (String) Requires replacement if changed.
 - `security_updates` (Boolean)
 - `webhook_configs` (Attributes List) (see [below for nested schema](#nestedatt--webhook_configs))
 
@@ -177,9 +84,9 @@ Optional:
 <a id="nestedatt--notification_settings--send_on_breaking_change_syncs_disabled--slack_configuration"></a>
 ### Nested Schema for `notification_settings.send_on_breaking_change_syncs_disabled.slack_configuration`
 
-Required:
+Optional:
 
-- `webhook` (String)
+- `webhook` (String) Not Null
 
 
 
@@ -199,9 +106,9 @@ Optional:
 <a id="nestedatt--notification_settings--send_on_breaking_change_warning--slack_configuration"></a>
 ### Nested Schema for `notification_settings.send_on_breaking_change_warning.slack_configuration`
 
-Required:
+Optional:
 
-- `webhook` (String)
+- `webhook` (String) Not Null
 
 
 
@@ -221,9 +128,9 @@ Optional:
 <a id="nestedatt--notification_settings--send_on_connection_update--slack_configuration"></a>
 ### Nested Schema for `notification_settings.send_on_connection_update.slack_configuration`
 
-Required:
+Optional:
 
-- `webhook` (String)
+- `webhook` (String) Not Null
 
 
 
@@ -243,9 +150,9 @@ Optional:
 <a id="nestedatt--notification_settings--send_on_connection_update_action_required--slack_configuration"></a>
 ### Nested Schema for `notification_settings.send_on_connection_update_action_required.slack_configuration`
 
-Required:
+Optional:
 
-- `webhook` (String)
+- `webhook` (String) Not Null
 
 
 
@@ -265,9 +172,9 @@ Optional:
 <a id="nestedatt--notification_settings--send_on_failure--slack_configuration"></a>
 ### Nested Schema for `notification_settings.send_on_failure.slack_configuration`
 
-Required:
+Optional:
 
-- `webhook` (String)
+- `webhook` (String) Not Null
 
 
 
@@ -287,9 +194,9 @@ Optional:
 <a id="nestedatt--notification_settings--send_on_success--slack_configuration"></a>
 ### Nested Schema for `notification_settings.send_on_success.slack_configuration`
 
-Required:
+Optional:
 
-- `webhook` (String)
+- `webhook` (String) Not Null
 
 
 
@@ -309,9 +216,9 @@ Optional:
 <a id="nestedatt--notification_settings--send_on_sync_disabled--slack_configuration"></a>
 ### Nested Schema for `notification_settings.send_on_sync_disabled.slack_configuration`
 
-Required:
+Optional:
 
-- `webhook` (String)
+- `webhook` (String) Not Null
 
 
 
@@ -331,9 +238,9 @@ Optional:
 <a id="nestedatt--notification_settings--send_on_sync_disabled_warning--slack_configuration"></a>
 ### Nested Schema for `notification_settings.send_on_sync_disabled_warning.slack_configuration`
 
-Required:
+Optional:
 
-- `webhook` (String)
+- `webhook` (String) Not Null
 
 
 
@@ -341,13 +248,10 @@ Required:
 <a id="nestedatt--notifications"></a>
 ### Nested Schema for `notifications`
 
-Required:
-
-- `notification_type` (String) must be one of ["slack", "customerio"]
-
 Optional:
 
 - `customerio_configuration` (Attributes) (see [below for nested schema](#nestedatt--notifications--customerio_configuration))
+- `notification_type` (String) Not Null; must be one of ["slack", "customerio"]
 - `send_on_failure` (Boolean) Default: true
 - `send_on_success` (Boolean) Default: false
 - `slack_configuration` (Attributes) (see [below for nested schema](#nestedatt--notifications--slack_configuration))
@@ -359,9 +263,9 @@ Optional:
 <a id="nestedatt--notifications--slack_configuration"></a>
 ### Nested Schema for `notifications.slack_configuration`
 
-Required:
+Optional:
 
-- `webhook` (String)
+- `webhook` (String) Not Null
 
 
 

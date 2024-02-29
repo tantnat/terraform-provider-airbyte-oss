@@ -18,11 +18,11 @@ resource "airbyte_source_definition_manifest" "my_sourcedefinitionmanifest" {
     description = "...my_description..."
     manifest    = {}
     spec        = {}
-    version     = 0
+    version     = 3
   }
   set_as_active_manifest = true
-  source_definition_id   = "ed73d68a-b928-40ee-8d96-c08a642e276d"
-  workspace_id           = "d0ab8d09-6c23-4af1-b00d-e2cba9260839"
+  source_definition_id   = "2c7e2666-964b-41e5-8ee0-38120ec22ac9"
+  workspace_id           = "78dbe310-dc62-4194-b112-ed73d68ab928"
 }
 ```
 
@@ -31,29 +31,20 @@ resource "airbyte_source_definition_manifest" "my_sourcedefinitionmanifest" {
 
 ### Required
 
-- `declarative_manifest` (Attributes) (see [below for nested schema](#nestedatt--declarative_manifest))
-- `set_as_active_manifest` (Boolean)
+- `declarative_manifest` (Attributes) Requires replacement if changed. (see [below for nested schema](#nestedatt--declarative_manifest))
+- `set_as_active_manifest` (Boolean) Requires replacement if changed.
 - `source_definition_id` (String)
 - `workspace_id` (String)
-
-### Read-Only
-
-- `exception_class_name` (String)
-- `exception_stack` (List of String)
-- `id` (String) The ID of this resource.
-- `message` (String)
-- `root_cause_exception_class_name` (String)
-- `root_cause_exception_stack` (List of String)
 
 <a id="nestedatt--declarative_manifest"></a>
 ### Nested Schema for `declarative_manifest`
 
 Required:
 
-- `description` (String)
-- `manifest` (Attributes) Low code CDK manifest JSON object (see [below for nested schema](#nestedatt--declarative_manifest--manifest))
-- `spec` (Attributes) The specification for what values are required to configure the sourceDefinition. (see [below for nested schema](#nestedatt--declarative_manifest--spec))
-- `version` (Number)
+- `description` (String) Requires replacement if changed.
+- `manifest` (Attributes) Low code CDK manifest JSON object. Requires replacement if changed. (see [below for nested schema](#nestedatt--declarative_manifest--manifest))
+- `spec` (Attributes) The specification for what values are required to configure the sourceDefinition. Requires replacement if changed. (see [below for nested schema](#nestedatt--declarative_manifest--spec))
+- `version` (Number) Requires replacement if changed.
 
 <a id="nestedatt--declarative_manifest--manifest"></a>
 ### Nested Schema for `declarative_manifest.manifest`

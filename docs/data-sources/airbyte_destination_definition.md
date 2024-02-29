@@ -14,7 +14,7 @@ DestinationDefinition DataSource
 
 ```terraform
 data "airbyte_destination_definition" "my_destinationdefinition" {
-  destination_definition_id = "26a55755-8711-41c3-96fa-6ed0923bff39"
+  destination_definition_id = "9100781f-2dad-4fe3-95f9-7cbac4a9fe32"
 }
 ```
 
@@ -27,8 +27,7 @@ data "airbyte_destination_definition" "my_destinationdefinition" {
 
 ### Read-Only
 
-- `custom` (Boolean) Default: false
-Whether the connector is custom or not
+- `custom` (Boolean) Whether the connector is custom or not
 - `docker_image_tag` (String)
 - `docker_repository` (String)
 - `documentation_url` (String)
@@ -50,8 +49,7 @@ Read-Only:
 - `normalization_integration_type` (String) a field indicating the type of integration dialect to use for normalization.
 - `normalization_repository` (String) a field indicating the name of the repository to be used for normalization. If the value of the flag is NULL - normalization is not used.
 - `normalization_tag` (String) a field indicating the tag of the docker repository to be used for normalization.
-- `supported` (Boolean) Default: false
-whether the destination definition supports normalization.
+- `supported` (Boolean) whether the destination definition supports normalization.
 
 
 <a id="nestedatt--resource_requirements"></a>
@@ -78,8 +76,7 @@ Read-Only:
 
 Read-Only:
 
-- `job_type` (String) must be one of ["get_spec", "check_connection", "discover_schema", "sync", "reset_connection", "connection_updater", "replicate"]
-enum that describes the different types of jobs that the platform runs.
+- `job_type` (String) enum that describes the different types of jobs that the platform runs. must be one of ["get_spec", "check_connection", "discover_schema", "sync", "reset_connection", "connection_updater", "replicate"]
 - `resource_requirements` (Attributes) optional resource requirements to run workers (blank for unbounded allocations) (see [below for nested schema](#nestedatt--resource_requirements--job_specific--resource_requirements))
 
 <a id="nestedatt--resource_requirements--job_specific--resource_requirements"></a>

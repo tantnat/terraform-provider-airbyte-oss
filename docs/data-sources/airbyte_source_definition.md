@@ -14,7 +14,7 @@ SourceDefinition DataSource
 
 ```terraform
 data "airbyte_source_definition" "my_sourcedefinition" {
-  source_definition_id = "0e334498-7de7-4710-bbdf-6188b86c7c05"
+  source_definition_id = "38de26a5-5755-4871-91c3-16fa6ed0923b"
 }
 ```
 
@@ -27,8 +27,7 @@ data "airbyte_source_definition" "my_sourcedefinition" {
 
 ### Read-Only
 
-- `custom` (Boolean) Default: false
-Whether the connector is custom or not
+- `custom` (Boolean) Whether the connector is custom or not
 - `docker_image_tag` (String)
 - `docker_repository` (String)
 - `documentation_url` (String)
@@ -66,8 +65,7 @@ Read-Only:
 
 Read-Only:
 
-- `job_type` (String) must be one of ["get_spec", "check_connection", "discover_schema", "sync", "reset_connection", "connection_updater", "replicate"]
-enum that describes the different types of jobs that the platform runs.
+- `job_type` (String) enum that describes the different types of jobs that the platform runs. must be one of ["get_spec", "check_connection", "discover_schema", "sync", "reset_connection", "connection_updater", "replicate"]
 - `resource_requirements` (Attributes) optional resource requirements to run workers (blank for unbounded allocations) (see [below for nested schema](#nestedatt--resource_requirements--job_specific--resource_requirements))
 
 <a id="nestedatt--resource_requirements--job_specific--resource_requirements"></a>

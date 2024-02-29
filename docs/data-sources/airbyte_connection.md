@@ -14,7 +14,7 @@ Connection DataSource
 
 ```terraform
 data "airbyte_connection" "my_connection" {
-  connection_id = "aaa86acf-aeba-4dc8-b85b-cf425a69f844"
+  connection_id = "0839cded-c24b-4e26-ba48-a24e9eaedfd4"
 }
 ```
 
@@ -31,10 +31,8 @@ data "airbyte_connection" "my_connection" {
 - `destination_id` (String)
 - `geography` (String) must be one of ["auto", "us", "eu"]
 - `name` (String)
-- `namespace_definition` (String) must be one of ["source", "destination", "customformat"]
-Method used for computing final namespace in destination
-- `namespace_format` (String) Default: null
-Used when namespaceDefinition is 'customformat'. If blank then behaves like namespaceDefinition = 'destination'. If "${SOURCE_NAMESPACE}" then behaves like namespaceDefinition = 'source'.
+- `namespace_definition` (String) Method used for computing final namespace in destination. must be one of ["source", "destination", "customformat"]
+- `namespace_format` (String) Used when namespaceDefinition is 'customformat'. If blank then behaves like namespaceDefinition = 'destination'. If "${SOURCE_NAMESPACE}" then behaves like namespaceDefinition = 'source'.
 - `non_breaking_changes_preference` (String) must be one of ["ignore", "disable", "propagate_columns", "propagate_fully"]
 - `notify_schema_changes` (Boolean)
 - `notify_schema_changes_by_email` (Boolean)
@@ -42,12 +40,10 @@ Used when namespaceDefinition is 'customformat'. If blank then behaves like name
 - `prefix` (String) Prefix that will be prepended to the name of each stream when it is written to the destination.
 - `resource_requirements` (Attributes) optional resource requirements to run workers (blank for unbounded allocations) (see [below for nested schema](#nestedatt--resource_requirements))
 - `schedule_data` (Attributes) schedule for when the the connection should run, per the schedule type (see [below for nested schema](#nestedatt--schedule_data))
-- `schedule_type` (String) must be one of ["manual", "basic", "cron"]
-determine how the schedule data should be interpreted
+- `schedule_type` (String) determine how the schedule data should be interpreted. must be one of ["manual", "basic", "cron"]
 - `source_catalog_id` (String)
 - `source_id` (String)
-- `status` (String) must be one of ["active", "inactive", "deprecated"]
-Active means that data is flowing through the connection. Inactive means it is not. Deprecated means the connection is off and cannot be re-activated. the schema field describes the elements of the schema that will be synced.
+- `status` (String) Active means that data is flowing through the connection. Inactive means it is not. Deprecated means the connection is off and cannot be re-activated. the schema field describes the elements of the schema that will be synced. must be one of ["active", "inactive", "deprecated"]
 - `sync_catalog` (Attributes) describes the available schema (catalog). (see [below for nested schema](#nestedatt--sync_catalog))
 - `workspace_id` (String)
 
